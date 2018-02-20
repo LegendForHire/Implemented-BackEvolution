@@ -54,7 +54,9 @@ public class Tester {
         		System.out.println("Type 'q' to quit");
         		Scanner in = new Scanner(System.in);
         		String quit = in.nextLine();
-        		if(in.equals("q"))System.exit(1);
+        		if(quit.equals("q")) {
+        			System.exit(1);
+        		}
         		}
         	}
         };
