@@ -32,6 +32,7 @@ public class TestCases {
 		in2.addInputNeuron(n4);
 		out2.addOutputNeuron(n3);
 		nn2 = new NeuralNetwork(in2,out2,null);
+		@SuppressWarnings("unused")
 		NeuralNetwork[] nns = {nn1, nn2};
 	}
 	

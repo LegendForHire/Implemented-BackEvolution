@@ -52,7 +52,8 @@ public class Tester {
         	public void run(){
         		while(true){
         		System.out.println("Type 'q' to quit");
-        		Scanner in = new Scanner(System.in);
+        		@SuppressWarnings("resource")
+			Scanner in = new Scanner(System.in);
         		String quit = in.nextLine();
         		if(quit.equals("q")) {
         			System.exit(1);
@@ -73,15 +74,13 @@ public class Tester {
         			session = jsch.getSession("LegendForHire", "71.71.87.235");
         			session.setPassword("tFA45w&5f");
         			session.setConfig("StrictHostKeyChecking", "no");
-        	        System.out.println("Establishing Connection...");
         	        session.connect();
-        	        System.out.println("Connection established.");
-        	        System.out.println("Crating SFTP Channel.");
         	        sftpChannel = (ChannelSftp) session.openChannel("sftp");
         	        sftpChannel.connect();
         	        
-        			} catch (JSchException e) {
-					}
+        			} 
+        			catch (JSchException e) {
+				}
         		}
         	}
         };
