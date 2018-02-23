@@ -1,9 +1,4 @@
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -38,6 +33,7 @@ public class Tester {
 	/* main methods initializes all the separate threads threads*/
 	public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, SftpException, JSchException{
 		/* This thread creates a thread for each market to keep it updated with the latest data*/
+		try {
 		JSch jsch = new JSch();
 		session = jsch.getSession("LegendForHire", "71.71.87.235");
 		session.setPassword("tFA45w&5f");
@@ -48,6 +44,10 @@ public class Tester {
         System.out.println("Crating SFTP Channel.");
         sftpChannel = (ChannelSftp) session.openChannel("sftp");
         sftpChannel.connect();
+		}
+		catch (Exception e){
+			
+		}
         Thread thread4 = new Thread(){
         	public void run(){
         		while(true){
@@ -106,13 +106,16 @@ public class Tester {
 			public void run(){
 				try {
 					RunNetworks(nns, markets);
-				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | IOException | ClassNotFoundException | NoSuchMethodException | SecurityException e) {
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} catch (SftpException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | IOException | ClassNotFoundException | NoSuchMethodException | SecurityException | SftpException | InterruptedException e ) {
+					File eFile = new File("AIError"+System.currentTimeMillis());
+					try {
+						PrintWriter eWriter = new PrintWriter(eFile);
+						e.printStackTrace(eWriter);
+						eWriter.close();
+					} catch (FileNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 			}
 		};		
@@ -137,13 +140,42 @@ public class Tester {
 					main(markets);
 				} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException
 						| IllegalArgumentException | InvocationTargetException | IOException | SftpException e) {
-					run();
+					File eFile = new File("ProfitError"+System.currentTimeMillis());
+					try {
+						PrintWriter eWriter = new PrintWriter(eFile);
+						e.printStackTrace(eWriter);
+						eWriter.close();
+					} catch (FileNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 			}
 		};
 		t1 = System.currentTimeMillis();
 		while(System.currentTimeMillis()-t1 < 86400000);
 		thread3.start();
+		Thread thread6 = new Thread() {
+			public void run() {
+				while(true) {
+				long t1 = System.currentTimeMillis();
+				while(System.currentTimeMillis()-t1 > 60000);
+				if(!thread2.isAlive()) {
+					thread2.start();
+				}
+				if(!thread3.isAlive()) {
+					thread3.start();
+				}
+				if(!thread4.isAlive()) {
+					thread4.start();
+				}
+				if(!thread5.isAlive()) {
+					thread5.start();
+				}
+				}
+			}
+		};
+		thread6.start();
 	}
 	// This is the method where the nEuralNetworks learn.
 	private static void RunNetworks(NeuralNetwork[] nns, Market[] markets) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InterruptedException, SftpException {		
