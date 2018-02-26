@@ -156,21 +156,21 @@ public class Tester {
 		while(System.currentTimeMillis()-t1 < 86400000);
 		thread3.start();
 		Thread thread6 = new Thread() {
+			@SuppressWarnings("deprecation")
 			public void run() {
 				while(true) {
-				long t1 = System.currentTimeMillis();
-				while(System.currentTimeMillis()-t1 > 60000);
-				if(!thread2.isAlive()) {
+				try {
+					thread2.join();
 					thread2.start();
-				}
-				if(!thread3.isAlive()) {
+					thread3.stop();
 					thread3.start();
-				}
-				if(!thread4.isAlive()) {
+					thread4.stop();
 					thread4.start();
-				}
-				if(!thread5.isAlive()) {
+					thread5.stop();
 					thread5.start();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 				}
 			}
