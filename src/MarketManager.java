@@ -9,29 +9,16 @@ public class MarketManager {
 		Singleton s = Singleton.getInstance();
 		Market[] markets = marketCreator();
 		s.setMarkets(markets);
-		Thread thread1 = new Thread() {
-			public void run(){
-				while(true) {
-					Thread thread = new Thread() {
-						public void run() {
-				try {
-					updater(markets);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-					};
-					thread.start();
+		Thread thread = new Thread() {
+				public void run() {
 					try {
-						thread.join();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
+						updater(markets);
+					} catch (IOException e) {
 						e.printStackTrace();
 					}
-				}
-			}
+				}	
 		};
-		thread1.start();
+		thread.start();
 	}
 	//creates all the markets
 		public static Market[] marketCreator() throws IOException{
@@ -66,13 +53,15 @@ public class MarketManager {
 			ArrayList<Thread> threads = new ArrayList<Thread>();
 			for (Market market : markets){
 				threads.add (new Thread() {
-					public void run(){
-						try {
-							updater(market);
-						} catch (IOException e) {
-							e.printStackTrace();
+					public void run(){			
+								
+									try {
+										updater(market);
+									} catch (IOException e) {
+										e.printStackTrace();
+									}
+								
 						}
-					}
 				});
 				
 			}
