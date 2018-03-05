@@ -215,18 +215,15 @@ public class NetworkCreator {
 				n.setLayernumber(1);
 			}
 			layers[0] = input;
-			Layer output = new Layer(false,true);
-			Class<?> outputs = Class.forName("OutputMethods");
-			Method m1 = outputs.getMethods()[0];
-			Method m2 = outputs.getMethods()[1];
+			Layer output = new Layer(false,true);;
 			//creates 5 buy and 5 sell outputs for each market.
 			for (Market market: markets){
 				for (int i = 1; i <= 5;i++){
 					if (!market.getMarketName().equals("BTC-HKG")&&!market.getMarketName().equals("BTC-XBB")){
-					OutputNeuron out = new OutputNeuron(m1,1,market,i);
+					OutputNeuron out = new OutputNeuron("buy",1,market,i);
 					output.addOutputNeuron(out);
 					out.setLayernumber(2);
-					out = new OutputNeuron(m2,1,market,i);
+					out = new OutputNeuron("sell",1,market,i);
 					output.addOutputNeuron(out);
 					out.setLayernumber(2);
 					}

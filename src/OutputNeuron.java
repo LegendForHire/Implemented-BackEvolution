@@ -1,9 +1,9 @@
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 public class OutputNeuron extends Neuron {
-	private Method method;
+	private String method;
 	private double activation;
 	private Market market;
 	private int selector;
@@ -11,7 +11,7 @@ public class OutputNeuron extends Neuron {
 	private long lastmethod;
 	public boolean shouldAct;
 	private double error;
-	public OutputNeuron(Method m, double d){
+	public OutputNeuron(String m, double d){
 		genes = new ArrayList<Gene>();
 		method = m;
 		activation = d;
@@ -34,9 +34,9 @@ public class OutputNeuron extends Neuron {
 	private ArrayList<Wallet> getWallets() {
 		return wallets;
 	}
-	public OutputNeuron(Method m, double d, Market market, int selected){
+	public OutputNeuron(String string, double d, Market market, int selected){
 		genes = new ArrayList<Gene>();
-		method = m;
+		method = string;
 		activation = d;
 		this.market = market;
 		selector = selected;
@@ -47,10 +47,10 @@ public class OutputNeuron extends Neuron {
 	public void updateWallets(ArrayList<Wallet> w){
 		wallets = w;
 	}
-	public Method getOutputMethod(){
+	public String getOutputMethod(){
 		return method;	
 	}
-	public void updateMethod(Method m){
+	public void updateMethod(String m){
 		method = m;
 	}
 	public Market getMarket(){
@@ -68,10 +68,16 @@ public class OutputNeuron extends Neuron {
 	public void setSelector(int selector) {
 		this.selector = selector;
 	}
-	public void invoke() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+	public void invoke() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException{
+		lastmethod = System.currentTimeMillis();
 		if (System.currentTimeMillis() - lastmethod > 60000){
-			method.invoke(null, market, selector, wallets);	
-			lastmethod = System.currentTimeMillis();
+			if(method.equals("sell")) {
+				OutputMethods.sell(market, selector, wallets);
+			}
+			else {
+				OutputMethods.buy(market, selector, wallets);
+			}
+			
 		}
 	}
 	public void setActive (boolean b){

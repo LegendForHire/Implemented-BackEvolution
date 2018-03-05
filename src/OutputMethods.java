@@ -34,7 +34,4 @@ public class OutputMethods {
 		from.withdraw(purchase);
 		to.deposit((purchase*market.getData(5))*.9975);		
 	}
-	public int fakeMeth(){
-		return 1;
-	}
 }

@@ -149,7 +149,7 @@ public class NeuralNetManager {
 	
 	}
 	//This is where a single neural network is run
-		public static void RunNetwork(NeuralNetwork nn) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		public static void RunNetwork(NeuralNetwork nn) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
 			//runs each layer in order
 			nn.clearInputArrays();
 			for (Layer l : nn.getLayers()){			

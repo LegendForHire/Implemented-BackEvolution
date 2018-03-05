@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -17,8 +16,8 @@ public class Backpropagate {
 			ArrayList<OutputNeuron> buys = new ArrayList<OutputNeuron>();
 			// choose output neurons that should activate
 			for(OutputNeuron n : out.getONeurons()){
-				Method m = n.getOutputMethod();
-				if (m.getName().contains("buy")){
+				String m = n.getOutputMethod();
+				if (m.contains("buy")){
 					buys.add(n);
 					n.setActive(false);
 				}
