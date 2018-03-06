@@ -7,6 +7,11 @@ import java.util.Random;
 public class Evolve {
 	public static Random rand = new Random();
 	public static Singleton s = Singleton.getInstance();
+	public static final double  WEIGHT_ADJUST = .65;
+	public static final double  RANDOM_WEIGHT = .1+WEIGHT_ADJUST;
+	public static final double ENABLE_DISABLE = .05+RANDOM_WEIGHT;
+	public static final double  NEW_GENE = ENABLE_DISABLE + .17 ;
+	public static final double EXISTING_LAYER = NEW_GENE + .029;
 	public static NeuralNetwork[] evolve(NeuralNetwork[] nns,Market[] markets) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		//double checks to makesure the arrays arestill properly sorted with the most recent market data.
 		Arrays.sort(nns);
@@ -518,16 +523,16 @@ public class Evolve {
 			}
 		}
 		// gene mutation
-		if (selector < .8 && genes.size() > 0){
+		if (selector < ENABLE_DISABLE && genes.size() > 0){
 			
 			
 			Gene gene= genes.get(0);
 			if(genes.size() > 1) gene= genes.get(rand.nextInt(genes.size()-1));
-			if(selector < .65) {
+			if(selector < WEIGHT_ADJUST) {
 				//adjust weight
 				gene.setWeight(gene.getWeight()*(1+(Math.random()*.1)));
 			}
-			else if (selector < .75){
+			else if (selector < RANDOM_WEIGHT){
 				// new random weight
 				gene.setWeight(Math.random()*2 - 1);
 				
@@ -538,7 +543,7 @@ public class Evolve {
 			}
 		
 		}
-		else if (selector <.97 || genes.size() == 0){
+		else if (selector < NEW_GENE || genes.size() == 0){
 			// new gene
 			int layer = 0;
 			if (newnn.getLayers().size() > 2) layer = rand.nextInt(newnn.getLayers().size()-2);
@@ -630,7 +635,7 @@ public class Evolve {
 		}
 		else{
 			//new neuron
-			if (newnn.getLayers().size() == 2 || selector > .999 + ((newnn.getLayers().size()-2)*.00004)){
+			if (newnn.getLayers().size() == 2 || selector > EXISTING_LAYER + ((newnn.getLayers().size()-2)*.00004)){
 				//new neuron in new layer
 				Layer l = new Layer(false, false);
 				newnn.addLayer(l);

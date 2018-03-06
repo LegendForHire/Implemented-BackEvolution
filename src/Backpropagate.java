@@ -55,8 +55,8 @@ public class Backpropagate {
 			// calculate the error for each output neuron
 			for(OutputNeuron n : out.getONeurons()){
 				if(n.getInputs().size() == 0) n.setError(0);
-				else if(n.shouldAct && n.getLast() < 1)n.setError((1.01+Math.random()-Sigmoid(n.getLast()))*Sigmoid(n.getLast())*(1-Sigmoid(n.getLast())));
-				else if(!n.shouldAct && n.getLast() > 1)n.setError((-.01+Math.random()-Sigmoid(n.getLast()))*Sigmoid(n.getLast())*(1-Sigmoid(n.getLast())));
+				else if(n.shouldAct && n.getLast() < Singleton.ACTIVATION)n.setError((1.01+Math.random()-Sigmoid(n.getLast()))*Sigmoid(n.getLast())*(1-Sigmoid(n.getLast())));
+				else if(!n.shouldAct && n.getLast() > Singleton.ACTIVATION)n.setError((-.01+Math.random()-Sigmoid(n.getLast()))*Sigmoid(n.getLast())*(1-Sigmoid(n.getLast())));
 				else n.setError(0);			
 			}
 			for(int i = nn.getLayers().size()-1; i > 0; i--){

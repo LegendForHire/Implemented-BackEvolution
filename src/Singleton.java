@@ -12,6 +12,7 @@ public class Singleton {
 	private NeuralNetwork[] networks;
 	private double totalGlobalError;
 	private PrintWriter writer;
+	public static final double ACTIVATION = .8;
 	
 	private Singleton() {
 		File f = new File("log.txt");

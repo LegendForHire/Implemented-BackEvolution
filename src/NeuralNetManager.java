@@ -18,10 +18,12 @@ public class NeuralNetManager {
 	private static ArrayList<Wallet> noactwallets;
 	public static Random rand = new Random();
 	public static final double ALLOWABLE_ERROR= 250;
+	public static final int TIMING = 60000;
+	public static final int NUM_NETWORKS = 200;
 	public static void start() throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, SftpException, JSchException {
 		// TODO Auto-generated method stub
 		s = Singleton.getInstance();
-		NeuralNetwork[] nns = NetworkCreator.CreateNetworks(200, s.getMarkets()); 
+		NeuralNetwork[] nns = NetworkCreator.CreateNetworks(NUM_NETWORKS, s.getMarkets()); 
 		noactwallets = new ArrayList<Wallet>();
 		URL currencies = new URL("https://bittrex.com/api/v1.1/public/getCurrencies");
 		BufferedReader in = new BufferedReader(new InputStreamReader(currencies.openStream()));
@@ -78,7 +80,8 @@ public class NeuralNetManager {
 			for (NeuralNetwork nn : nns){
 				nn.restartWallets();
 			}
-		s.setTotalGlobalError(ALLOWABLE_ERROR/(Math.log(i)*3+1) +1);
+		double scaling = Math.log(i)*3+1;
+		s.setTotalGlobalError(ALLOWABLE_ERROR/scaling + 1);
 		System.out.println("Iteration " + i);
 		s.getWriter().println("Iteration" + i);
 		// see method description
@@ -86,7 +89,7 @@ public class NeuralNetManager {
 			Neuraltracker(nn);	
 		}
 		// this is where the back propagation learning step for the neural networks run. currently I have them set to run for one minute before evaluating
-		while(s.getTotalGlobalError() > ALLOWABLE_ERROR/(Math.log(i)*3+1)){
+		while(s.getTotalGlobalError() > ALLOWABLE_ERROR/scaling){
 			//set old values for back propagation step
 			for(Market m: markets){
 				m.setOld();
@@ -95,7 +98,7 @@ public class NeuralNetManager {
 				RunNetwork(nn);					
 			}
 			long t1 = System.currentTimeMillis();
-			while(System.currentTimeMillis() - t1 < 60000);
+			while(System.currentTimeMillis() - t1 < TIMING);
 			Backpropagate.backpropagate(nns);		
 			s.getWriter().println("Total Global Error:" + s.getTotalGlobalError()); 
 		}
@@ -106,7 +109,7 @@ public class NeuralNetManager {
 		}
 		s.getWriter().println("Wallets Restarted");
 		long t1 = System.currentTimeMillis();
-		while (System.currentTimeMillis()-t1 < 60000){
+		while (System.currentTimeMillis()-t1 < TIMING){
 			for (NeuralNetwork nn : nns){
 				RunNetwork(nn);					
 			}	
@@ -180,10 +183,10 @@ public class NeuralNetManager {
 				else if (l.isOutput()){
 					//calls the output methods if the data that passes all the way through is enough to trigger the output neuron.
 					for (OutputNeuron n : l.getONeurons()){
-						if (n.getValue() > .8){
+						if (Backpropagate.Sigmoid(n.getValue()) > Singleton.ACTIVATION){
 							n.invoke();
 						}
-						n.setLast(n.getValue());
+						n.setLast(Backpropagate.Sigmoid(n.getValue()));
 						n.setValue(0.01);
 					}
 				}

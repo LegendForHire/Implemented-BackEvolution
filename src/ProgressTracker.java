@@ -14,6 +14,8 @@ public class ProgressTracker {
 	public static Singleton s = Singleton.getInstance();
 	private static ArrayList<Wallet> wallets;
 	private static ArrayList<Wallet> noactwallets;
+	public static final int UPDATE_TIMING = 60000;
+	public static final int WAIT_TIME = 86400000;
 	public static void start() throws IOException {
 		wallets = new ArrayList<Wallet>();
 		noactwallets = new ArrayList<Wallet>();
@@ -59,7 +61,7 @@ public class ProgressTracker {
 			}
 		};
 		long t1 = System.currentTimeMillis();
-		while(System.currentTimeMillis()-t1 < 86400000);
+		while(System.currentTimeMillis()-t1 < WAIT_TIME);
 		thread3.start();
 	}
 	public static void main(Market[] markets) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SftpException {
@@ -68,7 +70,7 @@ public class ProgressTracker {
 		NeuralNetwork nn = s.getNetworks()[0];
 		NeuralNetManager.RunNetwork(nn);
 		long t = System.currentTimeMillis();
-		while(System.currentTimeMillis()-t > 60000);
+		while(System.currentTimeMillis()-t > UPDATE_TIMING);
 		File f2 = new File("profit.txt");
 		PrintWriter fout = new PrintWriter(f2);
 		double noact = 0;
