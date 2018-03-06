@@ -79,6 +79,7 @@ public class NeuralNetManager {
 				nn.restartWallets();
 			}
 		s.setTotalGlobalError(ALLOWABLE_ERROR/(Math.log(i)*3+1) +1);
+		System.out.println("Iteration " + i);
 		s.getWriter().println("Iteration" + i);
 		// see method description
 		for(NeuralNetwork nn : nns) {
