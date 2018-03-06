@@ -79,7 +79,7 @@ public class NeuralNetManager {
 				nn.restartWallets();
 			}
 		s.setTotalGlobalError(ALLOWABLE_ERROR/(Math.log(i)*3+1) +1);
-		System.out.println("Iteration" + i);
+		s.getWriter().println("Iteration" + i);
 		// see method description
 		for(NeuralNetwork nn : nns) {
 			Neuraltracker(nn);	
@@ -96,14 +96,14 @@ public class NeuralNetManager {
 			long t1 = System.currentTimeMillis();
 			while(System.currentTimeMillis() - t1 < 60000);
 			Backpropagate.backpropagate(nns);		
-			System.out.println("Total Global Error:" + s.getTotalGlobalError()); 
+			s.getWriter().println("Total Global Error:" + s.getTotalGlobalError()); 
 		}
-		System.out.println("backpropagation complete");
+		s.getWriter().println("backpropagation complete");
 		//Just so it's easy to keep track of how well things are doing all of the wallets are restarted to a default state at the beginning of each run
 		for (NeuralNetwork nn : nns){
 			nn.restartWallets();
 		}
-		System.out.println("Wallets Restarted");
+		s.getWriter().println("Wallets Restarted");
 		long t1 = System.currentTimeMillis();
 		while (System.currentTimeMillis()-t1 < 60000){
 			for (NeuralNetwork nn : nns){
@@ -114,7 +114,7 @@ public class NeuralNetManager {
 		for (NeuralNetwork nn : nns){
 			nn.updateFitness();				
 		}
-		System.out.println("Fitness Determined");
+		s.getWriter().println("Fitness Determined");
 		// determines the fitness if no action was taken
 		double noact = 0;
 		for (Wallet w : noactwallets){
@@ -140,10 +140,10 @@ public class NeuralNetManager {
 		// saves the current state of the neural networks.
 		save(nns, markets, noact);
 		s.setNetworks(nns);
-		System.out.println("Last state saved");
+		s.getWriter().println("Last state saved");
 		//evolution method
 		nns = Evolve.evolve(nns, markets);
-		System.out.println("Iteration " + (i++) + " Complete");
+		s.getWriter().println("Iteration " + (i++) + " Complete");
 		}
 		
 	

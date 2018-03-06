@@ -1,3 +1,7 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+
 import com.jcraft.jsch.ChannelSftp;
 
 public class Singleton {
@@ -7,8 +11,13 @@ public class Singleton {
 	private Market[] markets;
 	private NeuralNetwork[] networks;
 	private double totalGlobalError;
+	private PrintWriter writer;
 	
 	private Singleton() {
+		File f = new File("log.txt");
+		try {
+			writer = new PrintWriter(f);
+		} catch (FileNotFoundException e) {}
 	}
 	
 	public static Singleton getInstance() {
@@ -51,6 +60,14 @@ public class Singleton {
 
 	public void setTotalGlobalError(double totalGlobalError) {
 		this.totalGlobalError = totalGlobalError;
+	}
+
+	public PrintWriter getWriter() {
+		return writer;
+	}
+
+	public void setWriter(PrintWriter writer) {
+		this.writer = writer;
 	}
 	
 

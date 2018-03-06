@@ -68,7 +68,8 @@ public class MarketManager {
 			for (Thread thread: threads){
 				thread.start();
 			}
-			System.out.println("all started updating");
+			Singleton s = Singleton.getInstance();
+			s.getWriter().println("all started updating");
 		}
 	//keeps a single market constantly updated
 	public static void updater (Market market) throws IOException{

@@ -14,14 +14,14 @@ public class NetworkCreator {
 		public static NeuralNetwork[] CreateNetworks(int i, Market[] markets) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SftpException, JSchException{
 		//if there are no load files , it creates one random gene for each neural network.
 		NeuralNetwork[] NetworkList = new NeuralNetwork[i];
-		
+		Singleton s = Singleton.getInstance();
 		try{
 			File file = new File("Generation.txt");					
 			load(NetworkList, file);
-			System.out.println("loaded Networks");
+			s.getWriter().println("loaded Networks");
 		}
 		catch(Exception e){
-		System.out.println("Creating Networks from Scratch");
+		s.getWriter().println("Creating Networks from Scratch");
 		for (int j = 0; j<i;j++){		
 				Layer[] layers = creator(markets);
 				Layer outputlayercopy = layers[1];

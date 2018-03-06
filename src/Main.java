@@ -38,6 +38,8 @@ public class Main {
 			Scanner in = new Scanner(System.in);
         		String quit = in.nextLine();
         		if(quit.equals("q")) {
+        			Singleton s = Singleton.getInstance();
+        			s.getWriter().close();
         			System.exit(1);
         		}
         		}

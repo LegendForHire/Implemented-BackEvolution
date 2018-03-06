@@ -9,10 +9,11 @@ public class SFTPManager {
 		
 		Thread thread5 = new Thread(){
         	public void run(){
+        		Singleton s = Singleton.getInstance();
         		while(true) {
     				Thread thread = new Thread() {
     					public void run() {
-        		Singleton s = Singleton.getInstance();
+        		
         		while(true){       			
         			try {       			
         			JSch jsch = new JSch();
@@ -38,7 +39,7 @@ public class SFTPManager {
 					thread.join();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					s.getWriter().println(e.getMessage());
 				}
         		}
         	}

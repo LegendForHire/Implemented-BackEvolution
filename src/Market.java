@@ -65,7 +65,7 @@ public class Market {
 		}
 		catch (Exception e){
 			//included so i can see if a market is constantly failing.
-			//System.out.println(marketName + "update failed at :" + System.currentTimeMillis());
+			//s.getWriter().println(marketName + "update failed at :" + System.currentTimeMillis());
 			//set to 0 so that any input associated with this essentially becomes disabled on a failed update.
 			for (int i =0; i < 90; i++){
 				if (i == 3 && marketData[i] == null) marketData[i] = .01;
