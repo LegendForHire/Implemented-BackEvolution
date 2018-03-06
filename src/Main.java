@@ -1,4 +1,10 @@
-
+/**
+ * main.java 1.0 March 6, 2018
+ *
+ * Copyright (c) 2018 Blair Helms
+ * Mebane, North Carolina 27302 U.S.A
+ * All Rights Reserved
+ */
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;

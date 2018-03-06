@@ -1,3 +1,10 @@
+/**
+ * OutputMethods.java 1.0 March 6, 2018
+ *
+ * Copyright (c) 2018 Blair Helms
+ * Mebane, North Carolina 27302 U.S.A
+ * All Rights Reserved
+ */
 import java.io.IOException;
 import java.util.ArrayList;
 	//holds the output methods for neural network creation. and running.

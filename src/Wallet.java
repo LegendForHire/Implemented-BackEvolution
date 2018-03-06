@@ -1,4 +1,10 @@
-
+/**
+ * Wallet.java 1.0 March 6, 2018
+ *
+ * Copyright (c) 2018 Blair Helms
+ * Mebane, North Carolina 27302 U.S.A
+ * All Rights Reserved
+ */
 public class Wallet {
 	private String name;
 	private double ammount;

@@ -1,7 +1,13 @@
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
-
+/**
+ * Backpropagate.java 1.0 March 6, 2018
+ *
+ * Copyright (c) 2018 Blair Helms
+ * Mebane, North Carolina 27302 U.S.A
+ * All Rights Reserved
+ */
 public class Backpropagate {
 	public static final double LEARNING_RATE = .01;
 	public static final double MOMENTUM = .25;
