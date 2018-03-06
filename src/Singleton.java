@@ -39,7 +39,7 @@ public class Singleton {
 
 	public void setChannel(ChannelSftp sftp) {
 		// TODO Auto-generated method stub
-		
+		channel = sftp;				
 	}
 
 	public void setMarkets(Market[] markets) {
