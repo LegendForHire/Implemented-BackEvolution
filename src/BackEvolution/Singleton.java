@@ -11,8 +11,11 @@ import java.io.PrintWriter;
  */
 
 public interface Singleton {
-	public double getAllowed();
-	public void setAllowed(double a);
+	//create fields for all items that have getters and setter
+	//create constants for all methods with only getters. 
+	//these are your twiddly knobs for changing how the algorithm runs a bit.
+	// also when implementing create the getInstance method of the singleton
+	// and at least an empty constructor
 	public double getTotalGlobalError();
 	public void setTotalGlobalError(double totalGlobalError);
 	public PrintWriter getWriter();
@@ -20,17 +23,13 @@ public interface Singleton {
 	public void setNetworks(NeuralNetwork[] nns);
 	public NeuralNetwork[] getNetworks();
 	public int getTiming();
-	public void setTiming(int i);
 	public double getActivation();
-	public void setActivation(double d);
 	public String getType();
 	public void incrementGen();
 	public int getGen();
-	public void setNumNetworks(int numNetworks);
 	public int getNumNetworks();
-	public void setLearningRate(double learningRate);
 	public double getLearningRate();
 	public double getMomentum();
-	public void setMomentum(double momentum);
+	double getAllowedError();
 }
 

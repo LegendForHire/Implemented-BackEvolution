@@ -64,14 +64,14 @@ public abstract class NeuralNetManager {
 			s.getWriter().println("Iteration" + s.getGen());
 			NeuralNetwork[] nns = s.getNetworks();
 			double scaling = Math.log(s.getGen())*3+1;
-			s.setTotalGlobalError(s.getAllowed()/scaling + 1);
+			s.setTotalGlobalError(s.getAllowedError()/scaling + 1);
 			
 			// see method description
 			for(NeuralNetwork nn : nns) {
 				Neuraltracker(nn);	
 			}
 			// this is where the back propagation learning step for the neural networks run. currently I have them set to run for one minute before evaluating
-			while(s.getTotalGlobalError() > s.getAllowed()/scaling){
+			while(s.getTotalGlobalError() > s.getAllowedError()/scaling){
 				//set old values for back propagation step
 				netManager.BackIterationHandling();
 				for (NeuralNetwork nn : nns){

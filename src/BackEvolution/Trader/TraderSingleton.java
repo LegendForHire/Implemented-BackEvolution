@@ -14,13 +14,11 @@ public class TraderSingleton implements Singleton {
 	public static final int NUM_NETWORKS = 200;
 	private static TraderSingleton uniqueInstance = new TraderSingleton();
 	private PrintWriter writer;
-	public double allowed;
-	private int timing;
-	private double activation;
 	private int Generation;
-	private int numNetworks;
-	private double learningRate;
-	private double momentum;
+	public static final double ALLOWABLE_ERROR= 250;
+	public static final int TIMING = 60000;
+	public static final double LEARNING_RATE = .01;
+	public static final double MOMENTUM = .25;
 	private static final String TYPE = "Trader";
 	private TraderSingleton(){
 		File f = new File("log.txt");
@@ -68,29 +66,17 @@ public class TraderSingleton implements Singleton {
 		this.totalGlobalError = totalGlobalError;
 	}
 	@Override
-	public double getAllowed(){
-		return allowed;	
-	}
-	@Override
-	public void setAllowed(double a){
-		allowed = a;
+	public double getAllowedError(){
+		return ALLOWABLE_ERROR;	
 	}
 	@Override
 	public int getTiming(){
-		return timing;
-	}
-	@Override
-	public void setTiming(int i){
-		timing = i;
+		return TIMING;
 	}
 	@Override
 	public double getActivation() {
 		// TODO Auto-generated method stub
-		return activation;
-	}
-	@Override
-	public void setActivation(double d) {
-		activation = d;
+		return ACTIVATION;
 	}
 	@Override
 	public String getType() {
@@ -98,8 +84,7 @@ public class TraderSingleton implements Singleton {
 	}
 	@Override
 	public void incrementGen() {
-		Generation = Generation+1;
-		
+		Generation = Generation+1;		
 	}
 	@Override
 	public int getGen() {
@@ -107,27 +92,14 @@ public class TraderSingleton implements Singleton {
 		return Generation;
 	}
 	@Override
-	public void setNumNetworks(int numNetworks) {
-		this.numNetworks = numNetworks;
-		
-	}
-	@Override
 	public int getNumNetworks() {
-		return numNetworks;
-		
-	}
-	@Override
-	public void setLearningRate(double learningRate) {
-		this.learningRate = learningRate;
+		return NUM_NETWORKS;
 		
 	}
 	public double getLearningRate() {
-		return learningRate;
+		return LEARNING_RATE;
 	}
 	public double getMomentum() {
-		return momentum;
-	}
-	public void setMomentum(double momentum) {
-		this.momentum = momentum;
+		return MOMENTUM;
 	}
 }

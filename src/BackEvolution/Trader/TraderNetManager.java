@@ -18,22 +18,8 @@ public class TraderNetManager implements SpecialNetManager {
 	private static ArrayList<Wallet> noactwallets;
 	public static Random rand = new Random();
 	private static int noact;
-	public static final double ALLOWABLE_ERROR= 250;
-	public static final int TIMING = 60000;
-	public static final int NUM_NETWORKS = 200;
-	public static final double ACTIVATION = .8;
-	public TraderNetManager(){}
-	public static final double LEARNING_RATE = .01;
-	public static final double MOMENTUM = .25;
 	public void setup(){	
 		try {
-			TraderSingleton s = TraderSingleton.getInstance();
-			s.setAllowed(ALLOWABLE_ERROR);
-			s.setTiming(TIMING);
-			s.setActivation(ACTIVATION);
-			s.setNumNetworks(NUM_NETWORKS);
-			s.setLearningRate(LEARNING_RATE);
-			s.setMomentum(MOMENTUM);
 			noactwallets = new ArrayList<Wallet>();
 			URL currencies;
 			currencies = new URL("https://bittrex.com/api/v1.1/public/getCurrencies");
