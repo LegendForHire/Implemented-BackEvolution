@@ -15,12 +15,13 @@ import java.util.ArrayList;
 public abstract class NeuralNetManager {
 	@SuppressWarnings({ "unchecked", "deprecation" })
 	public static void start(Singleton s) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException {
-		// TODO Auto-generated method stub
+		//Creating the networks to run them
 		Class<? extends SpecialNetManager> class1 = (Class<? extends SpecialNetManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
 		SpecialNetManager netManager = class1.newInstance();
 		netManager.setup();
 		NeuralNetwork[] nns =  NetworkCreator.CreateNetworks(s); 
 		s.setNetworks(nns);
+		//Thread to keep the networks learning
 		Thread thread2 = new Thread() {
 			
 			public void run(){
@@ -55,6 +56,7 @@ public abstract class NeuralNetManager {
 		};		
 		thread2.start();
 		}
+	//runs the networks
 	@SuppressWarnings({ "unchecked", "deprecation" })
 	protected static void RunNetworks(Singleton s) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InterruptedException, InstantiationException {		
 			Class<? extends SpecialNetManager> class1 = (Class<? extends SpecialNetManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
@@ -63,6 +65,7 @@ public abstract class NeuralNetManager {
 			System.out.println("Iteration " + s.getGen());
 			s.getWriter().println("Iteration" + s.getGen());
 			NeuralNetwork[] nns = s.getNetworks();
+			//Scales the allowed error over time allowing a much larger starting error but capping the smallest error possible at a lower but still reasonable number.
 			double scaling = Math.log(s.getGen())*3+1;
 			s.setTotalGlobalError(s.getAllowedError()/scaling + 1);
 			
@@ -72,20 +75,23 @@ public abstract class NeuralNetManager {
 			}
 			// this is where the back propagation learning step for the neural networks run. currently I have them set to run for one minute before evaluating
 			while(s.getTotalGlobalError() > s.getAllowedError()/scaling){
-				//set old values for back propagation step
+				//set necessary values for backpropagation step
 				netManager.BackIterationHandling();
+				//run the networks
 				for (NeuralNetwork nn : nns){
 					RunNetwork(nn,s);					
 				}
 				long t1 = System.currentTimeMillis();
 				while(System.currentTimeMillis() - t1 < s.getTiming());
+				//Backpropagates error adjustments
 				Backpropagate.backpropagate(nns,s);		
 				s.getWriter().println("Total Global Error:" + s.getTotalGlobalError()); 
 				s.getWriter().println("backpropagation complete");
 			}
-		//Just so it's easy to keep track of how well things are doing all of the wallets are restarted to a default state at the beginning of each run
+		//Sets up data for evolve step
 		netManager.EvolveSetup();
 		long t1 = System.currentTimeMillis();
+		// runs the networks for a minute to measure their performance
 		while (System.currentTimeMillis()-t1 < s.getTiming()){
 			for (NeuralNetwork nn : nns){
 				RunNetwork(nn,s);					
@@ -160,6 +166,7 @@ public abstract class NeuralNetManager {
 			
 		}				
 	@SuppressWarnings({ "deprecation" })
+	//save method
 	private static void save(Singleton s) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
 		NeuralNetwork[] nns = s.getNetworks();
 		@SuppressWarnings("unchecked")
@@ -191,11 +198,13 @@ public abstract class NeuralNetManager {
 				if (l.isInput()){
 					int layernumber = l.getNumber();
 					for (Neuron n : l.getNeurons()){
+						//default saves regular neuron number but if overridden a unique name is provided for each
 						String neurondata = manager.saveInput(n);
 						for (Gene g :n.getGenes()){
 							Neuron nout = g.getConnection();
 							if (nn.getLayers().size() == nout.getLayernumber()) {
 								Neuron nout2 = g.getConnection();
+								//default saves regular neuron number but if overridden a unique name is provided for each
 								String noutnum = manager.saveOutput(nout2);
 								int noutlayer = nout2.getLayernumber();
 								double weight = g.getWeight();
@@ -225,6 +234,8 @@ public abstract class NeuralNetManager {
 									n.RemoveGenes(g);
 								}
 								else{
+								//default saves regular neuron number but if overridden a unique name is provided for each
+
 								String noutnum = manager.saveOutput(nout2);
 								int noutlayer = nout2.getLayernumber();
 								double weight = g.getWeight();

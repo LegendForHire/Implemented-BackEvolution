@@ -14,18 +14,21 @@ public class Backpropagate {
 	public static Random rand = new Random();
 	@SuppressWarnings("deprecation")
 	public static void backpropagate(NeuralNetwork[] nns, Singleton s) throws IOException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException {
+		// makes sure old error is reset
 		s.setTotalGlobalError(0.0);
 		@SuppressWarnings("unchecked")
+		//prepares call to specific implementation
 		Class<? extends SpecialNetManager> class1 = (Class<? extends SpecialNetManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
 		SpecialNetManager netManager = class1.newInstance();
+		//Determines which neurons should have fired
 		netManager.setAct();
 		for(NeuralNetwork nn : nns){
 			Layer out = nn.getLayers().get(nn.getLayers().size()-1);			
 			// calculate the error for each output neuron
 			for(Neuron n : out.getNeurons()){
 				if(n.getInputs().size() == 0) n.setError(0);
-				else if(n.shouldAct && n.getLast() < s.getActivation())n.setError((1.01+Math.random()-Sigmoid(n.getLast()))*Sigmoid(n.getLast())*(1-Sigmoid(n.getLast())));
-				else if(!n.shouldAct && n.getLast() > s.getActivation())n.setError((-.01+Math.random()-Sigmoid(n.getLast()))*Sigmoid(n.getLast())*(1-Sigmoid(n.getLast())));
+				else if(n.shouldAct && n.getLast() < s.getActivation())n.setError((.8+Math.random()-Sigmoid(n.getLast()))*Sigmoid(n.getLast())*(1-Sigmoid(n.getLast())));
+				else if(!n.shouldAct && n.getLast() > s.getActivation())n.setError((-.8-Math.random()-Sigmoid(n.getLast()))*Sigmoid(n.getLast())*(1-Sigmoid(n.getLast())));
 				else n.setError(0);			
 			}
 			for(int i = nn.getLayers().size()-1; i > 0; i--){
@@ -42,12 +45,18 @@ public class Backpropagate {
 				}
 				else{
 					for(Neuron n: l.getNeurons()){
-						//calculate the error for Neurons
+						//calculate the error for hidden layer Neurons
 						double outputErrors = 0;
+						int m = 0;
+						int expected = 0;
 						for(Gene g : n.getGenes()){
-							outputErrors = g.getConnection().getError();							
+							m++;
+							outputErrors += g.getConnection().getError();
+							expected += g.getConnection().getError()/g.getWeight();
+							
 						}
-						double expected = 1; // I need to figure out how to figure out the target, was not in documentation I read. Seems its supposed to be 1 but not sure;	t
+						if(m>0)outputErrors = outputErrors/m;
+						expected = expected/m;
 						n.setError((expected-Sigmoid(n.getLast()))*Sigmoid(n.getLast())*outputErrors);
 						//adjust the weight for genes
 						for(Gene g : n.getInputs()){
@@ -70,6 +79,7 @@ public class Backpropagate {
 			s.setTotalGlobalError(s.getTotalGlobalError() + totalsum/2);
 		}		
 	}
+	//regularly used sigmoid function
 	public static double Sigmoid(double d) {
 		return 1/(1+Math.exp(d*-1));
 	}

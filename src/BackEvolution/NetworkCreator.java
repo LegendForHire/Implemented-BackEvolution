@@ -34,7 +34,7 @@ public abstract class NetworkCreator {
 		}
 		catch(Exception e){
 			s.getWriter().println("Creating Networks from Scratch");
-		for (int j = 0; j<s.getNumNetworks();j++){		
+			for (int j = 0; j<s.getNumNetworks();j++){		
 				Layer[] layers;
 				try {
 					layers = creator(s);
@@ -48,18 +48,16 @@ public abstract class NetworkCreator {
 						creator.NeuronSetup(no, j);
 					}
 				} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException
-						| IllegalArgumentException | InvocationTargetException | InstantiationException
-						| IOException e1) {
-					// TODO Auto-generated catch block
+					| IllegalArgumentException | InvocationTargetException | InstantiationException
+					| IOException e1) {
 					e1.printStackTrace();
 					System.exit(1);
 				}
-				
-				}									
+			}									
 		}
 		return NetworkList;		
 	}
-		//loads the most recent save file.
+		//Generates a single random gene
 		public static Layer[] RandomGenerate(Layer[] layers){
 			Layer outputlayercopy = layers[1];
 			Layer inputlayercopy = layers[0];
@@ -75,6 +73,7 @@ public abstract class NetworkCreator {
 			Layer[] copies = {inputlayercopy, outputlayercopy};
 			return copies;
 		}
+		//Adds a gene to a neuron
 		public static void geneAdder(double weight, int inLayer, int outLayer, Integer inNeuron, Integer outNeuron, NeuralNetwork nn, int enabled){
 			Gene g2 = new Gene(nn.getLayers().get(outLayer-1).getNeurons().get(outNeuron-1), weight);
 			if (enabled == 0)g2.toggle();
@@ -83,6 +82,7 @@ public abstract class NetworkCreator {
 			nn.getLayers().get(outLayer-1).getNeurons().get(outNeuron-1).addInput(g2);
 		}
 		@SuppressWarnings({ "unchecked", "deprecation" })
+		//loads a NeuralNetwork from a file
 		public static void load(Singleton s, NeuralNetwork nn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, FileNotFoundException{
 			Class<? extends Neuron> class1 = (Class<? extends Neuron>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"Neuron");
 			Class<? extends Layer> class2 = (Class<? extends Layer>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"Layer");

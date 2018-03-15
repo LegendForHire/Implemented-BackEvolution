@@ -14,6 +14,7 @@ import java.util.Random;
 
 public class Evolve {
 	public static Random rand = new Random();
+	//Could add these as twiddly knobs for singleton. keeping here for now.
 	public static final double  WEIGHT_ADJUST = .65;
 	public static final double  RANDOM_WEIGHT = .1+WEIGHT_ADJUST;
 	public static final double ENABLE_DISABLE = .05+RANDOM_WEIGHT;
