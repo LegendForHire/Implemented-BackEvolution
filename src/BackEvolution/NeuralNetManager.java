@@ -12,12 +12,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.SftpException;
-
 public abstract class NeuralNetManager {
 	@SuppressWarnings("unchecked")
-	public static void start(Singleton s) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, SftpException, JSchException, InstantiationException {
+	public static void start(Singleton s) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException {
 		// TODO Auto-generated method stub
 		Class<? extends SpecialNetManager> class1 = (Class<? extends SpecialNetManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
 		SpecialNetManager netManager = class1.newInstance();
@@ -32,7 +29,7 @@ public abstract class NeuralNetManager {
 					public void run() {
 					try {
 						RunNetworks(s);
-					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException | IOException | InterruptedException | SftpException e ) {
+					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException | IOException | InterruptedException e) {
 							File eFile = new File("AIError"+System.currentTimeMillis());
 							try {
 							PrintWriter eWriter = new PrintWriter(eFile);
@@ -59,7 +56,7 @@ public abstract class NeuralNetManager {
 		thread2.start();
 		}
 	@SuppressWarnings("unchecked")
-	protected static void RunNetworks(Singleton s) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InterruptedException, SftpException, InstantiationException {		
+	protected static void RunNetworks(Singleton s) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InterruptedException, InstantiationException {		
 			Class<? extends SpecialNetManager> class1 = (Class<? extends SpecialNetManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
 			SpecialNetManager netManager = class1.newInstance();
 			while(true) {
@@ -163,7 +160,7 @@ public abstract class NeuralNetManager {
 			
 		}				
 	@SuppressWarnings("unused")
-	private static void save(NeuralNetwork[] nns) throws IOException, SftpException {
+	private static void save(NeuralNetwork[] nns) throws IOException {
 		long t = System.currentTimeMillis();
 		File out;
 		File recent;

@@ -3,12 +3,10 @@ package BackEvolution;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Scanner;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.SftpException;
 
 public class Main {
 	@SuppressWarnings({ "unchecked", "resource" })
-	public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, SftpException, JSchException, InstantiationException{
+	public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException{
 		System.out.println("find your package name 'BackEvolution.TYPE' and enter what you have replaced TYPE with:");
 		Scanner in = new Scanner(System.in);
 		String type = in.nextLine();

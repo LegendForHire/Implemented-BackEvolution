@@ -16,8 +16,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import com.jcraft.jsch.SftpException;
-
 import BackEvolution.NeuralNetManager;
 import BackEvolution.NeuralNetwork;
 public class ProgressTracker {
@@ -52,7 +50,7 @@ public class ProgressTracker {
 				try {
 					main(s.getMarkets());
 				} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException
-						| IllegalArgumentException | InvocationTargetException | IOException | SftpException e) {
+						| IllegalArgumentException | InvocationTargetException | IOException e) {
 					File eFile = new File("ProfitError"+System.currentTimeMillis());
 					try {
 						PrintWriter eWriter = new PrintWriter(eFile);
@@ -79,7 +77,7 @@ public class ProgressTracker {
 		while(System.currentTimeMillis()-t1 < WAIT_TIME);
 		thread3.start();
 	}
-	public static void main(Market[] markets) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SftpException {
+	public static void main(Market[] markets) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
 		while(true){
 		NeuralNetwork nn = s.getNetworks()[0];
 		NeuralNetManager.RunNetwork(nn,s);
