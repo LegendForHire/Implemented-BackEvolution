@@ -6,9 +6,14 @@ public interface SpecialNetManager {
 	void BackIterationHandling();
 	void EvolveSetup();
 	void EvolveTeardown();
-	void save();
 	public void setAct();
-	String saveInput(Neuron in);
-	String saveOutput(Neuron out);
-	String saveMetaData(NeuralNetwork nn);
+	default String saveInput(Neuron in) {
+		return "" + in.getNumber();
+	}
+	default String saveOutput(Neuron out) {
+		return "" + out.getNumber();
+	}
+	default String saveMetaData(NeuralNetwork nn) {
+		return "";
+	}
 }

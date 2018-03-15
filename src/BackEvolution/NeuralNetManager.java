@@ -98,7 +98,7 @@ public abstract class NeuralNetManager {
 		}
 		netManager.EvolveTeardown();
 		// saves the current state of the neural networks.
-		netManager.save();
+		save(s);
 		s.getWriter().println("Last state saved");
 		//evolution method
 		nns = Evolve.evolve(nns, s);
@@ -159,7 +159,7 @@ public abstract class NeuralNetManager {
 			}
 			
 		}				
-	@SuppressWarnings({ "unused", "deprecation" })
+	@SuppressWarnings({ "deprecation" })
 	private static void save(Singleton s) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
 		NeuralNetwork[] nns = s.getNetworks();
 		@SuppressWarnings("unchecked")

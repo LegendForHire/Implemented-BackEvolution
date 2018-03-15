@@ -112,9 +112,6 @@ public class TraderNetManager implements SpecialNetManager {
 		// sorts the neural networks from most fit to least fit.
 		Arrays.sort(nns);
 	}
-	public void save(){
-
-	}
 	@Override
 	public void setAct() {
 	Random rand = new Random();
@@ -165,11 +162,13 @@ public class TraderNetManager implements SpecialNetManager {
 		}		
 	}
 	}
+	// Don't Include semicolons, or colons in this return
 	@Override
 	public String saveInput(Neuron outo) {
 		TraderNeuron out = (TraderNeuron) outo;
 		return out.getMarket().getMarketName() + "_" + out.getSelector();
 	}
+	// Don't Include semicolons, or colons in this return
 	@Override
 	public String saveOutput(Neuron ino) {
 		TraderNeuron in = (TraderNeuron) ino;
