@@ -27,8 +27,7 @@ public abstract class NetworkCreator {
 			SpecialCreator creator = CreatorClass.newInstance();
 		
 		try{
-			for (NeuralNetwork nn : NetworkList){
-			
+			for (NeuralNetwork nn : NetworkList){	
 			load(s, nn);
 			s.getWriter().println("loaded Networks");
 			}
