@@ -147,7 +147,7 @@ public class Evolve {
 		return newnns;
 		
 	}
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	private static NeuralNetwork clone(NeuralNetwork cloner, Singleton s) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException {
 		//starts by creating the basic structure for the new network
 		Class<? extends NeuralNetwork> networkClass = (Class<? extends NeuralNetwork>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"Network");
@@ -214,7 +214,7 @@ public class Evolve {
 		return mutate(newnn,s);
 	}
 	//where breeding takes place
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	private static NeuralNetwork crossover(NeuralNetwork cross, NeuralNetwork over, Singleton s) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException {
 		//determines which of the two networks was more fit and less fit
 		Class<? extends NeuralNetwork> networkClass = (Class<? extends NeuralNetwork>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"Network");
@@ -368,7 +368,7 @@ public class Evolve {
 		return mutate(newnn,s);
 	}
  	//where mutating takes place
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	private static NeuralNetwork mutate(NeuralNetwork newnn, Singleton s) throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		NeuralNetManager.Neuraltracker(newnn);
 		//determines type of mutation

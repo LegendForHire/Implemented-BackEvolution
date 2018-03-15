@@ -11,6 +11,7 @@ public class Main {
 		Scanner in = new Scanner(System.in);
 		String type = in.nextLine();
 		Class<? extends SpecialMain> mainClass = (Class<? extends SpecialMain>) Class.forName("BackEvolution." + type + "." + type+"Main");
+		@SuppressWarnings("deprecation")
 		SpecialMain main = mainClass.newInstance();
 		
 		long t1 = System.currentTimeMillis();

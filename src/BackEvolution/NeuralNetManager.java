@@ -13,7 +13,7 @@ import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 public abstract class NeuralNetManager {
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	public static void start(Singleton s) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException {
 		// TODO Auto-generated method stub
 		Class<? extends SpecialNetManager> class1 = (Class<? extends SpecialNetManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
@@ -55,7 +55,7 @@ public abstract class NeuralNetManager {
 		};		
 		thread2.start();
 		}
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	protected static void RunNetworks(Singleton s) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InterruptedException, InstantiationException {		
 			Class<? extends SpecialNetManager> class1 = (Class<? extends SpecialNetManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
 			SpecialNetManager netManager = class1.newInstance();
@@ -159,8 +159,12 @@ public abstract class NeuralNetManager {
 			}
 			
 		}				
-	@SuppressWarnings("unused")
-	private static void save(NeuralNetwork[] nns) throws IOException {
+	@SuppressWarnings({ "unused", "deprecation" })
+	private static void save(Singleton s) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+		NeuralNetwork[] nns = s.getNetworks();
+		@SuppressWarnings("unchecked")
+		Class<? extends SpecialNetManager> class1 = (Class<? extends SpecialNetManager>) Class.forName("BackEvolution." + s.getType()+"."+s.getType()+"NetManager");
+		SpecialNetManager manager = class1.newInstance();
 		long t = System.currentTimeMillis();
 		File out;
 		File recent;
@@ -169,10 +173,13 @@ public abstract class NeuralNetManager {
 
 			out = new File("Generation.txt");
 			recent = new File("MostRecent.txt");
-			fout = new PrintWriter(out);
-			frecent = new PrintWriter(recent);
-			frecent.println(t);
-			frecent.close();
+			try {
+				fout = new PrintWriter(out);
+				frecent = new PrintWriter(recent);
+				frecent.println(t);
+				frecent.close();
+	
+		
 		for (NeuralNetwork nn : nns){
 			fout.print(nn.getLayers().size() + ";");
 			for (Layer l : nn.getLayers()){
@@ -180,23 +187,71 @@ public abstract class NeuralNetManager {
 				
 			}
 			fout.print(";");
-			for (Layer l : nn.getLayers()){	
+			for (Layer l : nn.getLayers()){
+				if (l.isInput()){
+					int layernumber = l.getNumber();
+					for (Neuron n : l.getNeurons()){
+						String neurondata = manager.saveInput(n);
+						for (Gene g :n.getGenes()){
+							Neuron nout = g.getConnection();
+							if (nn.getLayers().size() == nout.getLayernumber()) {
+								Neuron nout2 = g.getConnection();
+								String noutnum = manager.saveOutput(nout2);
+								int noutlayer = nout2.getLayernumber();
+								double weight = g.getWeight();
+								int enabled = g.getstate();
+								fout.print(layernumber + ":" + neurondata + ":" + noutnum + ":" + noutlayer + ":" + weight + ":" + enabled + ",");
+							}
+							else{
+								int noutnum = nout.getNumber();
+								int noutlayer = nout.getLayernumber();
+								double weight = g.getWeight();
+								int enabled = g.getstate();
+								fout.print(layernumber + ":" + neurondata + ":" + noutnum + ":" + noutlayer + ":" + weight + ":" + enabled + ",");
+							}
+							
+						}
+					}
+				}
+				else{
 					int layernumber = l.getNumber();
 					for (Neuron n : l.getNeurons()){
 						int neuronnumber = n.getNumber();
 						for (Gene g :n.getGenes()){
-							Neuron nout = g.getConnection();						
-					        int noutnum = nout.getNumber();
-							int noutlayer = nout.getLayernumber();
-							double weight = g.getWeight();
-							int enabled = g.getstate();
-							fout.print(layernumber + ":" + neuronnumber + ":" + noutnum + ":" + noutlayer + ":" + weight + ":" + enabled + ",");		
+							Neuron nout = g.getConnection();
+							if (nn.getLayers().size() == nout.getLayernumber()) {
+								Neuron nout2 = g.getConnection();
+								if(nout2 == null){
+									n.RemoveGenes(g);
+								}
+								else{
+								String noutnum = manager.saveOutput(nout2);
+								int noutlayer = nout2.getLayernumber();
+								double weight = g.getWeight();
+								int enabled = g.getstate();
+								fout.print(layernumber + ":" + neuronnumber + ":" + noutnum + ":" + noutlayer + ":" + weight + ":" + enabled + ",");
+								}
+							}
+							else{
+								int noutnum = nout.getNumber();
+								int noutlayer = nout.getLayernumber();
+								double weight = g.getWeight();
+								int enabled = g.getstate();
+								fout.print(layernumber + ":" + neuronnumber + ":" + noutnum + ":" + noutlayer + ":" + weight + ":" + enabled + ",");
+							}
+							
 						}
 					}
+				}
 				
-			}
+			}		
+			fout.println();
 		}
 		fout.close();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	//Makes sure neuron and gene location data are correct.
 	public static void Neuraltracker(NeuralNetwork nn){		

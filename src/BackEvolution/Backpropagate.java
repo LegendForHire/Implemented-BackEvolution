@@ -12,6 +12,7 @@ import java.util.Random;
 public class Backpropagate {
 	
 	public static Random rand = new Random();
+	@SuppressWarnings("deprecation")
 	public static void backpropagate(NeuralNetwork[] nns, Singleton s) throws IOException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException {
 		s.setTotalGlobalError(0.0);
 		@SuppressWarnings("unchecked")

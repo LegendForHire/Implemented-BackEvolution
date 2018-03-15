@@ -1,16 +1,13 @@
 package BackEvolution.Trader;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
-import BackEvolution.Gene;
 import BackEvolution.Layer;
 import BackEvolution.NeuralNetwork;
 import BackEvolution.Neuron;
@@ -116,101 +113,7 @@ public class TraderNetManager implements SpecialNetManager {
 		Arrays.sort(nns);
 	}
 	public void save(){
-		NeuralNetwork[] nns = s.getNetworks();
-		Market[] markets = s.getMarkets();
-		
-		long t = System.currentTimeMillis();
-		File out;
-		File recent;
-		PrintWriter fout;
-		PrintWriter frecent;
 
-			out = new File("Generation.txt");
-			recent = new File("MostRecent.txt");
-			try {
-				fout = new PrintWriter(out);
-				frecent = new PrintWriter(recent);
-				frecent.println(t);
-				frecent.close();
-	
-		
-		for (NeuralNetwork nn : nns){
-			fout.print(nn.getLayers().size() + ";");
-			for (Layer l : nn.getLayers()){
-				fout.print(l.getNeurons().size() + ",");
-				
-			}
-			fout.print(";");
-			for (Layer l : nn.getLayers()){
-				if (l.isInput()){
-					int layernumber = l.getNumber();
-					for (Neuron no : l.getNeurons()){
-						TraderNeuron n = (TraderNeuron) no;
-						String neurondata = n.getMarket().getMarketName() + "_" + n.getSelector();
-						for (Gene g :n.getGenes()){
-							Neuron nout = g.getConnection();
-							if (nn.getLayers().size() == nout.getLayernumber()) {
-								Neuron nout2o = g.getConnection();
-								TraderNeuron nout2 = (TraderNeuron) nout2o;
-								String noutnum = nout2.getMarket().getMarketName() + "_" + nout2.getSelector();
-								int noutlayer = nout2.getLayernumber();
-								double weight = g.getWeight();
-								int enabled = g.getstate();
-								fout.print(layernumber + ":" + neurondata + ":" + noutnum + ":" + noutlayer + ":" + weight + ":" + enabled + ",");
-							}
-							else{
-								int noutnum = nout.getNumber();
-								int noutlayer = nout.getLayernumber();
-								double weight = g.getWeight();
-								int enabled = g.getstate();
-								fout.print(layernumber + ":" + neurondata + ":" + noutnum + ":" + noutlayer + ":" + weight + ":" + enabled + ",");
-							}
-							
-						}
-					}
-				}
-				else{
-					int layernumber = l.getNumber();
-					for (Neuron n : l.getNeurons()){
-						int neuronnumber = n.getNumber();
-						for (Gene g :n.getGenes()){
-							Neuron nout = g.getConnection();
-							if (nn.getLayers().size() == nout.getLayernumber()) {
-								Neuron nout2o = g.getConnection();
-								TraderNeuron nout2 = (TraderNeuron) nout2o;
-								if(nout2 == null){
-									n.RemoveGenes(g);
-								}
-								else{
-								String noutnum = nout2.getMarket().getMarketName() + "_" + nout2.getSelector();
-								int noutlayer = nout2.getLayernumber();
-								double weight = g.getWeight();
-								int enabled = g.getstate();
-								fout.print(layernumber + ":" + neuronnumber + ":" + noutnum + ":" + noutlayer + ":" + weight + ":" + enabled + ",");
-								}
-							}
-							else{
-								int noutnum = nout.getNumber();
-								int noutlayer = nout.getLayernumber();
-								double weight = g.getWeight();
-								int enabled = g.getstate();
-								fout.print(layernumber + ":" + neuronnumber + ":" + noutnum + ":" + noutlayer + ":" + weight + ":" + enabled + ",");
-							}
-							
-						}
-					}
-				}
-				
-			}
-			int i = -1;
-			while(!markets[++i].getMarketName().equals("USDT-BTC"));
-			fout.println("; Created (Genarations Ago):" + nn.getAge() + "; Made (USD):" + ((nn.getFitness()-noact)*markets[i].getData(3))+ "; Global Error :" + nn.getGlobalError());
-		}
-		fout.close();
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
 	}
 	@Override
 	public void setAct() {
@@ -261,6 +164,27 @@ public class TraderNetManager implements SpecialNetManager {
 			}
 		}		
 	}
+	}
+	@Override
+	public String saveInput(Neuron outo) {
+		TraderNeuron out = (TraderNeuron) outo;
+		return out.getMarket().getMarketName() + "_" + out.getSelector();
+	}
+	@Override
+	public String saveOutput(Neuron ino) {
+		TraderNeuron in = (TraderNeuron) ino;
+		return in.getMarket().getMarketName() + "_" + in.getSelector();
+	}
+	@Override
+	public String saveMetaData(NeuralNetwork nn) {
+		Market[] markets = s.getMarkets();
+		int i = -1;
+		while(!markets[++i].getMarketName().equals("USDT-BTC"));
+		try {
+			return "; Created (Genarations Ago):" + nn.getAge() + "; Made (USD):" + ((nn.getFitness()-noact)*markets[i].getData(3))+ "; Global Error :" + nn.getGlobalError();
+		} catch (IOException e) {
+			return "; Created (Genarations Ago):" + nn.getAge() + "; Global Error :" + nn.getGlobalError();
+		}
 	}
 	
 	
