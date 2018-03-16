@@ -74,7 +74,7 @@ public class ProgressTracker {
 			}
 		};
 		long t1 = System.currentTimeMillis();
-		while(System.currentTimeMillis()-t1 < 0);
+		while(System.currentTimeMillis()-t1 < WAIT_TIME);
 		thread3.start();
 	}
 	public static void main(Market[] markets) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
