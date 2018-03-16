@@ -68,28 +68,33 @@ public class ProgressTracker {
 						thread.join();
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
-						e.printStackTrace();
+						s.getWriter().print(e.getMessage() + "Error in progress tracker");
 					}
 				}
 			}
 		};
 		long t1 = System.currentTimeMillis();
-		while(System.currentTimeMillis()-t1 < WAIT_TIME);
+		while(System.currentTimeMillis()-t1 < 0);
 		thread3.start();
 	}
 	public static void main(Market[] markets) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
 		while(true){
 		NeuralNetwork nn = s.getNetworks()[0];
-		NeuralNetManager.RunNetwork(nn,s);
 		long t = System.currentTimeMillis();
-		while(System.currentTimeMillis()-t > UPDATE_TIMING);
+		while(System.currentTimeMillis()-t > UPDATE_TIMING) {
+			NeuralNetManager.RunNetwork(nn,s);
+		};
 		File f2 = new File("profit.txt");
 		PrintWriter fout = new PrintWriter(f2);
-		double noact = 0;		
+		double noact = 50;		
 		for(Wallet w : noactwallets) {
-			int j = -1;
-			while(!markets[++j].getMarketName().equals(w.getName()));
-			noact += w.getAmmount()*markets[j].getData(3);
+			double amt = w.getAmmount();
+			for (Market market : markets){
+				if (market.getMarketName().equals("BTC-" + w.getName())){
+					noact += amt*market.getData(3);
+				}
+			
+			}
 		}
 		fout.println("Total Profit= " + (nn.getFitness()-noact)*BTC.getData(3));
 		fout.close();
