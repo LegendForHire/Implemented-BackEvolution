@@ -117,7 +117,7 @@ public abstract class NetworkCreator {
 				if (inLayer == 1){
 					boolean selected = false;
 					for (Neuron n : nn.getLayers().get(0).getNeurons()){
-						if (manager.saveInput(n).equals(g[2])){
+						if (manager.saveInput(n).equals(g[1])){
 							selected = true;
 							inNeuron = n.getNumber();
 						}
