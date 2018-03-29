@@ -20,6 +20,8 @@ public class BrawlhallaSingleton implements Singleton{
 	private NeuralNetwork[] nns;
 	private int Gen;
 	private static final int LEARNTYPE = 1;
+	private Controller[] controllers;
+	private Game game;
 
 	private BrawlhallaSingleton(){
 		
@@ -114,6 +116,18 @@ public class BrawlhallaSingleton implements Singleton{
 	public int getLearningType() {
 		// TODO Auto-generated method stub
 		return LEARNTYPE;
+	}
+	public Controller[] getControllers() {
+		return controllers;
+	}
+	public void setControllers(Controller[] controllers) {
+		this.controllers = controllers;
+	}
+	public void setGame(Game game) {
+		this.game = game;		
+	}
+	public Game getGame(){
+		return game;
 	}
 
 }

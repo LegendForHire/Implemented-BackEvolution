@@ -3,9 +3,10 @@ package BackEvolution.Brawlhalla;
 import Backpropagate.BackpropagateManager;
 import Competitive.CompetitionManager;
 import Evolve.EvolveManager;
+import General.NeuralNetwork;
 
 public class BrawlhallaNetManager implements BackpropagateManager,EvolveManager,CompetitionManager {
-
+	private BrawlhallaSingleton s = BrawlhallaSingleton.getInstance();
 	@Override
 	public void BackpropagationSetup() {
 		// TODO Auto-generated method stub
@@ -13,9 +14,12 @@ public class BrawlhallaNetManager implements BackpropagateManager,EvolveManager,
 	}
 
 	@Override
-	public void setup() {
-		// TODO Auto-generated method stub
-		
+	public void setup() {		
+		Controller[] controllers = new Controller[s.numCompeting()];
+		for(int i = 0; i < s.numCompeting();i++){
+			controllers[i] = new Controller();
+		}
+		s.setGame(new Game(controllers));
 	}
 
 	@Override
@@ -44,8 +48,11 @@ public class BrawlhallaNetManager implements BackpropagateManager,EvolveManager,
 
 	@Override
 	public void setupCompetition(int[] currentPlayers) {
-		// TODO Auto-generated method stub
-		
+		NeuralNetwork[] nns = s.getNetworks();
+		for(int i = 0; i<s.numCompeting();i++) {
+			BrawlhallaNetwork nn = (BrawlhallaNetwork) nns[currentPlayers[i]];
+			nn.setController(s.getControllers()[i]);
+		}
 	}
 	@Override
 	public boolean getGameOver() {

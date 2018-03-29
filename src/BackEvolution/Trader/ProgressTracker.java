@@ -100,7 +100,7 @@ public class ProgressTracker {
 				}
 			}
 		}
-		fout.println("Total Profit= " + (nn.getFitness()-noact)*BTC.getData(3));
+		fout.println("Total Profit = " + (nn.getFitness()-noact)*BTC.getData(3));
 		fout.close();
 			
 		}		
