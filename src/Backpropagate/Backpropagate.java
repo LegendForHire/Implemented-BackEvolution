@@ -23,6 +23,7 @@ public class Backpropagate {
 	public static void runner(Singleton s) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, ClassNotFoundException, SecurityException, InstantiationException {
 		@SuppressWarnings("unchecked")
 		Class<? extends BackpropagateManager> class1 = (Class<? extends BackpropagateManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
+		@SuppressWarnings("deprecation")
 		BackpropagateManager netManager = class1.newInstance();
 		netManager.BackpropagationSetup();
 		System.out.println("Iteration " + s.getGen());

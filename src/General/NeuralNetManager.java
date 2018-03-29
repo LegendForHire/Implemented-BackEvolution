@@ -59,7 +59,6 @@ public abstract class NeuralNetManager {
 		thread2.start();
 		}
 	//runs the networks
-	@SuppressWarnings("deprecation")
 	protected static void RunNetworks(Singleton s) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InterruptedException, InstantiationException {
 			while(true) {
 				if(s.getLearningType() <= 1)Backpropagate.runner(s);

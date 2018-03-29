@@ -33,6 +33,7 @@ public class Evolve {
 	public static void runner(Singleton s) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException, ClassNotFoundException, InterruptedException {
 		@SuppressWarnings("unchecked")
 		Class<? extends EvolveManager> class1 = (Class<? extends EvolveManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
+		@SuppressWarnings("deprecation")
 		EvolveManager netManager = class1.newInstance();
 		netManager.EvolveSetup();
 		NeuralNetwork[] nns = s.getNetworks();
