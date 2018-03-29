@@ -5,6 +5,7 @@ public class Game {
 	Controller opponent;
 	Controller player;
 	private double[] data;
+	private boolean gameOver;
 	public Game(Controller[] c){
 		this.c = c;
 	}
@@ -17,7 +18,17 @@ public class Game {
 		}
 		return data[i];
 	}
+	public boolean isOver() {
+		return gameOver;
+	}
 	public void updater(){
+		//replace with when i get game interface
+		if(isOver()){
+			gameOver = true;
+		}
+		else {
+			gameOver = false;
+		}
 		
 	}
 }
