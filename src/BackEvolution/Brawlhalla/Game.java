@@ -31,4 +31,20 @@ public class Game {
 		}
 		
 	}
+	public int getNumLegends() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	public int getNumStages() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	public int getNumWeapons() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	public GameState getState() {
+		// TODO Auto-generated method stub
+		return new GameState();
+	}
 }

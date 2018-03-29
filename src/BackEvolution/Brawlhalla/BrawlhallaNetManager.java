@@ -9,7 +9,7 @@ public class BrawlhallaNetManager implements BackpropagateManager,EvolveManager,
 	private BrawlhallaSingleton s = BrawlhallaSingleton.getInstance();
 	@Override
 	public void BackpropagationSetup() {
-		// TODO Auto-generated method stub
+		s.setLastState();
 		
 	}
 

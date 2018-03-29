@@ -22,6 +22,7 @@ public class BrawlhallaSingleton implements Singleton{
 	private static final int LEARNTYPE = 1;
 	private Controller[] controllers;
 	private Game game;
+	private GameState state;
 
 	private BrawlhallaSingleton(){
 		
@@ -128,6 +129,12 @@ public class BrawlhallaSingleton implements Singleton{
 	}
 	public Game getGame(){
 		return game;
+	}
+	public void setLastState() {
+		state = game.getState();
+	}
+	public GameState getLastState() {
+		return state;
 	}
 
 }
