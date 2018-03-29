@@ -78,12 +78,12 @@ public class ProgressTracker {
 		thread3.start();
 	}
 	public static void main(Market[] markets) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+		File f2 = new File("profit.txt");
 		while(true){
 		NeuralNetwork nn = s.getNetworks()[0];
 		NeuralNetManager.RunNetwork(nn,s);
 		long t = System.currentTimeMillis();
 		while(System.currentTimeMillis()-t > UPDATE_TIMING);
-		File f2 = new File("profit.txt");
 		PrintWriter fout = new PrintWriter(f2);
 		double noact = 0;		
 		for (Wallet w : noactwallets){
