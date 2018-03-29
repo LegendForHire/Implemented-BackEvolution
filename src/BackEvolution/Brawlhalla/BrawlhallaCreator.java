@@ -23,7 +23,7 @@ public class BrawlhallaCreator implements SpecialCreator{
 			copies[1].addNeuron(new BrawlhallaNeuron("release" + output));
 		}
 		Game g = s.getGame();
-		for (int i = 0; i < g.getNumLegends()*2 + g.getNumWeapons()*2 + g.getNumStages()*2 + 6; i++) {
+		for (int i = 0; i < s.getLegends().length*2 + s.getWeapons().length*4 + s.getStages().length*2 + 6; i++) {
 			copies[0].addNeuron(new BrawlhallaNeuron(""+i));
 		}
 	}

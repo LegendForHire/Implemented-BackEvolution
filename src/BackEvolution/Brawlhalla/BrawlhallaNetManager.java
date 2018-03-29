@@ -10,7 +10,6 @@ public class BrawlhallaNetManager implements BackpropagateManager,EvolveManager,
 	@Override
 	public void BackpropagationSetup() {
 		s.setLastState();
-		
 	}
 
 	@Override

@@ -22,7 +22,7 @@ public class BrawlhallaSingleton implements Singleton{
 	private static final int LEARNTYPE = 1;
 	private Controller[] controllers;
 	private Game game;
-	private GameState state;
+	private double[][] state;
 
 	private BrawlhallaSingleton(){
 		
@@ -133,8 +133,20 @@ public class BrawlhallaSingleton implements Singleton{
 	public void setLastState() {
 		state = game.getState();
 	}
-	public GameState getLastState() {
+	public double[][] getLastState() {
 		return state;
+	}
+	public Weapon[] getWeapons() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public Legend[] getLegends() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public Stage[] getStages() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
