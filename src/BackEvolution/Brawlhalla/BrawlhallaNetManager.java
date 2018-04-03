@@ -65,4 +65,10 @@ public class BrawlhallaNetManager implements BackpropagateManager,EvolveManager,
 		
 	}
 
+	@Override
+	public boolean isTurn(NeuralNetwork nn) {
+		// simultaneous play so always true;
+		return true;
+	}
+
 }

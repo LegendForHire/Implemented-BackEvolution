@@ -26,10 +26,13 @@ public class Competition {
 				Thread thread = new Thread(){
 					public void run(){
 						try {
-							Backpropagate.BackIterationHandling(s);
-							NeuralNetManager.RunNetwork(nn,s);
-							NeuralNetwork[] back = {nn};
-							Backpropagate.backpropagate(back, s);
+							while(!netManager.getGameOver()) {
+								while(!netManager.isTurn(nn))
+								Backpropagate.BackIterationHandling(s);
+								NeuralNetManager.RunNetwork(nn,s);
+								NeuralNetwork[] back = {nn};
+								Backpropagate.backpropagate(back, s);
+							}
 						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
 								| IOException | ClassNotFoundException | SecurityException | InstantiationException e) {
 							// TODO Auto-generated catch block

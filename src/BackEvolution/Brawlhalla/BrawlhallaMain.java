@@ -7,8 +7,9 @@ public class BrawlhallaMain implements SpecialMain {
 
 	@Override
 	public Singleton SetupStartup() {
-		// TODO Auto-generated method stub
-		return null;
+		BrawlhallaSingleton s = BrawlhallaSingleton.getInstance();
+		//start brawlhalla here
+		return s;
 	}
 
 	@Override
