@@ -1,5 +1,7 @@
 package BackEvolution.Brawlhalla;
 
+import java.util.ArrayList;
+
 public class Game {
 	Controller[] c;
 	Controller opponent;
@@ -14,6 +16,7 @@ public class Game {
 	private Weapon player2Equipped;
 	private Legend player1Legend;
 	private Legend w;
+	private ArrayList<double[][]> stateList;
 	public Game(Controller[] c){
 		this.c = c;
 		Player2Data = new double[s.getLegends().length + s.getWeapons().length + 3];
@@ -90,5 +93,13 @@ public class Game {
 		// TODO Auto-generated method stub
 		double[][] gameState = {Player1Data.clone(),Player2Data.clone()};
 		return gameState;
+	}
+	public void stateStart() {
+		stateList = new ArrayList<double[][]>();
+		stateList.add(getState());
+	}
+	public void addState(double[][] state) {
+		stateList.add(state);
+		
 	}
 }

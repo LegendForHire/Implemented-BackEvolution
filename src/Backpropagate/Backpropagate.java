@@ -41,7 +41,7 @@ public class Backpropagate {
 		// this is where the back propagation learning step for the neural networks run. currently I have them set to run for one minute before evaluating
 		while(s.getTotalGlobalError() > s.getAllowedError()/scaling){
 			if(s.numCompeting() > 1){
-				Competition.runner(s);
+				Competition.backpropagationRunner(s);
 			}
 			else{
 				//set necessary values for backpropagation step
@@ -50,9 +50,8 @@ public class Backpropagate {
 				for (NeuralNetwork nn : nns){
 					NeuralNetManager.RunNetwork(nn,s);					
 				}
-			}
-			//Backpropagates error adjustments
-			backpropagate(nns,s);		
+				backpropagate(nns,s);
+			}	
 			s.getWriter().println("Total Global Error:" + s.getTotalGlobalError()); 
 			s.getWriter().println("backpropagation complete");		
 		}
@@ -129,6 +128,14 @@ public class Backpropagate {
 	//regularly used sigmoid function
 	public static double Sigmoid(double d) {
 		return 1/(1+Math.exp(d*-1));
+	}
+
+	public static void BackIterationHandling(Singleton s) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+		@SuppressWarnings("unchecked")
+		Class<? extends BackpropagateManager> class1 = (Class<? extends BackpropagateManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
+		@SuppressWarnings("deprecation")
+		BackpropagateManager netManager = class1.newInstance();
+		netManager.BackIterationHandling();		
 	}
 	
 }

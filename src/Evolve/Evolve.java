@@ -40,7 +40,7 @@ public class Evolve {
 		long t1 = System.currentTimeMillis();
 		// runs the networks for a minute to measure their performance
 		if(s.numCompeting() > 1){
-			Competition.runner(s);
+			Competition.evolutionRunner(s);
 		}
 		else{
 			while (System.currentTimeMillis()-t1 < s.getTiming()){

@@ -29,8 +29,6 @@ public class BrawlhallaNetwork extends NeuralNetwork {
 				bn.setController(controller);
 			}
 		}
-	}
-
-	
+	}	
 
 }

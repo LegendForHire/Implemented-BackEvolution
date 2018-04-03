@@ -19,12 +19,12 @@ public class BrawlhallaNetManager implements BackpropagateManager,EvolveManager,
 			controllers[i] = new Controller();
 		}
 		s.setGame(new Game(controllers));
+		s.getGame().stateStart();
 	}
 
 	@Override
-	public void BackIterationHandling() {
-		// TODO Auto-generated method stub
-		
+	public void BackIterationHandling() {		
+		s.setLastState();
 	}
 
 	@Override
@@ -57,6 +57,12 @@ public class BrawlhallaNetManager implements BackpropagateManager,EvolveManager,
 	public boolean getGameOver() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void CompetitionIterator(int[] currentPlayers) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
