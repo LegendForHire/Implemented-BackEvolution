@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 
 import Competitive.Competition;
+import Competitive.CompetitionSingleton;
 import General.Gene;
 import General.Layer;
 import General.NeuralNetManager;
@@ -20,7 +21,7 @@ import General.Singleton;
 public class Backpropagate {
 	
 	public static Random rand = new Random();
-	public static void runner(Singleton s) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, ClassNotFoundException, SecurityException, InstantiationException {
+	public static void runner(Singleton s) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, ClassNotFoundException, SecurityException, InstantiationException, InterruptedException {
 		@SuppressWarnings("unchecked")
 		Class<? extends BackpropagateManager> class1 = (Class<? extends BackpropagateManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
 		@SuppressWarnings("deprecation")
@@ -41,7 +42,7 @@ public class Backpropagate {
 		// this is where the back propagation learning step for the neural networks run. currently I have them set to run for one minute before evaluating
 		while(s.getTotalGlobalError() > s.getAllowedError()/scaling){
 			if(s.numCompeting() > 1){
-				Competition.backpropagationRunner(s);
+				Competition.backpropagationRunner((CompetitionSingleton) s);
 			}
 			else{
 				//set necessary values for backpropagation step

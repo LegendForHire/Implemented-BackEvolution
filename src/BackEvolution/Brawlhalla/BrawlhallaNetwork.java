@@ -29,6 +29,14 @@ public class BrawlhallaNetwork extends NeuralNetwork {
 				bn.setController(controller);
 			}
 		}
+	}
+	public void addWin() {
+		fitness++;
+		
+	}
+	public void resetWins() {
+		fitness = 0;
+		
 	}	
 
 }

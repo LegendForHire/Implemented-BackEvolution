@@ -48,16 +48,16 @@ public class Game {
 				datas[i][1] = getPlayerY(i);
 				datas[i][2] = getPlayerJumpsLeft(i);
 				for (int j =3; j < s.getWeapons().length+3; j++){
-					if (s.getWeapons()[j-3].getName().equals(EquippedWeapon(i).getName())) levelData[j]=1;
-					else levelData[j] = 0;
+					if (s.getWeapons()[j-3].getName().equals(EquippedWeapon(i).getName())) datas[i][j]=1;
+					else datas[i][j] = 0;
 				}
 				for (int j = 3 + s.getWeapons().length; j < s.getWeapons().length*2+3; j++){
-					if (CurrentLegend(i).isEquipabble(s.getWeapons()[j- 3 + s.getWeapons().length])) levelData[j]=1;
-					else levelData[j] = 0;
+					if (CurrentLegend(i).isEquipabble(s.getWeapons()[j- 3 + s.getWeapons().length])) datas[i][j]=1;
+					else datas[i][j] = 0;
 				}
 				for (int j = 3 + s.getWeapons().length*2; j < s.getLegends().length +3 + s.getWeapons().length*2; j++){
-					if (s.getLegends()[j-3 + s.getWeapons().length*2].getName().equals(CurrentLegend(i).getName())) levelData[j]=1;
-					else levelData[j] = 0;
+					if (s.getLegends()[j-3 + s.getWeapons().length*2].getName().equals(CurrentLegend(i).getName())) datas[i][j]=1;
+					else datas[i][j] = 0;
 				}
 			}
 			for (int i = 0; i < s.getStages().length; i++){

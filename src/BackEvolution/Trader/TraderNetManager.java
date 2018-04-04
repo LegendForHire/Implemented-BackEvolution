@@ -113,7 +113,7 @@ public class TraderNetManager implements BackpropagateManager,EvolveManager {
 		ArrayList<Neuron> buys = new ArrayList<Neuron>();
 		
 		for(Neuron n : out.getNeurons()){
-			String m = n.getOutputMethod();
+			String m = n.getMethod();
 			if (m.contains("buy")){
 				buys.add(n);
 				n.setActive(false);

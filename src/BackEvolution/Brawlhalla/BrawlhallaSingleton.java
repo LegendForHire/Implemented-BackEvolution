@@ -2,10 +2,10 @@ package BackEvolution.Brawlhalla;
 
 import java.io.PrintWriter;
 
+import Competitive.CompetitionSingleton;
 import General.NeuralNetwork;
-import General.Singleton;
 
-public class BrawlhallaSingleton implements Singleton{
+public class BrawlhallaSingleton implements CompetitionSingleton{
 	private static final int TIMING = 0;
 	private static final double ACTIVATION = .8;
 	private static final String TYPE = "Brawlhalla";
@@ -23,6 +23,8 @@ public class BrawlhallaSingleton implements Singleton{
 	private Controller[] controllers;
 	private Game game;
 	private double[][] state;
+	private String lastAction;
+	private int[] currentPlayers;
 
 	private BrawlhallaSingleton(){
 		
@@ -147,6 +149,19 @@ public class BrawlhallaSingleton implements Singleton{
 	public Stage[] getStages() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	public String getLastAction() {
+		// TODO Auto-generated method stub
+		return lastAction;
+	}
+	public int[] getCurrentPlayers() {
+		// TODO Auto-generated method stub
+		return currentPlayers;
+	}
+	@Override
+	public void setCurrentPlayers(int[] players) {
+		currentPlayers = players;
+		
 	}
 
 }

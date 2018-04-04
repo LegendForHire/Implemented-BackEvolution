@@ -38,9 +38,9 @@ public abstract class Neuron {
 		value = 0;
 		number = n.getNumber();
 		layernumber = n.getLayernumber();
-		method = n.getOutputMethod();
+		method = n.getMethod();
 	}
-	public String getOutputMethod(){
+	public String getMethod(){
 		return method;	
 	}
 	public void updateMethod(String m){
