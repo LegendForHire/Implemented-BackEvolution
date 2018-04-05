@@ -24,6 +24,12 @@ public class TraderSingleton implements EvolveSingleton, BackpropagateSingleton 
 	private static final String TYPE = "Trader";
 	private static final int NUM_COMPETING = 1;
 	private static final int LEARNTYPE = 1;
+	public static final double  WEIGHT_ADJUST = .65;
+	public static final double  RANDOM_WEIGHT = .1+WEIGHT_ADJUST;
+	public static final double ENABLE_DISABLE = .05+RANDOM_WEIGHT;
+	public static final double  NEW_GENE = ENABLE_DISABLE + .17 ;
+	public static final double EXISTING_LAYER = NEW_GENE + .029;
+
 	private TraderSingleton(){
 		File f = new File("log.txt");
 		try {
@@ -110,5 +116,30 @@ public class TraderSingleton implements EvolveSingleton, BackpropagateSingleton 
 	public void setNetworks(NeuralNetwork[] networks) {
 		// TODO Auto-generated method stub
 		this.networks = networks;
+	}
+	@Override
+	public double getDisableProbability() {
+		// TODO Auto-generated method stub
+		return ENABLE_DISABLE;
+	}
+	@Override
+	public double getAdjustProbability() {
+		// TODO Auto-generated method stub
+		return WEIGHT_ADJUST;
+	}
+	@Override
+	public double getRandomProbability() {
+		// TODO Auto-generated method stub
+		return RANDOM_WEIGHT;
+	}
+	@Override
+	public double getNewGeneProbability() {
+		// TODO Auto-generated method stub
+		return NEW_GENE;
+	}
+	@Override
+	public double getExistingLayerProbability() {
+		// TODO Auto-generated method stub
+		return EXISTING_LAYER;
 	}
 }

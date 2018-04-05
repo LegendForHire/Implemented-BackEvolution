@@ -17,6 +17,7 @@ public interface Singleton {
 	// also when implementing create the getInstance method of the singleton
 	// and at least an empty constructor
 	public PrintWriter getWriter();
+	public int getTiming();
 	public void setWriter(PrintWriter w);
 	public void setNetworks(NeuralNetwork[] nns);
 	public NeuralNetwork[] getNetworks();

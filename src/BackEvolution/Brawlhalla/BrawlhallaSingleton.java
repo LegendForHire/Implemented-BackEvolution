@@ -16,6 +16,11 @@ public class BrawlhallaSingleton implements EvolveSingleton,BackpropagateSinglet
 	private static final double MOMENTUM = .25;
 	private static final double ALLOWED_ERROR = 250;
 	private static final int NUM_COMPETING = 2;
+	public static final double  WEIGHT_ADJUST = .65;
+	public static final double  RANDOM_WEIGHT = .1+WEIGHT_ADJUST;
+	public static final double ENABLE_DISABLE = .05+RANDOM_WEIGHT;
+	public static final double  NEW_GENE = ENABLE_DISABLE + .17 ;
+	public static final double EXISTING_LAYER = NEW_GENE + .029;
 	private static BrawlhallaSingleton uniqueInstance = new BrawlhallaSingleton();
 	private double totalGlobalError;
 	private PrintWriter writer;
@@ -164,6 +169,31 @@ public class BrawlhallaSingleton implements EvolveSingleton,BackpropagateSinglet
 	public void setCurrentPlayers(int[] players) {
 		currentPlayers = players;
 		
+	}
+	@Override
+	public double getDisableProbability() {
+		// TODO Auto-generated method stub
+		return ENABLE_DISABLE;
+	}
+	@Override
+	public double getAdjustProbability() {
+		// TODO Auto-generated method stub
+		return WEIGHT_ADJUST;
+	}
+	@Override
+	public double getRandomProbability() {
+		// TODO Auto-generated method stub
+		return RANDOM_WEIGHT;
+	}
+	@Override
+	public double getNewGeneProbability() {
+		// TODO Auto-generated method stub
+		return NEW_GENE;
+	}
+	@Override
+	public double getExistingLayerProbability() {
+		// TODO Auto-generated method stub
+		return EXISTING_LAYER;
 	}
 
 }

@@ -25,12 +25,7 @@ import General.SpecialCreator;
 
 public class Evolve {
 	public static Random rand = new Random();
-	//Could add these as twiddly knobs for singleton. keeping here for now.
-	public static final double  WEIGHT_ADJUST = .65;
-	public static final double  RANDOM_WEIGHT = .1+WEIGHT_ADJUST;
-	public static final double ENABLE_DISABLE = .05+RANDOM_WEIGHT;
-	public static final double  NEW_GENE = ENABLE_DISABLE + .17 ;
-	public static final double EXISTING_LAYER = NEW_GENE + .029;
+	
 	public static void runner(Singleton s1) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException, ClassNotFoundException, InterruptedException {
 		EvolveSingleton s = (EvolveSingleton) s1;
 		@SuppressWarnings("unchecked")
@@ -58,8 +53,10 @@ public class Evolve {
 		netManager.EvolveTeardown();
 		
 	}
-	public static NeuralNetwork[] evolve(NeuralNetwork[] nns,Singleton s) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException {
+	public static NeuralNetwork[] evolve(NeuralNetwork[] nns,Singleton s1) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException {
+		
 		//double checks to makesure the arrays arestill properly sorted with the most recent market data.
+		EvolveSingleton s = (EvolveSingleton) s1;
 		Arrays.sort(nns);
 		//Half of the neuralnetworks will survive.
 		NeuralNetwork[] halfnns = new NeuralNetwork[nns.length/2];
@@ -187,7 +184,8 @@ public class Evolve {
 		
 	}
 	@SuppressWarnings({ "unchecked", "deprecation" })
-	private static NeuralNetwork clone(NeuralNetwork cloner, Singleton s) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException {
+	private static NeuralNetwork clone(NeuralNetwork cloner, Singleton s1) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException {
+		EvolveSingleton s = (EvolveSingleton) s1;
 		//starts by creating the basic structure for the new network
 		Class<? extends NeuralNetwork> networkClass = (Class<? extends NeuralNetwork>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"Network");
 		Class<? extends Layer> layerClass = (Class<? extends Layer>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"Layer");
@@ -254,7 +252,8 @@ public class Evolve {
 	}
 	//where breeding takes place
 	@SuppressWarnings({ "unchecked", "deprecation" })
-	private static NeuralNetwork crossover(NeuralNetwork cross, NeuralNetwork over, Singleton s) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException {
+	private static NeuralNetwork crossover(NeuralNetwork cross, NeuralNetwork over, Singleton s1) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException {
+		EvolveSingleton s = (EvolveSingleton) s1;
 		//determines which of the two networks was more fit and less fit
 		Class<? extends NeuralNetwork> networkClass = (Class<? extends NeuralNetwork>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"Network");
 		Class<? extends Layer> layerClass = (Class<? extends Layer>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"Layer");
@@ -408,7 +407,8 @@ public class Evolve {
 	}
  	//where mutating takes place
 	@SuppressWarnings({ "unchecked", "deprecation" })
-	private static NeuralNetwork mutate(NeuralNetwork newnn, Singleton s) throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	private static NeuralNetwork mutate(NeuralNetwork newnn, Singleton s1) throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		EvolveSingleton s = (EvolveSingleton) s1;
 		NeuralNetManager.Neuraltracker(newnn);
 		//determines type of mutation
 		double selector = Math.random();
@@ -420,14 +420,14 @@ public class Evolve {
 				}
 		}
 		// gene mutation
-		if (selector < ENABLE_DISABLE && genes.size() > 0){				
+		if (selector < s.getDisableProbability()&& genes.size() > 0){				
 			Gene gene= genes.get(0);
 			if(genes.size() > 1) gene= genes.get(rand.nextInt(genes.size()-1));
-			if(selector < WEIGHT_ADJUST) {
+			if(selector < s.getAdjustProbability()) {
 				//adjust weight
 				gene.setWeight(gene.getWeight()*(1+(Math.random()*.1)));
 			}
-			else if (selector < RANDOM_WEIGHT){
+			else if (selector < s.getRandomProbability()){
 				// new random weight
 				gene.setWeight(Math.random()*2 - 1);
 				
@@ -438,7 +438,7 @@ public class Evolve {
 			}
 		
 		}
-		else if (selector < NEW_GENE || genes.size() == 0){
+		else if (selector < s.getNewGeneProbability() || genes.size() == 0){
 			// new gene
 			int layer = 0;
 			if (newnn.getLayers().size() > 2) layer = rand.nextInt(newnn.getLayers().size()-2);
@@ -467,7 +467,7 @@ public class Evolve {
 		else{
 			Class<? extends Layer> layerClass = (Class<? extends Layer>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"Layer");
 			Class<? extends Neuron> neuronClass = (Class<? extends Neuron>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"Neuron");
-			if (newnn.getLayers().size() == 2 || selector > EXISTING_LAYER + ((newnn.getLayers().size()-2)*.00004)){
+			if (newnn.getLayers().size() == 2 || selector > s.getExistingLayerProbability()){
 				//new neuron in new layer
 				Class<?>[] types = {boolean.class,boolean.class};
 				Constructor<? extends Layer> con = layerClass.getConstructor(types);
