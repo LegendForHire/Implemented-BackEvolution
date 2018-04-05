@@ -21,7 +21,8 @@ import General.Singleton;
 public class Backpropagate {
 	
 	public static Random rand = new Random();
-	public static void runner(Singleton s) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, ClassNotFoundException, SecurityException, InstantiationException, InterruptedException {
+	public static void runner(Singleton s1) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, ClassNotFoundException, SecurityException, InstantiationException, InterruptedException {
+		BackpropagateSingleton s = (BackpropagateSingleton) s1;
 		@SuppressWarnings("unchecked")
 		Class<? extends BackpropagateManager> class1 = (Class<? extends BackpropagateManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
 		@SuppressWarnings("deprecation")
@@ -51,6 +52,8 @@ public class Backpropagate {
 				for (NeuralNetwork nn : nns){
 					NeuralNetManager.RunNetwork(nn,s);					
 				}
+				long t = System.currentTimeMillis();
+				while(System.currentTimeMillis() - t < s.getTiming())
 				backpropagate(nns,s);
 			}	
 			s.getWriter().println("Total Global Error:" + s.getTotalGlobalError()); 
@@ -60,7 +63,8 @@ public class Backpropagate {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static void backpropagate(NeuralNetwork[] nns, Singleton s) throws IOException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException {
+	public static void backpropagate(NeuralNetwork[] nns, Singleton s1) throws IOException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException {
+		BackpropagateSingleton s = (BackpropagateSingleton) s1;
 		// makes sure old error is reset
 		s.setTotalGlobalError(0.0);
 		@SuppressWarnings("unchecked")

@@ -31,7 +31,8 @@ public class Evolve {
 	public static final double ENABLE_DISABLE = .05+RANDOM_WEIGHT;
 	public static final double  NEW_GENE = ENABLE_DISABLE + .17 ;
 	public static final double EXISTING_LAYER = NEW_GENE + .029;
-	public static void runner(Singleton s) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException, ClassNotFoundException, InterruptedException {
+	public static void runner(Singleton s1) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException, ClassNotFoundException, InterruptedException {
+		EvolveSingleton s = (EvolveSingleton) s1;
 		@SuppressWarnings("unchecked")
 		Class<? extends EvolveManager> class1 = (Class<? extends EvolveManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
 		@SuppressWarnings("deprecation")

@@ -3,10 +3,12 @@ package BackEvolution.Trader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import General.NeuralNetwork;
-import General.Singleton;
 
-public class TraderSingleton implements Singleton {
+import Backpropagate.BackpropagateSingleton;
+import Evolve.EvolveSingleton;
+import General.NeuralNetwork;
+
+public class TraderSingleton implements EvolveSingleton, BackpropagateSingleton {
 	private Market[] markets;
 	private NeuralNetwork[] networks;
 	private double totalGlobalError;

@@ -2,10 +2,12 @@ package BackEvolution.Brawlhalla;
 
 import java.io.PrintWriter;
 
+import Backpropagate.BackpropagateSingleton;
 import Competitive.CompetitionSingleton;
+import Evolve.EvolveSingleton;
 import General.NeuralNetwork;
 
-public class BrawlhallaSingleton implements CompetitionSingleton{
+public class BrawlhallaSingleton implements EvolveSingleton,BackpropagateSingleton, CompetitionSingleton{
 	private static final int TIMING = 0;
 	private static final double ACTIVATION = .8;
 	private static final String TYPE = "Brawlhalla";

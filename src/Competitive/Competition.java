@@ -10,7 +10,8 @@ import General.Singleton;
 
 public class Competition {
 	@SuppressWarnings({"unchecked","deprecation"})
-	public static void backpropagationRunner(CompetitionSingleton s) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InterruptedException{		
+	public static void backpropagationRunner(Singleton s1) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InterruptedException{		
+		CompetitionSingleton s = (CompetitionSingleton) s1;
 		Class<? extends CompetitionManager> class1 = (Class<? extends CompetitionManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
 		CompetitionManager netManager = class1.newInstance();
 		NeuralNetwork[] nns = s.getNetworks();
