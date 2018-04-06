@@ -16,16 +16,15 @@ public class Game {
 	private Weapon player2Equipped;
 	private Legend player1Legend;
 	private Legend w;
-	private ArrayList<double[][]> stateList;
 	public Game(Controller[] c){
 		this.c = c;
-		Player2Data = new double[s.getLegends().length + s.getWeapons().length + 3];
-		Player1Data = new double[s.getLegends().length + s.getWeapons().length + 3];
-		levelData = new double[s.getStages().length];
+		Player2Data = new double[s.getLegends().size() + s.getWeapons().size() + 3];
+		Player1Data = new double[s.getLegends().size() + s.getWeapons().size() + 3];
+		levelData = new double[s.getStages().size()];
 	}
 	public double getData(Controller controller, int i) {
-		if(i > s.getWeapons().length*4+s.getLegends().length*2+5){
-			return levelData[i-s.getWeapons().length*4+s.getLegends().length*2+5];
+		if(i > s.getWeapons().size()*4+s.getLegends().size()*2+5){
+			return levelData[i-s.getWeapons().size()*4+s.getLegends().size()*2+5];
 		}
 		else if(c[1] == controller && i%2 == 0 || c[0] == controller && i%2 == 1 ){
 			return Player2Data[i/2];
@@ -47,21 +46,21 @@ public class Game {
 				datas[i][0] = getPlayerX(i);
 				datas[i][1] = getPlayerY(i);
 				datas[i][2] = getPlayerJumpsLeft(i);
-				for (int j =3; j < s.getWeapons().length+3; j++){
-					if (s.getWeapons()[j-3].getName().equals(EquippedWeapon(i).getName())) datas[i][j]=1;
+				for (int j =3; j < s.getWeapons().size()+3; j++){
+					if (s.getWeapons().get(j-3).getName().equals(EquippedWeapon(i).getName())) datas[i][j]=1;
 					else datas[i][j] = 0;
 				}
-				for (int j = 3 + s.getWeapons().length; j < s.getWeapons().length*2+3; j++){
-					if (CurrentLegend(i).isEquipabble(s.getWeapons()[j- 3 + s.getWeapons().length])) datas[i][j]=1;
+				for (int j = 3 + s.getWeapons().size(); j < s.getWeapons().size()*2+3; j++){
+					if (CurrentLegend(i).isEquipabble(s.getWeapons().get(j- 3 + s.getWeapons().size()))) datas[i][j]=1;
 					else datas[i][j] = 0;
 				}
-				for (int j = 3 + s.getWeapons().length*2; j < s.getLegends().length +3 + s.getWeapons().length*2; j++){
-					if (s.getLegends()[j-3 + s.getWeapons().length*2].getName().equals(CurrentLegend(i).getName())) datas[i][j]=1;
+				for (int j = 3 + s.getWeapons().size()*2; j < s.getLegends().size() +3 + s.getWeapons().size()*2; j++){
+					if (s.getLegends().get(j-3 + s.getWeapons().size()*2).getName().equals(CurrentLegend(i).getName())) datas[i][j]=1;
 					else datas[i][j] = 0;
 				}
 			}
-			for (int i = 0; i < s.getStages().length; i++){
-				if(s.getStages()[i].getName().equals(currentStage.getName()))levelData[i]=1;
+			for (int i = 0; i < s.getStages().size(); i++){
+				if(s.getStages().get(i).getName().equals(currentStage.getName()))levelData[i]=1;
 				else levelData[i] = 0;
 			}
 			
@@ -91,15 +90,19 @@ public class Game {
 	}
 	public double[][] getState() {
 		// TODO Auto-generated method stub
-		double[][] gameState = {Player1Data.clone(),Player2Data.clone()};
+		double[][] gameState = {Player1Data.clone(),Player2Data.clone(), levelData.clone()};
 		return gameState;
 	}
-	public void stateStart() {
-		stateList = new ArrayList<double[][]>();
-		stateList.add(getState());
+	public ArrayList<Legend> getLegends() {
+		// TODO Auto-generated method stub
+		return null;
 	}
-	public void addState(double[][] state) {
-		stateList.add(state);
-		
+	public ArrayList<Weapon> getWeapons() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	public ArrayList<Stage> getStages() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -13,13 +13,11 @@ public class BrawlhallaNetwork extends NeuralNetwork {
 			throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException, SecurityException {
 		super(inputLayer, outputLayer, a);
-		// TODO Auto-generated constructor stub
 	}
 	public BrawlhallaNetwork(NeuralNetwork nn, Class<?> a)
 			throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException, SecurityException {
 		super(nn, a);
-		// TODO Auto-generated constructor stub
 	}
 	public void setController(Controller controller) {
 		this.controller = controller;

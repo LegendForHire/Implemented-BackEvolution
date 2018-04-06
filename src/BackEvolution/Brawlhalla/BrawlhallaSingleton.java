@@ -1,6 +1,7 @@
 package BackEvolution.Brawlhalla;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import Backpropagate.BackpropagateSingleton;
 import Competitive.CompetitionSingleton;
@@ -32,6 +33,9 @@ public class BrawlhallaSingleton implements EvolveSingleton,BackpropagateSinglet
 	private double[][] state;
 	private String lastAction;
 	private int[] currentPlayers;
+	private ArrayList<Legend> legends;
+	private ArrayList<Weapon> weapons;
+	private ArrayList<Stage> stages;
 
 	private BrawlhallaSingleton(){
 		
@@ -124,7 +128,6 @@ public class BrawlhallaSingleton implements EvolveSingleton,BackpropagateSinglet
 	}
 	@Override
 	public int getLearningType() {
-		// TODO Auto-generated method stub
 		return LEARNTYPE;
 	}
 	public Controller[] getControllers() {
@@ -145,24 +148,19 @@ public class BrawlhallaSingleton implements EvolveSingleton,BackpropagateSinglet
 	public double[][] getLastState() {
 		return state;
 	}
-	public Weapon[] getWeapons() {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<Weapon> getWeapons() {
+		return weapons;
 	}
-	public Legend[] getLegends() {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<Legend> getLegends() {
+		return legends;
 	}
-	public Stage[] getStages() {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<Stage> getStages() {
+		return stages;
 	}
 	public String getLastAction() {
-		// TODO Auto-generated method stub
 		return lastAction;
 	}
 	public int[] getCurrentPlayers() {
-		// TODO Auto-generated method stub
 		return currentPlayers;
 	}
 	@Override
@@ -172,28 +170,35 @@ public class BrawlhallaSingleton implements EvolveSingleton,BackpropagateSinglet
 	}
 	@Override
 	public double getDisableProbability() {
-		// TODO Auto-generated method stub
 		return ENABLE_DISABLE;
 	}
 	@Override
 	public double getAdjustProbability() {
-		// TODO Auto-generated method stub
 		return WEIGHT_ADJUST;
 	}
 	@Override
 	public double getRandomProbability() {
-		// TODO Auto-generated method stub
 		return RANDOM_WEIGHT;
 	}
 	@Override
 	public double getNewGeneProbability() {
-		// TODO Auto-generated method stub
 		return NEW_GENE;
 	}
 	@Override
 	public double getExistingLayerProbability() {
-		// TODO Auto-generated method stub
 		return EXISTING_LAYER;
+	}
+	public void setLegends() {
+		legends = game.getLegends();
+		
+	}
+	public void setWeapons() {
+		weapons = game.getWeapons();
+		
+	}
+	public void setStages() {
+		stages = game.getStages();
+		
 	}
 
 }

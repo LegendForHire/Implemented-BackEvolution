@@ -21,10 +21,10 @@ public class BrawlhallaNetManager implements BackpropagateManager,EvolveManager,
 	}
 	private String getMethodName(int i) {
 		String name = "";
-		if(i%2 == 0 && !(i > s.getWeapons().length*4+s.getLegends().length*2+5) ) {
+		if(i%2 == 0 && !(i > s.getWeapons().size()*4+s.getLegends().size()*2+5) ) {
 			name += "Player1";
 		}
-		else if(!(i > s.getWeapons().length*4+s.getLegends().length*2+5)) {
+		else if(!(i > s.getWeapons().size()*4+s.getLegends().size()*2+5)) {
 			name += "Player2";
 		}
 		else {
@@ -39,17 +39,17 @@ public class BrawlhallaNetManager implements BackpropagateManager,EvolveManager,
 		else if(i/2 == 2) {
 			name += "PlayerJumps";
 		}
-		else if(i/2 <  s.getWeapons().length+3) {
-			name += s.getWeapons()[i-3].getName();
+		else if(i/2 <  s.getWeapons().size()+3) {
+			name += s.getWeapons().get(i-3).getName();
 		}
-		else if(i/2 <  s.getWeapons().length*2+3) {
-			name += s.getWeapons()[i-s.getWeapons().length-3].getName();
+		else if(i/2 <  s.getWeapons().size()*2+3) {
+			name += s.getWeapons().get(i-s.getWeapons().size()-3).getName();
 		}
-		else if(i/2 <  s.getWeapons().length*2+s.getLegends().length+3) {
-			name += s.getWeapons()[i-s.getWeapons().length*2-3].getName();
+		else if(i/2 <  s.getWeapons().size()*2+s.getLegends().size()+3) {
+			name += s.getWeapons().get(i-s.getWeapons().size()*2-3).getName();
 		}
 		else {
-			name += s.getStages()[i-s.getWeapons().length*4+s.getLegends().length*2+5].getName();
+			name += s.getStages().get(i-s.getWeapons().size()*4+s.getLegends().size()*2+5).getName();
 		}
 		return name;
 	}
@@ -65,7 +65,9 @@ public class BrawlhallaNetManager implements BackpropagateManager,EvolveManager,
 			controllers[i] = new Controller();
 		}
 		s.setGame(new Game(controllers));
-		s.getGame().stateStart();
+		s.setLegends();
+		s.setWeapons();
+		s.setStages();
 		possibleActions = new ArrayList<String>();
 		String[] outputs1 = {"PressA","PressB","PressX","PressY","ReleaseA","ReleaseB","ReleaseX","ReleaseY"};
 		String[] outputs2 = {"PressUp","PressDown","PressLeft","PressRight","ReleaseUp","ReleaseDown","ReleaseLeft","ReleaseRight"};
