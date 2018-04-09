@@ -19,7 +19,7 @@ public class BrawlhallaNeuron extends Neuron {
 			controller.press(method.substring(5));
 		}
 		else if(method.contains("release")) {
-			controller.press(method.substring(7));
+			controller.release(method.substring(7));
 		}
 		else {
 			setValue(BrawlhallaSingleton.getInstance().getGame().getData(controller,Integer.parseInt(method)));
