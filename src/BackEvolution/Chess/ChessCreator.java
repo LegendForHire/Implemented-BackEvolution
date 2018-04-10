@@ -14,7 +14,9 @@ public class ChessCreator implements SpecialCreator{
 		String[] pieces = {"K1","Q","K","K2","P1","P2","P3","P4","P5","P6","P7","P8"};
 		for( String piece :  pieces) {
 			for (int i = 0; i< 64; i++) {
-				ChessNeuron n = new ChessNeuron("isPiece_"+piece+"_"+i);
+				ChessNeuron n = new ChessNeuron("isPiece_"+piece+"_"+i);	
+				copies[0].addNeuron(n);
+				n = new ChessNeuron("isPiece_"+piece.toLowerCase()+"_"+i);
 				copies[0].addNeuron(n);
 			}
 		}
