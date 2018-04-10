@@ -1,6 +1,7 @@
 package BackEvolution.Chess;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import Backpropagate.BackpropagateSingleton;
 import Competitive.CompetitionSingleton;
@@ -10,6 +11,7 @@ import General.NeuralNetwork;
 public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, CompetitionSingleton {
 	private static ChessSingleton uniqueInstance = new ChessSingleton();
 	private String[] board;
+	private ArrayList<String> legalMoves;
 
 	private ChessSingleton() {
 		
@@ -171,6 +173,95 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 	}
 	public void setChessboard(String[] board) {
 		this.board = board;
+	}
+	public void checkLegal() {
+		legalMoves = new ArrayList<String>();
+		for(int i=0; i<64;i++) {
+			if(board[i].contains("R")) {
+				for(int j = 0; j<7; j++) {
+					if(i+j*8+8 > 63) break;
+					if(board[i+j*8+8].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[i+j*8+8].toLowerCase().equals(board[i+j*8+8])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}
+				}
+				for(int j = 7; j<14; j++) {
+					if(i+j-6 > 63 || (i+j-6)%8<i%8) break;
+					if(board[i+j-6].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[i+j-6].toLowerCase().equals(board[i+j-6])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}
+				}
+				for(int j = 14; j<21; j++) {
+					if(i-((j-13)*8) <  0) break;
+					if(board[i-((j-13)*8)].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[i-((j-13)*8)].toLowerCase().equals(board[i+(j-13)*8])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}
+				}
+				for(int j = 21; j<28; j++) {
+					if(i-j+20 < 0 || (i-j+20)%8>i%8) break;
+					if(board[i+j-20].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[i-j+20].toLowerCase().equals(board[i-j+20])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}
+				}
+			}
+			if(board[i].contains("r")) {
+				for(int j = 0; j<7; j++) {
+					if(i-j*8-8 <0) break;
+					if(board[i-j*8-8].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[i-j*8-8].toLowerCase().equals(board[i-j*8-8])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}
+				}
+				for(int j = 7; j<14; j++) {
+					if(i-j+6 < 0 || (i-j+6)%8>i%8) break;
+					if(board[i-j+6].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[i-j+6].toLowerCase().equals(board[i-j+6])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}
+				}
+				for(int j = 14; j<21; j++) {
+					if(i+((j-13)*8) > 63) break;
+					if(board[i+((j-13)*8)].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[i+((j-13)*8)].toLowerCase().equals(board[i+((j-13)*8)])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}
+				}
+				for(int j = 21; j<28; j++) {
+					if(i+j-20 < 0 || (i+j-20)%8<i%8) break;
+					if(board[i+j-20].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[i+j-20].toLowerCase().equals(board[i+j-20])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}
+				}
+			}
+		}
 	}
 
 }

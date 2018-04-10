@@ -25,6 +25,10 @@ public class ChessCreator implements SpecialCreator{
 			copies[1].addNeuron(n);
 			n = new ChessNeuron("P"+i+"_2");
 			copies[1].addNeuron(n);
+			n = new ChessNeuron("P"+i+"_3");
+			copies[1].addNeuron(n);
+			n = new ChessNeuron("P"+i+"_4");
+			copies[1].addNeuron(n);
 			n = new ChessNeuron("K1_"+(i-1));
 			copies[1].addNeuron(n);
 			n = new ChessNeuron("K2_"+(i-1));
