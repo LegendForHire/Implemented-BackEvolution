@@ -226,7 +226,7 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						legalMoves.add(board[i]+"_"+j);
 					}
 					else {
-						if (board[i-j*8-8].toLowerCase().equals(board[i-j*8-8])) legalMoves.add(board[i]+"_"+j);
+						if (board[i-j*8-8].toUpperCase().equals(board[i-j*8-8])) legalMoves.add(board[i]+"_"+j);
 						break;
 					}
 				}
@@ -236,7 +236,7 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						legalMoves.add(board[i]+"_"+j);
 					}
 					else {
-						if (board[i-j+6].toLowerCase().equals(board[i-j+6])) legalMoves.add(board[i]+"_"+j);
+						if (board[i-j+6].toUpperCase().equals(board[i-j+6])) legalMoves.add(board[i]+"_"+j);
 						break;
 					}
 				}
@@ -246,7 +246,7 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						legalMoves.add(board[i]+"_"+j);
 					}
 					else {
-						if (board[i+((j-13)*8)].toLowerCase().equals(board[i+((j-13)*8)])) legalMoves.add(board[i]+"_"+j);
+						if (board[i+((j-13)*8)].toUpperCase().equals(board[i+((j-13)*8)])) legalMoves.add(board[i]+"_"+j);
 						break;
 					}
 				}
@@ -256,12 +256,103 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						legalMoves.add(board[i]+"_"+j);
 					}
 					else {
-						if (board[i+j-20].toLowerCase().equals(board[i+j-20])) legalMoves.add(board[i]+"_"+j);
+						if (board[i+j-20].toUpperCase().equals(board[i+j-20])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}
+				}
+			}
+			if(board[i].contains("B")) {
+				for(int j = 0; j<7;j++){
+					int location = i+j*7+7;
+					if(location > 63 || location%8>i%8)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toLowerCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}
+				}
+				for(int j = 7; j<14;j++){
+					int location = i+(j-6)*9;
+					if(location > 63 || location%8<i%8)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toLowerCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}
+				}
+				for(int j = 14; j<21;j++){
+					int location = i-(j-13)*7;
+					if(location < 0 || location%8>i%8)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toLowerCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}
+				}
+				for(int j = 21; j<28;j++){
+					int location = i-(j-21)*9;
+					if(location < 0 || location%8<i%8)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toLowerCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}
+				}
+			}
+			if(board[i].contains("b")){
+				for(int j = 0; j<7;j++){
+					int location = i-j*7-7;
+					if(location < 0 || location%8>i%8)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toLowerCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}
+				}
+				for(int j = 7; j<14;j++){
+					int location = i-(j-6)*9;
+					if(location < 0 || location%8<i%8)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toLowerCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}
+				}
+				for(int j = 14; j<21;j++){
+					int location = i+(j-13)*7;
+					if(location > 63 || location%8>i%8)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toLowerCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}
+				}
+				for(int j = 21; j<28;j++){
+					int location = i+(j-21)*9;
+					if(location > 63 || location%8<i%8)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toLowerCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
 						break;
 					}
 				}
 			}
 		}
 	}
-
 }
