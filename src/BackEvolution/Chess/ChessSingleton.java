@@ -2,7 +2,6 @@ package BackEvolution.Chess;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
-
 import Backpropagate.BackpropagateSingleton;
 import Competitive.CompetitionSingleton;
 import Evolve.EvolveSingleton;
@@ -10,8 +9,27 @@ import General.NeuralNetwork;
 
 public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, CompetitionSingleton {
 	private static ChessSingleton uniqueInstance = new ChessSingleton();
-	private String[] board;
-	private ArrayList<String> legalMoves;
+	private static final int TIMING = 0;
+	private static final double ACTIVATION = 0;
+	private static final String TYPE = "Chess";
+	private static final int NUM_NETWORKS = 200;
+	private static final double LEARNING_RATE = .01;
+	private static final double MOMENTUM = .25;
+	private static final double ALLOWED_ERROR = 250;
+	private static final int NUM_COMPETING = 2;
+	public static final double  WEIGHT_ADJUST = .65;
+	public static final double  RANDOM_WEIGHT = .1+WEIGHT_ADJUST;
+	public static final double ENABLE_DISABLE = .05+RANDOM_WEIGHT;
+	public static final double  NEW_GENE = ENABLE_DISABLE + .17 ;
+	public static final double EXISTING_LAYER = NEW_GENE + .029;
+	private double totalGlobalError;
+	private PrintWriter writer;
+	private NeuralNetwork[] nns;
+	private int Gen;
+	private static final int LEARNTYPE = 1;
+	private String[] chessboard;
+	private ArrayList<String> currentLegalMoves;
+	private int[] currentPlayers;
 
 	private ChessSingleton() {
 		
@@ -19,145 +37,145 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 	@Override
 	public PrintWriter getWriter() {
 		// TODO Auto-generated method stub
-		return null;
+		return writer;
 	}
 
 	@Override
 	public int getTiming() {
 		// TODO Auto-generated method stub
-		return 0;
+		return TIMING;
 	}
 
 	@Override
 	public void setWriter(PrintWriter w) {
 		// TODO Auto-generated method stub
-
+		writer = w;
 	}
 
 	@Override
 	public void setNetworks(NeuralNetwork[] nns) {
-		// TODO Auto-generated method stub
+		this.nns = nns;
 
 	}
 
 	@Override
 	public NeuralNetwork[] getNetworks() {
 		// TODO Auto-generated method stub
-		return null;
+		return nns;
 	}
 
 	@Override
 	public double getActivation() {
 		// TODO Auto-generated method stub
-		return 0;
+		return ACTIVATION;
 	}
 
 	@Override
 	public String getType() {
 		// TODO Auto-generated method stub
-		return null;
+		return TYPE;
 	}
 
 	@Override
 	public void incrementGen() {
-		// TODO Auto-generated method stub
+		Gen++;
 
 	}
 
 	@Override
 	public int getGen() {
 		// TODO Auto-generated method stub
-		return 0;
+		return Gen;
 	}
 
 	@Override
 	public int getNumNetworks() {
 		// TODO Auto-generated method stub
-		return 0;
+		return NUM_NETWORKS;
 	}
 
 	@Override
 	public int numCompeting() {
 		// TODO Auto-generated method stub
-		return 0;
+		return NUM_COMPETING;
 	}
 
 	@Override
 	public int getLearningType() {
 		// TODO Auto-generated method stub
-		return 0;
+		return LEARNTYPE;
 	}
 
 	@Override
 	public int[] getCurrentPlayers() {
 		// TODO Auto-generated method stub
-		return null;
+		return currentPlayers;
 	}
 
 	@Override
 	public void setCurrentPlayers(int[] players) {
-		// TODO Auto-generated method stub
+		currentPlayers = players;
 
 	}
 
 	@Override
 	public double getLearningRate() {
 		// TODO Auto-generated method stub
-		return 0;
+		return LEARNING_RATE;
 	}
 
 	@Override
 	public double getMomentum() {
 		// TODO Auto-generated method stub
-		return 0;
+		return MOMENTUM;
 	}
 
 	@Override
 	public double getAllowedError() {
 		// TODO Auto-generated method stub
-		return 0;
+		return ALLOWED_ERROR;
 	}
 
 	@Override
 	public double getTotalGlobalError() {
 		// TODO Auto-generated method stub
-		return 0;
+		return totalGlobalError;
 	}
 
 	@Override
 	public void setTotalGlobalError(double totalGlobalError) {
-		// TODO Auto-generated method stub
+		this.totalGlobalError = totalGlobalError;
 
 	}
 
 	@Override
 	public double getAdjustProbability() {
 		// TODO Auto-generated method stub
-		return 0;
+		return WEIGHT_ADJUST;
 	}
 
 	@Override
 	public double getRandomProbability() {
 		// TODO Auto-generated method stub
-		return 0;
+		return RANDOM_WEIGHT;
 	}
 
 	@Override
 	public double getDisableProbability() {
 		// TODO Auto-generated method stub
-		return 0;
+		return ENABLE_DISABLE;
 	}
 
 	@Override
 	public double getNewGeneProbability() {
 		// TODO Auto-generated method stub
-		return 0;
+		return NEW_GENE;
 	}
 
 	@Override
 	public double getExistingLayerProbability() {
 		// TODO Auto-generated method stub
-		return 0;
+		return EXISTING_LAYER;
 	}
 
 	public static ChessSingleton getInstance() {
@@ -166,16 +184,22 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 	}
 	public void startBoard(){
 		String [] boardInit = {"R1","K1","B1","Q","K","B2","K2","R2","P1","P2","P3","P4","P5","P6","P7","P8","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","p1","p2","p3","p4","p5","p6","p7","p8","r1","k1","b1","q","k","b2","k2","r2"};
-		board = boardInit;
+		chessboard = boardInit;
 	}
 	public String[] getChessboard() {
-		return board;
+		return chessboard;
 	}
 	public void setChessboard(String[] board) {
-		this.board = board;
+		this.chessboard = board;
 	}
 	public void checkLegal() {
-		legalMoves = new ArrayList<String>();
+		currentLegalMoves = checkLegalForState(chessboard);
+		for(String move: currentLegalMoves) {
+			if(YourKingInCheck(getStateforMove(move),move.equals(move.toUpperCase())))currentLegalMoves.remove(move); 
+		}
+	}
+	public ArrayList<String> checkLegalForState(String[] board) {
+		ArrayList<String> legalMoves = new ArrayList<String>();
 		for(int i=0; i<64;i++) {
 			if(board[i].contains("R")) {
 				for(int j = 0; j<7; j++) {
@@ -711,5 +735,25 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 				}
 			}
 		}
+		return legalMoves;		
+	}
+	private boolean YourKingInCheck(String[] stateforMove, boolean b) {
+		ArrayList<String> moveSet = checkLegalForState(stateforMove);
+		boolean check = true;
+		
+		for(String move: moveSet) {
+			if(b & move.equals(move.toLowerCase())) {
+				for(String piece: getStateforMove(move))if(piece.equals("K"))check=false;
+			}
+			else if(move.equals(move.toUpperCase())) {
+				for(String piece: getStateforMove(move))if(piece.equals("k"))check=false;
+			}
+		}
+		
+		return check;
+	}
+	private String[] getStateforMove(String legalMove) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
