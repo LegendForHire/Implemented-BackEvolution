@@ -315,7 +315,7 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						legalMoves.add(board[i]+"_"+j);
 					}
 					else {
-						if (board[location].toLowerCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						if (board[location].toUpperCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
 						break;
 					}
 				}
@@ -326,7 +326,7 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						legalMoves.add(board[i]+"_"+j);
 					}
 					else {
-						if (board[location].toLowerCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						if (board[location].toUpperCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
 						break;
 					}
 				}
@@ -337,7 +337,7 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						legalMoves.add(board[i]+"_"+j);
 					}
 					else {
-						if (board[location].toLowerCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						if (board[location].toUpperCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
 						break;
 					}
 				}
@@ -348,8 +348,365 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						legalMoves.add(board[i]+"_"+j);
 					}
 					else {
+						if (board[location].toUpperCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}
+				}
+			}
+			else if(board[i].contains("Q")) {
+				for(int j=0; i<7; j++) {
+					int location = i+j*8+8;
+					if(location > 63)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
 						if (board[location].toLowerCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
 						break;
+					}				
+				}
+				for(int j=7; i<14; j++) {
+					int location = i+(j-6)*9;
+					if(location > 63 || location%8 < i%8)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toLowerCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}				
+				}
+				for(int j=14; i<21; j++) {
+					int location = i+(j-13);
+					if(location > 63 || location%8 < i%8)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toLowerCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}				
+				}
+				for(int j=21; i<28; j++) {
+					int location = i-(j-20)*7;
+					if(location < 0 || location%8 < i%8)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toLowerCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}				
+				}
+				for(int j=28; i<35; j++) {
+					int location = i-(j-27)*8;
+					if(location < 0)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toLowerCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}				
+				}
+				for(int j=35; i<42; j++) {
+					int location = i-(j-34)*9;
+					if(location < 0 || location%8 > i%8)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toLowerCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}				
+				}
+				for(int j=42; i<49; j++) {
+					int location = i-(j-41);
+					if(location < 0 || location%8 > i%8)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toLowerCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}				
+				}
+				for(int j=49; i<56; j++) {
+					int location = i+(j-48)*7;
+					if(location > 63 || location%8 > i%8)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toLowerCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}				
+				}
+			}
+			else if(board[i].contains("q")) {
+				for(int j=0; i<7; j++) {
+					int location = i-j*8-8;
+					if(location < 63)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toUpperCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}				
+				}
+				for(int j=7; i<14; j++) {
+					int location = i-(j-6)*9;
+					if(location < 0 || location%8 > i%8)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toUpperCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}				
+				}
+				for(int j=14; i<21; j++) {
+					int location = i-(j-13);
+					if(location < 0 || location%8 > i%8)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toUpperCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}				
+				}
+				for(int j=21; i<28; j++) {
+					int location = i+(j-20)*7;
+					if(location > 63 || location%8 > i%8)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toUpperCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}				
+				}
+				for(int j=28; i<35; j++) {
+					int location = i+(j-27)*8;
+					if(location > 63)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toUpperCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}				
+				}
+				for(int j=35; i<42; j++) {
+					int location = i+(j-34)*9;
+					if(location > 63 || location%8 < i%8)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toUpperCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}				
+				}
+				for(int j=42; i<49; j++) {
+					int location = i-(j-41);
+					if(location < 0 || location%8 > i%8)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toUpperCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}				
+				}
+				for(int j=49; i<56; j++) {
+					int location = i-(j-48)*7;
+					if(location < 0 || location%8 < i%8)break;
+					if(board[location].equals("")) {
+						legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toUpperCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}				
+				}
+			}
+			else if(board[i].contains("P")) {
+				for (int j=0;i<2;j++) {
+					int location = i+j*8+8;
+					if(location > 63)break;
+					if(board[location].equals("")) {
+						if(j==1){
+							if (i/8==2)legalMoves.add(board[i]+"_"+j);
+						}
+						else legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toLowerCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}
+				}
+				if(board[i+7]!="" && board[i+7].toLowerCase().equals(board[i+7]))legalMoves.add(board[i]+"_"+3);
+				if(board[i+7]!="" && board[i+9].toLowerCase().equals(board[i+9]))legalMoves.add(board[i]+"_"+4);
+			}
+			else if(board[i].contains("p")) {
+				for (int j=0;i<2;j++) {
+					int location = i-j*8-8;
+					if(location > 63)break;
+					if(board[location].equals("")) {
+						if(j==1){
+							if (i/8==7)legalMoves.add(board[i]+"_"+j);
+						}
+						else legalMoves.add(board[i]+"_"+j);
+					}
+					else {
+						if (board[location].toLowerCase().equals(board[location])) legalMoves.add(board[i]+"_"+j);
+						break;
+					}
+				}
+				if(board[i-9]!="" && board[i-9].toLowerCase().equals(board[i+7]))legalMoves.add(board[i]+"_"+3);
+				if(board[i-7]!="" && board[i-7].toLowerCase().equals(board[i+9]))legalMoves.add(board[i]+"_"+4);
+			}
+			else if(board[i].contains("K")) {
+				if(board[i].length() ==1) {
+					int location = i+8;
+					if(location<=63) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+0);
+					}
+					location = i+9;
+					if(location<=63 && (location)%8>i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+1);
+					}
+					location = i+1;
+					if((location)%8>i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+2);
+					}
+					location = i-7;
+					if(location>=0 && (location)%8>i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+3);
+					}
+					location = i-8;
+					if(location>=0) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+4);
+					}
+					location = i-9;
+					if(location>=0&&(location)%8<i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+5);
+					}
+					location = i-1;
+					if((location)%8<i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+6);
+					}
+					location = i+7;
+					if(location<=63&&(location)%8<i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+7);
+					}
+				}
+				else {
+					int location = i+17;
+					if(location<=63&& (location)%8>i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+0);
+					}
+					location = i+10;
+					if(location<=63 && (location)%8>i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+1);
+					}
+					location = i-6;
+					if(location>=0 && (location)%8>i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+2);
+					}
+					location = i-15;
+					if(location>=0 && (location)%8>i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+3);
+					}
+					location = i-17;
+					if(location>=0 && (location)%8<i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+4);
+					}
+					location = i-10;
+					if(location>=0 && (location)%8<i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+5);
+					}
+					location = i+6;
+					if(location<=63 && (location)%8<i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+6);
+					}
+					location = i+15;
+					if(location<=63 && (location)%8<i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+7);
+					}
+				}
+				
+			}
+			else if(board[i].contains("k")) {
+				if(board[i].length() ==1) {
+					int location = i+8;
+					if(location<=63) {
+						if(board[location].equals("") || board[location].toUpperCase().equals(board[location]))legalMoves.add(board[i]+"_"+4);
+					}
+					location = i+9;
+					if(location<=63 && (location)%8>i%8) {
+						if(board[location].equals("") || board[location].toUpperCase().equals(board[location]))legalMoves.add(board[i]+"_"+5);
+					}
+					location = i+1;
+					if((location)%8>i%8) {
+						if(board[location].equals("") || board[location].toUpperCase().equals(board[location]))legalMoves.add(board[i]+"_"+6);
+					}
+					location = i-7;
+					if(location>=0 && (location)%8>i%8) {
+						if(board[location].equals("") || board[location].toUpperCase().equals(board[location]))legalMoves.add(board[i]+"_"+7);
+					}
+					location = i-8;
+					if(location>=0) {
+						if(board[location].equals("") || board[location].toUpperCase().equals(board[location]))legalMoves.add(board[i]+"_"+0);
+					}
+					location = i-9;
+					if(location>=0&&(location)%8<i%8) {
+						if(board[location].equals("") || board[location].toUpperCase().equals(board[location]))legalMoves.add(board[i]+"_"+1);
+					}
+					location = i-1;
+					if((location)%8<i%8) {
+						if(board[location].equals("") || board[location].toUpperCase().equals(board[location]))legalMoves.add(board[i]+"_"+2);
+					}
+					location = i+7;
+					if(location<=63&&(location)%8<i%8) {
+						if(board[location].equals("") || board[location].toUpperCase().equals(board[location]))legalMoves.add(board[i]+"_"+3);
+					}
+				}
+				else {
+					int location = i+17;
+					if(location<=63&& (location)%8>i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+4);
+					}
+					location = i+10;
+					if(location<=63 && (location)%8>i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+5);
+					}
+					location = i-6;
+					if(location>=0 && (location)%8>i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+6);
+					}
+					location = i-15;
+					if(location>=0 && (location)%8>i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+7);
+					}
+					location = i-17;
+					if(location>=0 && (location)%8<i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+0);
+					}
+					location = i-10;
+					if(location>=0 && (location)%8<i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+1);
+					}
+					location = i+6;
+					if(location<=63 && (location)%8<i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+2);
+					}
+					location = i+15;
+					if(location<=63 && (location)%8<i%8) {
+						if(board[location].equals("") || board[location].toLowerCase().equals(board[location]))legalMoves.add(board[i]+"_"+3);
 					}
 				}
 			}
