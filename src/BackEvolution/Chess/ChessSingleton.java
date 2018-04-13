@@ -378,7 +378,7 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 				}
 			}
 			else if(board[i].contains("Q")) {
-				for(int j=0; i<7; j++) {
+				for(int j=0; j<7; j++) {
 					int location = i+j*8+8;
 					if(location > 63)break;
 					if(board[location].equals("")) {
@@ -389,7 +389,7 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						break;
 					}				
 				}
-				for(int j=7; i<14; j++) {
+				for(int j=7; j<14; j++) {
 					int location = i+(j-6)*9;
 					if(location > 63 || location%8 < i%8)break;
 					if(board[location].equals("")) {
@@ -400,7 +400,7 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						break;
 					}				
 				}
-				for(int j=14; i<21; j++) {
+				for(int j=14; j<21; j++) {
 					int location = i+(j-13);
 					if(location > 63 || location%8 < i%8)break;
 					if(board[location].equals("")) {
@@ -411,7 +411,7 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						break;
 					}				
 				}
-				for(int j=21; i<28; j++) {
+				for(int j=21; j<28; j++) {
 					int location = i-(j-20)*7;
 					if(location < 0 || location%8 < i%8)break;
 					if(board[location].equals("")) {
@@ -422,7 +422,7 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						break;
 					}				
 				}
-				for(int j=28; i<35; j++) {
+				for(int j=28; j<35; j++) {
 					int location = i-(j-27)*8;
 					if(location < 0)break;
 					if(board[location].equals("")) {
@@ -433,7 +433,7 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						break;
 					}				
 				}
-				for(int j=35; i<42; j++) {
+				for(int j=35; j<42; j++) {
 					int location = i-(j-34)*9;
 					if(location < 0 || location%8 > i%8)break;
 					if(board[location].equals("")) {
@@ -444,7 +444,7 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						break;
 					}				
 				}
-				for(int j=42; i<49; j++) {
+				for(int j=42; j<49; j++) {
 					int location = i-(j-41);
 					if(location < 0 || location%8 > i%8)break;
 					if(board[location].equals("")) {
@@ -468,7 +468,7 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 				}
 			}
 			else if(board[i].contains("q")) {
-				for(int j=0; i<7; j++) {
+				for(int j=0; j<7; j++) {
 					int location = i-j*8-8;
 					if(location < 63)break;
 					if(board[location].equals("")) {
@@ -479,7 +479,7 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						break;
 					}				
 				}
-				for(int j=7; i<14; j++) {
+				for(int j=7; j<14; j++) {
 					int location = i-(j-6)*9;
 					if(location < 0 || location%8 > i%8)break;
 					if(board[location].equals("")) {
@@ -490,7 +490,7 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						break;
 					}				
 				}
-				for(int j=14; i<21; j++) {
+				for(int j=14; j<21; j++) {
 					int location = i-(j-13);
 					if(location < 0 || location%8 > i%8)break;
 					if(board[location].equals("")) {
@@ -501,7 +501,7 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						break;
 					}				
 				}
-				for(int j=21; i<28; j++) {
+				for(int j=21; j<28; j++) {
 					int location = i+(j-20)*7;
 					if(location > 63 || location%8 > i%8)break;
 					if(board[location].equals("")) {
@@ -512,7 +512,7 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						break;
 					}				
 				}
-				for(int j=28; i<35; j++) {
+				for(int j=28; j<35; j++) {
 					int location = i+(j-27)*8;
 					if(location > 63)break;
 					if(board[location].equals("")) {
@@ -523,7 +523,7 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						break;
 					}				
 				}
-				for(int j=35; i<42; j++) {
+				for(int j=35; j<42; j++) {
 					int location = i+(j-34)*9;
 					if(location > 63 || location%8 < i%8)break;
 					if(board[location].equals("")) {
@@ -534,7 +534,7 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						break;
 					}				
 				}
-				for(int j=42; i<49; j++) {
+				for(int j=42; j<49; j++) {
 					int location = i-(j-41);
 					if(location < 0 || location%8 > i%8)break;
 					if(board[location].equals("")) {
@@ -545,7 +545,7 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						break;
 					}				
 				}
-				for(int j=49; i<56; j++) {
+				for(int j=49; j<56; j++) {
 					int location = i-(j-48)*7;
 					if(location < 0 || location%8 < i%8)break;
 					if(board[location].equals("")) {
@@ -572,8 +572,8 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						break;
 					}
 				}
-				if(board[i+7]!="" && board[i+7].toLowerCase().equals(board[i+7]))legalMoves.add(board[i]+"_"+3);
-				if(board[i+7]!="" && board[i+9].toLowerCase().equals(board[i+9]))legalMoves.add(board[i]+"_"+4);
+				if(board[i+7]!="" && board[i+7].toLowerCase().equals(board[i+7]))legalMoves.add(board[i]+"_"+2);
+				if(board[i+9]!="" && board[i+9].toLowerCase().equals(board[i+9]))legalMoves.add(board[i]+"_"+3);
 			}
 			else if(board[i].contains("p")) {
 				for (int j=0;i<2;j++) {
@@ -590,8 +590,8 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 						break;
 					}
 				}
-				if(board[i-9]!="" && board[i-9].toLowerCase().equals(board[i+7]))legalMoves.add(board[i]+"_"+3);
-				if(board[i-7]!="" && board[i-7].toLowerCase().equals(board[i+9]))legalMoves.add(board[i]+"_"+4);
+				if(board[i-9]!="" && board[i-9].toLowerCase().equals(board[i+7]))legalMoves.add(board[i]+"_"+2);
+				if(board[i-7]!="" && board[i-7].toLowerCase().equals(board[i+9]))legalMoves.add(board[i]+"_"+3);
 			}
 			else if(board[i].contains("K")) {
 				if(board[i].length() ==1) {
@@ -751,6 +751,116 @@ public class ChessSingleton implements EvolveSingleton, BackpropagateSingleton, 
 		}
 		
 		return check;
+	}
+	private void move(String piece, int j) {
+		// TODO Auto-generated method stub
+		int location = 64;
+		int i = 64;
+		for(int k = 0; k < 64;k++)if(chessboard[k].equals(piece))i=k;
+		if(piece.contains("R")) {
+			if (j<7) location = i+j*8+8;
+			else if (j<14) location = i+j-6;
+			else if (j<21)location = i-((j-13)*8);
+			else location =i+j-20;
+		}
+		if(piece.contains("r")) {
+			if (j<7)location = i-j*8-8;
+			else if (j<14)location =i-j+6;
+			else if (j < 21)location =i+((j-13)*8);
+			else location = i+j-20;
+		}
+		if(piece.contains("B")) {
+			if (j < 7)location = i+j*7+7;
+			else if (j < 14)location = i+(j-6)*9;
+			else if (j < 21)location = i-(j-13)*7;
+			else location = i-(j-21)*9;
+		}
+		if(piece.contains("b")){
+			if (j < 7)location = i-j*7-7;
+			else if (j < 14)location = i-(j-6)*9;
+			else if (j < 21) location = i+(j-13)*7;
+			else location = i+(j-21)*9;
+
+		}
+		else if(piece.contains("Q")) {
+			if (j < 7)location = i+j*8+8;
+			else if (j < 14)location = i+(j-6)*9;
+			else if (j < 21)location = i+(j-13);
+			else if (j < 28) location = i-(j-20)*7;
+			else if (j < 35)location = i-(j-27)*8;
+			else if (j < 42)location = i-(j-34)*9;				
+			else if(j < 49)location = i-(j-41);
+			else location = i+(j-48)*7;
+		}
+		else if(piece.contains("q")) {
+			if(j < 7)location = i-j*8-8;			
+			else if (j < 14)location = i-(j-6)*9;
+			else if (j < 21)location = i-(j-13);
+			else if (j < 28)location = i+(j-20)*7;
+			else if (j <35)location = i+(j-27)*8;
+			else if (j <42)location = i+(j-34)*9;
+			else if (j <49)location = i-(j-41);
+			else location = i-(j-48)*7;				
+		}
+		else if(piece.contains("P")) {
+			if(j == 0) location = i+8;
+			if(j == 1) location = i+16;
+			if(j == 2) location = i+7;
+			if(j == 3) location = i+9;
+		}
+		else if(piece.contains("p")) {
+			if(j == 0) location = i-8;
+			if(j == 1) location = i-16;
+			if(j == 2) location = i-9;
+			if(j == 3) location = i-7;
+		}
+		else if(piece.contains("K")) {
+			if(piece.length() ==1) {
+				if(j == 0)location = i+8;
+				if(j == 1)location = i+9;
+				if(j == 2)location = i+1;
+				if(j == 3)location = i-7;
+				if(j == 4)location = i-8;
+				if(j == 5)location = i-9;
+				if(j == 6)location = i-1;
+				if(j == 7)location = i+7;
+			}
+			else {
+				if(j == 0)location = i+17;
+				if(j == 1)location = i+10;
+				if(j == 2)location = i-6;
+				if(j == 3)location = i-15;
+				if(j == 4)location = i-17;
+				if(j == 5)location = i-10;
+				if(j == 6)location = i+6;
+				if(j == 7)location = i+15;
+			}
+			
+		}
+		else if(piece.contains("k")) {
+			if(piece.length() == 1) {
+				if(j == 4)location = i+8;
+				if(j == 5)location = i+9;
+				if(j == 6)location = i+1;
+				if(j == 7)location = i-7;
+				if(j == 0)location = i-8;
+				if(j == 1)location = i-9;
+				if(j == 2)location = i-1;
+				if(j == 3)location = i+7;
+			}
+			else {
+				if(j == 4)location = i+17;
+				if(j == 5)location = i+10;
+				if(j == 6)location = i-6;
+				if(j == 7)location = i-15;
+				if(j == 0)location = i-17;
+				if(j == 1)location = i-10;
+				if(j == 2)location = i+6;
+				if(j == 3)location = i+15;
+			}
+		}
+		chessboard[i] = "";
+		chessboard[location] = piece;
 	}
 	private String[] getStateforMove(String legalMove) {
 		// TODO Auto-generated method stub
