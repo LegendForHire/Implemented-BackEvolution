@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
  * All Rights Reserved
  */
 import java.util.ArrayList;
+import java.util.Collection;
 
 public abstract class Layer {
 	private ArrayList<Neuron> neurons;

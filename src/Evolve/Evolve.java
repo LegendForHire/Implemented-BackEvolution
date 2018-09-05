@@ -24,6 +24,7 @@ import General.Singleton;
 import General.SpecialCreator;
 
 public class Evolve {
+	private static final double CLONE_CHANCE = .25;
 	public static Random rand = new Random();
 	
 	public static void runner(Singleton s1) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException, ClassNotFoundException, InterruptedException {
@@ -113,7 +114,7 @@ public class Evolve {
 			//this random decides if the network will be cloned or bred.
 			Double cloneVsCrossover=  Math.random();
 			//cloned
-			if (cloneVsCrossover <= .25){
+			if (cloneVsCrossover <= CLONE_CHANCE){
 				//this decides which network it will be a clone of
 				Double who = Math.random()*totalFitness;
 				NeuralNetwork cloner = null;

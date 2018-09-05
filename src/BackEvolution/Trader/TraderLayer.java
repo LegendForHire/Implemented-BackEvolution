@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import General.Layer;
 
 public class TraderLayer extends Layer {
+	
 	public TraderLayer() {
 		super(false,false);
 	}
