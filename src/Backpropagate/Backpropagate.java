@@ -23,17 +23,13 @@ public class Backpropagate {
 	public static Random rand = new Random();
 	public static void runner(Singleton s1) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, ClassNotFoundException, SecurityException, InstantiationException, InterruptedException {
 		BackpropagateSingleton s = (BackpropagateSingleton) s1;
-		@SuppressWarnings("unchecked")
-		Class<? extends BackpropagateManager> class1 = (Class<? extends BackpropagateManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
 		@SuppressWarnings("deprecation")
-		BackpropagateManager netManager = class1.newInstance();
+		BackpropagateManager netManager = netManagerReflected(s);
 		netManager.BackpropagationSetup();
-		System.out.println("Iteration " + s.getGen());
 		s.getWriter().println("Iteration" + s.getGen());
 		NeuralNetwork[] nns = s.getNetworks();
 		//Scales the allowed error over time allowing a much larger starting error but capping the smallest error possible at a lower but still reasonable number.
-		double scaling = Math.log(s.getGen())*3+1;
-		s.setTotalGlobalError(s.getAllowedError()/scaling + 1);
+		double scaling = startingErrorSetup(s);
 		// see method description
 		for(NeuralNetwork nn : nns) {
 			NeuralNetManager.Neuraltracker(nn);	
@@ -62,15 +58,25 @@ public class Backpropagate {
 		
 	}
 
+	private static double startingErrorSetup(BackpropagateSingleton s) {
+		double scaling = Math.log(s.getGen())*3+1;
+		s.setTotalGlobalError(s.getAllowedError()/scaling + 1);
+		return scaling;
+	}
+
+	private static BackpropagateManager netManagerReflected(BackpropagateSingleton s)
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		@SuppressWarnings("unchecked")
+		Class<? extends BackpropagateManager> class1 = (Class<? extends BackpropagateManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
+		@SuppressWarnings("deprecation")
+		BackpropagateManager netManager = class1.newInstance();
+		return netManager;
+	}
+
 	@SuppressWarnings("deprecation")
 	public static void backpropagate(NeuralNetwork[] nns, Singleton s1) throws IOException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException {
 		BackpropagateSingleton s = (BackpropagateSingleton) s1;
-		// makes sure old error is reset
-		s.setTotalGlobalError(0.0);
-		@SuppressWarnings("unchecked")
-		//prepares call to specific implementation
-		Class<? extends BackpropagateManager> class1 = (Class<? extends BackpropagateManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
-		BackpropagateManager netManager = class1.newInstance();
+		BackpropagateManager netManager = netManagerReflected(s);
 		//Determines which neurons should have fired
 		netManager.setAct();
 		for(NeuralNetwork nn : nns){
