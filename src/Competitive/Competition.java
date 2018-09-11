@@ -9,11 +9,9 @@ import General.NeuralNetwork;
 import General.Singleton;
 
 public class Competition {
-	@SuppressWarnings({"unchecked","deprecation"})
 	public static void backpropagationRunner(Singleton s1) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InterruptedException{		
 		CompetitionSingleton s = (CompetitionSingleton) s1;
-		Class<? extends CompetitionManager> class1 = (Class<? extends CompetitionManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
-		CompetitionManager netManager = class1.newInstance();
+		CompetitionManager netManager = netManagerReflected(s);
 		NeuralNetwork[] nns = s.getNetworks();
 		int[] currentPlayers= new int[s.numCompeting()];
 		for(int i = 0; i< s.numCompeting(); i++){
@@ -50,10 +48,7 @@ public class Competition {
 		}				
 	}
 	public static void evolutionRunner(CompetitionSingleton s) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InterruptedException{		
-		@SuppressWarnings("unchecked")
-		Class<? extends CompetitionManager> class1 = (Class<? extends CompetitionManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
-		@SuppressWarnings("deprecation")
-		CompetitionManager netManager = class1.newInstance();
+		CompetitionManager netManager = netManagerReflected(s);
 		NeuralNetwork[] nns = s.getNetworks();
 		int[] currentPlayers= new int[s.numCompeting()];
 		for(int i = 0; i< s.numCompeting(); i++){
@@ -82,6 +77,14 @@ public class Competition {
 			netManager.setEndCompetitionState();
 			incrementPlayers(s.getCurrentPlayers().length-1, s);
 		}				
+	}
+	private static CompetitionManager netManagerReflected(CompetitionSingleton s)
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+		@SuppressWarnings("unchecked")
+		Class<? extends CompetitionManager> class1 = (Class<? extends CompetitionManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
+		@SuppressWarnings("deprecation")
+		CompetitionManager netManager = class1.newInstance();
+		return netManager;
 	}
 	public static void incrementPlayers(int position, CompetitionSingleton s) {
 		int[] currentPlayers = s.getCurrentPlayers();
