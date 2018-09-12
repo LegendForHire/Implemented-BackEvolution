@@ -140,7 +140,6 @@ public class Backpropagate {
 	public static double Sigmoid(double d) {
 		return 1/(1+Math.exp(d*-1));
 	}
-
 	public static void BackIterationHandling(Singleton s) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		@SuppressWarnings("unchecked")
 		Class<? extends BackpropagateManager> class1 = (Class<? extends BackpropagateManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
