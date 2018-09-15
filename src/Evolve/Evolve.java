@@ -11,7 +11,7 @@ import java.lang.reflect.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
-
+import java.util.HashMap;
 import Competitive.Competition;
 import Competitive.CompetitionSingleton;
 import General.Gene;
@@ -20,25 +20,30 @@ import General.NetworkCreator;
 import General.NeuralNetManager;
 import General.NeuralNetwork;
 import General.Neuron;
+import General.PropertyReader;
 import General.Singleton;
 import General.SpecialCreator;
+import General.Species;
 
 public class Evolve {
 	private static final double CLONE_CHANCE = .25;
+	private static final double MAX_SPECIES_DELTA = Double.parseDouble(PropertyReader.getProperty("speciationThreshold"));
+	private static final double DISJOINTWEIGHT = 1;
+	private static final double EXCESSWEIGHT = 1;
+	private static final double DIFWEIGHT = 1;
 	public static Random rand = new Random();
 	
-	public static void runner(Singleton s1) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException, ClassNotFoundException, InterruptedException {
-		EvolveSingleton s = (EvolveSingleton) s1;
+	public static void runner(Singleton s) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException, ClassNotFoundException, InterruptedException {
 		EvolveManager netManager = netManagerReflected(s);
 		netManager.EvolveSetup();
 		NeuralNetwork[] nns = s.getNetworks();
 		long t1 = System.currentTimeMillis();
 		// runs the networks for a minute to measure their performance
-		if(s.numCompeting() > 1){
+		if(Integer.parseInt(PropertyReader.getProperty("competing")) > 1){
 			Competition.evolutionRunner((CompetitionSingleton) s);
 		}
 		else{
-			while (System.currentTimeMillis()-t1 < s.getTiming()){
+			while (System.currentTimeMillis()-t1 < Long.parseLong(PropertyReader.getProperty("timing"))){
 				for (NeuralNetwork nn : nns){
 					NeuralNetManager.RunNetwork(nn,s);					
 				}	
@@ -51,16 +56,16 @@ public class Evolve {
 		netManager.EvolveTeardown();
 		
 	}
-	private static EvolveManager netManagerReflected(EvolveSingleton s)
+	@SuppressWarnings("unchecked")
+	private static EvolveManager netManagerReflected(Singleton s)
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-		@SuppressWarnings("unchecked")
-		Class<? extends EvolveManager> class1 = (Class<? extends EvolveManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
+		String type = PropertyReader.getProperty("type");
+		Class<? extends EvolveManager> class1 = (Class<? extends EvolveManager>) Class.forName("BackEvolution."+ type +"."+ type+"NetManager");
 		@SuppressWarnings("deprecation")
 		EvolveManager netManager = class1.newInstance();
 		return netManager;
 	}
-	public static NeuralNetwork[] evolve(NeuralNetwork[] nns,Singleton s1) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException {
-		EvolveSingleton s = (EvolveSingleton) s1;
+	public static NeuralNetwork[] evolve(NeuralNetwork[] nns,Singleton s) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException {
 		Arrays.sort(nns);
 		NeuralNetwork[] halfnns = new NeuralNetwork[nns.length/2];
 		//This will be the new population that is returned
@@ -105,32 +110,74 @@ public class Evolve {
 		}
 		return tracker;
 	}
-	private static void newNetworkAtLoc(EvolveSingleton s, NeuralNetwork[] originalPopulation, NeuralNetwork[] newnns, Double totalFitness, int loc) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
+	private static void newNetworkAtLoc(Singleton s, NeuralNetwork[] originalPopulation, NeuralNetwork[] newnns, Double totalFitness, int loc) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
 		InvocationTargetException, IOException, InstantiationException {
 		//this random decides if the network will be cloned or bred.
 		Double cloneVsCrossover=  Math.random();
+		NeuralNetwork network;
 		//cloned
 		if (cloneVsCrossover <= CLONE_CHANCE){
 			NeuralNetwork clonedParent = parentSelection(originalPopulation, totalFitness);
-			newnns[loc] = clone(clonedParent, s);
+			network = clone(clonedParent, s);
 		}
 		//crossover
 		else{
 			NeuralNetwork parent1 = parentSelection(originalPopulation, totalFitness);
-			ArrayList<NeuralNetwork> equalLayers = new ArrayList<NeuralNetwork>();
-			//creates an array of neural networks with the same number of layers as the parent otherwise breeding is difficult
-			Double equalFitness = 0.0;
-			for(NeuralNetwork nn:originalPopulation){
-				if (nn.getLayers().size() == parent1.getLayers().size()){
-					equalLayers.add(nn);
-					equalFitness += nn.getFitness();
+			NeuralNetwork parent2 = parentSelection(originalPopulation, totalFitness);
+			network = crossover(parent1,parent2,s);
+		}
+		setSpecies(network, newnns, s);
+		newnns[loc] = network;
+	}
+	private static void setSpecies(NeuralNetwork network, NeuralNetwork[] newnns,Singleton s) {
+		boolean speciesFound = false;
+		for(NeuralNetwork compared : newnns) {
+			if(compared != null && !speciesFound){
+				double delta = getSpeciesDelta(network, compared);
+				if(delta < MAX_SPECIES_DELTA) {
+					network.setSpecies(compared.getSpecies());
+					speciesFound = true;
+				}			
+			}
+		}
+		if(!speciesFound) {
+			network.setSpecies(new Species(network));
+		}
+	}
+	public static double getSpeciesDelta(NeuralNetwork network, NeuralNetwork compare) {
+		
+		double weightdif=0;
+		int totalmatches = 0;
+		int numGenes;
+		int excess = 0;
+		int disjoint = 0;
+		ArrayList<Gene> genes = geneArrayCreator(network);
+		ArrayList<Gene> genes2 = geneArrayCreator(compare);
+		if(genes2.size() > genes.size())numGenes =genes2.size();
+		else numGenes = genes.size();
+		if(numGenes < 20) numGenes = 1;
+		for(Gene g: genes) {
+			boolean matchfound = false;
+			for(Gene g2: genes2) {
+				if(!matchfound && g2.getID() == g.getID()) {
+					matchfound = true;
+					totalmatches++;
+					weightdif= g.getWeight()-g2.getWeight();
+				}				
+			}
+			if(!matchfound)excess++;
+		}
+		for(Gene g2: genes2) {
+			boolean matchfound = false;
+			for(Gene g: genes) {
+				if(g2.getID() == g.getID()) {
+					matchfound=true;
 				}
 			}
-			//selects from the previously created array
-			NeuralNetwork parent2 = parentSelection((NeuralNetwork[]) equalLayers.toArray(),equalFitness);
-			//breeds
-			newnns[loc] = crossover(parent1,parent2,s);
+			if(!matchfound)disjoint++;
 		}
+		weightdif = weightdif/totalmatches;
+		return (EXCESSWEIGHT*excess)/numGenes + (DISJOINTWEIGHT*disjoint)/numGenes + DIFWEIGHT * weightdif;
 	}
 	private static NeuralNetwork parentSelection(NeuralNetwork[] originalPopulation, Double totalFitness) {
 		//this decides which network it will be a clone of
@@ -172,25 +219,23 @@ public class Evolve {
 		}
 		return totalFitness;
 	}
-	private static NeuralNetwork clone(NeuralNetwork cloner, Singleton s1) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException {
-		EvolveSingleton s = (EvolveSingleton) s1;
+	private static NeuralNetwork clone(NeuralNetwork cloner, Singleton s) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException {
 		//starts by creating the basic structure for the new network
 		NeuralNetwork newnn = newNetwork(s);
 		ArrayList<Layer> clonelayers = cloner.getLayers();
 		//adds layer and neuron structure
 		for (int i = 1; i < clonelayers.size()-1; i++){
 				ArrayList<Neuron> ns = clonelayers.get(i).getNeurons();
-				networkStructureCreation(newnn, ns.size(), s);					
+				networkLayerCreation(newnn, ns.size(), s);					
 		}
 		layerTrackingReset(clonelayers);
 		//adds genes to structure
-		ArrayList<double[]> geneIdentities = getGeneIdentities(clonelayers);
+		HashMap<Long, double[]> geneIdentities = getGeneIdentities(clonelayers,clonelayers.size());
 		geneAdder(newnn, geneIdentities);
 		//returns a mutated clone
 		return mutate(newnn,s);
 	}
-	private static NeuralNetwork crossover(NeuralNetwork cross, NeuralNetwork over, Singleton s1) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException {
-		EvolveSingleton s = (EvolveSingleton) s1;
+	private static NeuralNetwork crossover(NeuralNetwork cross, NeuralNetwork over, Singleton s) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException {
 		NeuralNetwork newnn = newNetwork(s);
 		NeuralNetwork lessfit = null;
 		NeuralNetwork morefit = null;
@@ -202,7 +247,6 @@ public class Evolve {
 			morefit = over;
 			lessfit = cross;
 		}
-		//pretty sure this is obsolete from when i tried to breed different layered networks but not sure if I can delete.
 		ArrayList<Layer> lesslayers = lessfit.getLayers();
 		ArrayList<Layer> morelayers = morefit.getLayers();
 		int maxlayers = 1;
@@ -215,26 +259,28 @@ public class Evolve {
 		//adds the neuron to each layer based on which network had the most neurons in that layer
 		for (int i = 1; i < maxlayers-1; i++){
 			int numNeurons = getNumNeurons(lesslayers, morelayers, i);
-			networkStructureCreation(newnn, numNeurons, s);
+			networkLayerCreation(newnn, numNeurons, s);
 		}
 		layerTrackingReset(lesslayers);
 		layerTrackingReset(morelayers);
-		ArrayList<double[]> geneIdentities = getGeneIdentities(morelayers);
-		ArrayList<double[]> geneIdentities2 = getGeneIdentities(lesslayers);
+		HashMap<Long, double[]> geneIdentities = getGeneIdentities(morelayers, maxlayers);
+		HashMap<Long, double[]> geneIdentities2 = getGeneIdentities(lesslayers, maxlayers);
 		geneBreeder(geneIdentities, geneIdentities2);
 		geneAdder(newnn, geneIdentities);
 		geneAdder(newnn, geneIdentities2);
 		return mutate(newnn,s);
 	}
-	private static void geneBreeder(ArrayList<double[]> geneIdentities, ArrayList<double[]> geneIdentities2) {
-		for (double[] nums : geneIdentities){
-			for (int i = 0; i < geneIdentities2.size(); i++){
-				double[] nums2 = geneIdentities2.get(i);
-				if (nums[0] == nums2[0] && nums[1] == nums2[1] && nums[2] == nums2[2] && nums[3] == nums2[3]){
-					nums[4] = (nums[4] + nums2[4])/2;
-					geneIdentities2.remove(nums2);
-					i--;
-				}
+	private static void geneBreeder(HashMap<Long, double[]> geneIdentities, HashMap<Long, double[]> geneIdentities2) {
+		for (long id : geneIdentities.keySet()){
+			if(geneIdentities2.containsKey(id)) {
+				double[] nums = geneIdentities.get(id);
+				double weight1 = nums[4];
+				geneIdentities.remove(id);
+				double weight2 =  geneIdentities2.get(id)[4];
+				geneIdentities2.remove(id);
+				nums[4] = weight1/2+weight2/2;
+				geneIdentities.put(id,nums);
+				
 			}
 		}
 	}
@@ -254,16 +300,16 @@ public class Evolve {
 		int lessnum = 0;
 		int morenum = 0;
 		try{
-		lesslayer = lesslayers.get(i);
-		lessnum = lesslayer.getNeurons().size();
+			lesslayer = lesslayers.get(i);
+			lessnum = lesslayer.getNeurons().size();
 		}
 		catch(Exception e){
 			morelayer = morelayers.get(i);
 			morenum = morelayer.getNeurons().size();
 		}
 		try{
-		morelayer = morelayers.get(i);
-		morenum = morelayer.getNeurons().size();
+			morelayer = morelayers.get(i);
+			morenum = morelayer.getNeurons().size();
 		}
 		catch (Exception e){
 		}
@@ -275,15 +321,15 @@ public class Evolve {
 		else if (lesslayer.isOutput()){
 			lessnum = 0;
 		}
-		int numNeurons = (morenum > lessnum) ? morenum : lessnum;
-		return numNeurons;
+		return (morenum > lessnum) ? morenum : lessnum;
 	}
 	@SuppressWarnings({ "unchecked", "deprecation" })
-	private static NeuralNetwork newNetwork(EvolveSingleton s) throws ClassNotFoundException, NoSuchMethodException,
+	private static NeuralNetwork newNetwork(Singleton s) throws ClassNotFoundException, NoSuchMethodException,
 	IllegalAccessException, InvocationTargetException, IOException, InstantiationException {
-		Class<? extends NeuralNetwork> networkClass = (Class<? extends NeuralNetwork>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"Network");
+		String type = PropertyReader.getProperty("type");
+		Class<? extends NeuralNetwork> networkClass = (Class<? extends NeuralNetwork>) Class.forName("BackEvolution."+type+"."+type+"Network");
 		Layer[] puts = NetworkCreator.creator(s);
-		Class<? extends SpecialCreator> managerClass = (Class<? extends SpecialCreator>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"Creator");
+		Class<? extends SpecialCreator> managerClass = (Class<? extends SpecialCreator>) Class.forName("BackEvolution."+type+"."+type+"Creator");
 		SpecialCreator manager = managerClass.newInstance();
 		manager.InputOutputcreator(puts);
 		Class<?>[] types2 = {Class.forName("BackEvolution.Layer"),Class.forName("BackEvolution.Layer")};
@@ -292,10 +338,11 @@ public class Evolve {
 		return newnn;
 	} 
 	@SuppressWarnings({ "unchecked", "deprecation" })
-	private static void networkStructureCreation(NeuralNetwork newnn, int numNeurons, EvolveSingleton s)
+	private static void networkLayerCreation(NeuralNetwork newnn, int numNeurons, Singleton s)
 			throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, ClassNotFoundException {
-		Class<? extends Layer> layerClass = (Class<? extends Layer>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"Layer");
-		Class<? extends Neuron> neuronClass = (Class<? extends Neuron>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"Neuron");	
+		String type = PropertyReader.getProperty("type");
+		Class<? extends Neuron> neuronClass = (Class<? extends Neuron>) Class.forName("BackEvolution."+type+"."+type+"Neuron");	
+		Class<? extends Layer> layerClass = (Class<? extends Layer>) Class.forName("BackEvolution."+type+"."+type+"Layer");
 		Class<?>[] types = {boolean.class,boolean.class};
 		Constructor<? extends Layer> con = layerClass.getConstructor(types);
 		Layer newl = con.newInstance(false, false);
@@ -308,8 +355,8 @@ public class Evolve {
 			newn.setNumber(newl.getNeurons().size()-1);
 		}
 	}
-	private static ArrayList<double[]> getGeneIdentities(ArrayList<Layer> layers) {
-		ArrayList<double[]> geneIdentities = new ArrayList<double[]>();
+	private static HashMap<Long, double[]> getGeneIdentities(ArrayList<Layer> layers, int maxlayers) {
+		HashMap<Long, double[]> geneIdentities = new HashMap<Long, double[]>();
 		for(int k =1; k <=layers.size(); k++){
 			Layer l = layers.get(k-1);			
 			for (Neuron n: l.getNeurons()){				
@@ -319,30 +366,32 @@ public class Evolve {
 					data[1] = n.getNumber();	
 					data[2] = g.getConnection().getNumber();
 					data[3] = g.getConnection().getLayernumber();
+					if(data[3] == layers.size() && data[3] < maxlayers)data[3]=maxlayers;
 					data[4] = g.getWeight();
-					geneIdentities.add(data);
+					long id = g.getID();
+					geneIdentities.put(id, data);
 				}
 			}
 		}
 		return geneIdentities;
 	}
-	private static void geneAdder(NeuralNetwork newnn, ArrayList<double[]> geneIdentities) {
-		for(double[] nums : geneIdentities){			
-			Gene newGene = new Gene(newnn.getLayers().get((int) nums[3]-1).getNeurons().get((int) nums[2]-1), nums[4]);
+	private static void geneAdder(NeuralNetwork newnn, HashMap<Long, double[]> geneIdentities) {
+		for(long id : geneIdentities.keySet()){
+			double[] nums = geneIdentities.get(id);
+			Gene newGene = new Gene(newnn.getLayers().get((int) nums[3]-1).getNeurons().get((int) nums[2]-1), nums[4], id);
 			Neuron newNeuron = newnn.getLayers().get((int) (nums[0]-1)).getNeurons().get((int) nums[1]-1);
 			newNeuron.AddGenes(newGene);
 			newGene.setInput(newNeuron);
 		}
 	}
-	private static NeuralNetwork mutate(NeuralNetwork newnn, Singleton s1) throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		EvolveSingleton s = (EvolveSingleton) s1;
+	private static NeuralNetwork mutate(NeuralNetwork newnn, Singleton s) throws NoSuchMethodException, SecurityException, ClassNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		NeuralNetManager.Neuraltracker(newnn);
 		double mutationSelector = Math.random();
 		ArrayList<Gene> genes = geneArrayCreator(newnn);
-		if (mutationSelector < s.getDisableProbability()&& genes.size() > 0)geneMutation(s, mutationSelector, genes);
-		else if (mutationSelector < s.getNewGeneProbability() || genes.size() == 0)newGeneInsert(newnn);
+		if (mutationSelector < Double.parseDouble(PropertyReader.getProperty("removeProbability"))&& genes.size() > 0)geneMutation(mutationSelector, genes);
+		else if (mutationSelector < Double.parseDouble(PropertyReader.getProperty("newGeneProbability")) || genes.size() == 0)newGeneInsert(newnn, s);
 		else {
-			if (newnn.getLayers().size() == 2 || mutationSelector > s.getExistingLayerProbability())newNeuronInNewLayer(newnn, genes, s);	
+			if (newnn.getLayers().size() == 2 || mutationSelector > Double.parseDouble(PropertyReader.getProperty("existingLayerProbability")))newNeuronInNewLayer(newnn, genes, s);	
 			else newNeuronInExistingLayer(newnn, s);	
 		}
 		return newnn;
@@ -357,8 +406,9 @@ public class Evolve {
 		return genes;
 	}
 	@SuppressWarnings({ "deprecation", "unchecked" })
-	private static void newNeuronInExistingLayer(NeuralNetwork newnn, EvolveSingleton s) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-		Class<? extends Neuron> neuronClass = (Class<? extends Neuron>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"Neuron");
+	private static void newNeuronInExistingLayer(NeuralNetwork newnn, Singleton s) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+		String type = PropertyReader.getProperty("type");
+		Class<? extends Neuron> neuronClass = (Class<? extends Neuron>) Class.forName("BackEvolution."+type+"."+type+"Neuron");
 		//new node in existing layer
 		ArrayList<Layer> layers = new ArrayList<Layer>();
 		for (Layer l : newnn.getLayers()){
@@ -398,7 +448,7 @@ public class Evolve {
 			n.setNumber(selected.getNeurons().size());
 			Neuron out = gene.getConnection();
 			gene.setConnection(n);
-			Gene gene2 = new Gene(out, Math.random()*2-1);
+			Gene gene2 = new Gene(out, Math.random()*2-1, s);
 			n.AddGenes(gene2);
 			gene2.setInput(n);
 		}
@@ -420,10 +470,10 @@ public class Evolve {
 				on = ns2.get(0);
 			}
 			Neuron n = neuronClass.newInstance();
-			Gene gene1 = new Gene(n, Math.random()*2-1);
+			Gene gene1 = new Gene(n, Math.random()*2-1, s);
 			in.AddGenes(gene1);
 			gene1.setInput(in);
-			Gene gene2 =new Gene(on,Math.random()*2-1);
+			Gene gene2 =new Gene(on,Math.random()*2-1, s);
 			gene2.setInput(n);
 			n.AddGenes(gene2);
 			selected.addNeuron(n);
@@ -432,11 +482,12 @@ public class Evolve {
 		}
 	}
 	@SuppressWarnings({ "unchecked", "deprecation" })
-	private static void newNeuronInNewLayer(NeuralNetwork newnn, ArrayList<Gene> genes, EvolveSingleton s)
+	private static void newNeuronInNewLayer(NeuralNetwork newnn, ArrayList<Gene> genes, Singleton s)
 			throws NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException, ClassNotFoundException {
 		//new neuron in new layer
-		Class<? extends Neuron> neuronClass = (Class<? extends Neuron>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"Neuron");
-		Class<? extends Layer> layerClass = (Class<? extends Layer>) Class.forName("BackEvolution."+ s.getType()+"."+ s.getType()+"Layer");
+		String type = PropertyReader.getProperty("type");
+		Class<? extends Neuron> neuronClass = (Class<? extends Neuron>) Class.forName("BackEvolution."+type+"."+type+"Neuron");
+		Class<? extends Layer> layerClass = (Class<? extends Layer>) Class.forName("BackEvolution."+type +"."+type+"Layer");
 		Class<?>[] types = {boolean.class,boolean.class};
 		Constructor<? extends Layer> con = layerClass.getConstructor(types);
 		Layer l = con.newInstance(false,false);
@@ -459,7 +510,7 @@ public class Evolve {
 			Gene gene= genes2.get((int) ((genes2.size()-1)*Math.random()));
 			Neuron out = gene.getConnection();
 			gene.setConnection(n);
-			n.AddGenes(new Gene(out, Math.random()*2 -1));
+			n.AddGenes(new Gene(out, Math.random()*2 -1, s));
 			gene.setInput(n);
 		}
 		else{
@@ -467,10 +518,10 @@ public class Evolve {
 			for (Gene g : genes){
 				ns.add(g.getConnection());
 			}
-			Gene gene = new Gene(n, Math.random()*2-1);
+			Gene gene = new Gene(n, Math.random()*2-1, s);
 			n.addInput(gene);
-			Gene gene2 = new Gene(outputlayer.getNeurons().get(0), Math.random()*2-1);
-			if(outputlayer.getNeurons().size()-1 > 0) gene2 = new Gene(outputlayer.getNeurons().get(rand.nextInt(outputlayer.getNeurons().size()-1)), Math.random()*2-1);
+			Gene gene2 = new Gene(outputlayer.getNeurons().get(0), Math.random()*2-1, s);
+			if(outputlayer.getNeurons().size()-1 > 0) gene2 = new Gene(outputlayer.getNeurons().get(rand.nextInt(outputlayer.getNeurons().size()-1)), Math.random()*2-1, s);
 			try{
 				Neuron in = ns.get(rand.nextInt(ns.size()-1));
 				in.AddGenes(gene);
@@ -487,7 +538,7 @@ public class Evolve {
 			gene2.getConnection().addInput(gene2);
 		}
 	}
-	private static void newGeneInsert(NeuralNetwork newnn) {
+	private static void newGeneInsert(NeuralNetwork newnn, Singleton s) {
 		// new gene
 		int layer = 0;
 		if (newnn.getLayers().size() > 2) layer = rand.nextInt(newnn.getLayers().size()-2);
@@ -503,7 +554,7 @@ public class Evolve {
 		}
 		double weight = Math.random()*2 - 1;
 		Neuron in = newnn.getLayers().get(layer).getNeurons().get(neuron);
-		Gene g = new Gene(newnn.getLayers().get(layer2).getNeurons().get(neuron2), weight);
+		Gene g = new Gene(newnn.getLayers().get(layer2).getNeurons().get(neuron2), weight, s);
 		newnn.getLayers().get(layer2).getNeurons().get(neuron2).addInput(g);
 		for(int i = 0; i < in.getGenes().size();i++){
 			if (newnn.getLayers().get(layer).getNeurons().get(neuron).getGenes().get(i).getConnection().getLayernumber() == layer2 &&newnn.getLayers().get(layer).getNeurons().get(neuron).getGenes().get(i).getConnection().getNumber() == neuron2){
@@ -513,21 +564,21 @@ public class Evolve {
 		}
 		in.AddGenes(g);
 	}
-	private static void geneMutation(EvolveSingleton s, double selector, ArrayList<Gene> genes) {
+	private static void geneMutation(double selector, ArrayList<Gene> genes) {
 		Gene gene= genes.get(0);
 		if(genes.size() > 1) gene= genes.get(rand.nextInt(genes.size()-1));
-		if(selector < s.getAdjustProbability()) {
+		if(selector < Double.parseDouble(PropertyReader.getProperty("adjustProbability"))){
 			//adjust weight
 			gene.setWeight(gene.getWeight()*(1+(Math.random()*.1)));
 		}
-		else if (selector < s.getRandomProbability()){
+		else if (selector < Double.parseDouble(PropertyReader.getProperty("randomProbability"))){
 			// new random weight
 			gene.setWeight(Math.random()*2 - 1);
 			
 		}
 		else{
 			//disable/enable gene
-			gene.toggle();	
+			gene.remove();	
 		}
 	}
 }

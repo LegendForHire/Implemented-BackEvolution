@@ -18,10 +18,18 @@ public class Gene {
 	private Neuron input;
 	private double lastInput;
 	private double lastChange;
-	public Gene(Neuron connected, double weight){
+	private long geneID;
+	public Gene(Neuron connected, double weight,Singleton s){
 		connect = connected;
 		connectweight = weight;
 		enabled = 1;
+		geneID = s.getNewID();
+	}
+	public Gene(Neuron connected, double weight, long d) {
+		connect = connected;
+		connectweight = weight;
+		enabled = 1;
+		geneID = d;
 	}
 	//returns the weight if enabled
 	public double getWeight(){
@@ -73,5 +81,15 @@ public class Gene {
 	public void setLastChange(double d) {
 		// TODO Auto-generated method stub
 		lastChange=d;
+	}
+	public long getID() {
+		return geneID;
+	}
+	public void remove() {
+		for(int i=0; i<input.genes.size();i++) {
+			if(input.genes.get(i)==this) {
+				input.genes.remove(i);
+			}
+		}
 	}
 }

@@ -17,18 +17,13 @@ public interface Singleton {
 	// also when implementing create the getInstance method of the singleton
 	// and at least an empty constructor
 	public PrintWriter getWriter();
-	public int getTiming();
 	public void setWriter(PrintWriter w);
 	public void setNetworks(NeuralNetwork[] nns);
 	public NeuralNetwork[] getNetworks();
-	public double getActivation();
-	public String getType();
 	public void incrementGen();
 	public int getGen();
-	public int getNumNetworks();
-	//set this return to1 or lower if not competing
-	public int numCompeting();
-	//if returns 0 Backpropagation, if returns 1 both, if returns 2 Evolution.
-	public int getLearningType();
+	// must return unique id.
+	public long getNewID();
+	public void setLastID(long num);
 }
 

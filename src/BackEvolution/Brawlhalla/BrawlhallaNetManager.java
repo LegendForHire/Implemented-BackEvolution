@@ -8,6 +8,7 @@ import Evolve.EvolveManager;
 import General.Layer;
 import General.NeuralNetwork;
 import General.Neuron;
+import General.PropertyReader;
 
 public class BrawlhallaNetManager implements BackpropagateManager,EvolveManager,CompetitionManager {
 	private BrawlhallaSingleton s = BrawlhallaSingleton.getInstance();
@@ -59,9 +60,10 @@ public class BrawlhallaNetManager implements BackpropagateManager,EvolveManager,
 	}
 
 	@Override
-	public void setup() {		
-		Controller[] controllers = new Controller[s.numCompeting()];
-		for(int i = 0; i < s.numCompeting();i++){
+	public void setup() {	
+		int competing = Integer.parseInt(PropertyReader.getProperty("competing"));
+		Controller[] controllers = new Controller[competing];
+		for(int i = 0; i < competing ;i++){
 			controllers[i] = new Controller();
 		}
 		s.setGame(new Game(controllers));
@@ -156,7 +158,7 @@ public class BrawlhallaNetManager implements BackpropagateManager,EvolveManager,
 	public void setupCompetition() {
 		int[] currentPlayers = s.getCurrentPlayers();
 		NeuralNetwork[] nns = s.getNetworks();
-		for(int i = 0; i<s.numCompeting();i++) {
+		for(int i = 0; i<Integer.parseInt(PropertyReader.getProperty("competing"));i++) {
 			BrawlhallaNetwork nn = (BrawlhallaNetwork) nns[currentPlayers[i]];
 			nn.setController(s.getControllers()[i]);
 		}

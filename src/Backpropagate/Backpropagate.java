@@ -10,6 +10,7 @@ import General.Layer;
 import General.NeuralNetManager;
 import General.NeuralNetwork;
 import General.Neuron;
+import General.PropertyReader;
 import General.Singleton;
 /**
  * Backpropagate.java 1.0 March 6, 2018
@@ -36,8 +37,8 @@ public class Backpropagate {
 		//Different types of network running for competitive networks
 		
 		// this is where the back propagation learning step for the neural networks run. currently I have them set to run for one minute before evaluating
-		while(s.getTotalGlobalError() > s.getAllowedError()/scaling){
-			if(s.numCompeting() > 1){
+		while(s.getTotalGlobalError() > Double.parseDouble(PropertyReader.getProperty("allowedError"))/scaling){
+			if(Integer.parseInt(PropertyReader.getProperty("competing")) > 1){
 				Competition.backpropagationRunner((CompetitionSingleton) s);
 			}
 			else{
@@ -48,7 +49,7 @@ public class Backpropagate {
 					NeuralNetManager.RunNetwork(nn,s);					
 				}
 				long t = System.currentTimeMillis();
-				while(System.currentTimeMillis() - t < s.getTiming())
+				while(System.currentTimeMillis() - t < Integer.parseInt(PropertyReader.getProperty("timing")));
 				backpropagate(nns,s);
 			}	
 			s.getWriter().println("Total Global Error:" + s.getTotalGlobalError()); 
@@ -58,13 +59,14 @@ public class Backpropagate {
 	}
 	private static double startingErrorSetup(BackpropagateSingleton s) {
 		double scaling = Math.log(s.getGen())*3+1;
-		s.setTotalGlobalError(s.getAllowedError()/scaling + 1);
+		s.setTotalGlobalError(Double.parseDouble(PropertyReader.getProperty("allowedError"))/scaling + 1);
 		return scaling;
 	}
+	@SuppressWarnings("unchecked")
 	private static BackpropagateManager netManagerReflected(BackpropagateSingleton s)
-			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-		@SuppressWarnings("unchecked")
-		Class<? extends BackpropagateManager> class1 = (Class<? extends BackpropagateManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException {	
+		String type = PropertyReader.getProperty("type");
+		Class<? extends BackpropagateManager> class1 = (Class<? extends BackpropagateManager>) Class.forName("BackEvolution."+type+"."+type+"NetManager");
 		@SuppressWarnings("deprecation")
 		BackpropagateManager netManager = class1.newInstance();
 		return netManager;
@@ -92,7 +94,7 @@ public class Backpropagate {
 	private static void geneCorrection(BackpropagateSingleton s, Neuron n) {
 		for(Gene g : n.getInputs()){
 			Neuron input = g.getInput();
-			g.setLastChange(n.getError()*s.getLearningRate()*input.getLast()+g.getWeight()+g.getLastChange()*s.getMomentum());
+			g.setLastChange(n.getError()*Double.parseDouble(PropertyReader.getProperty("learningRate"))*input.getLast()+g.getWeight()+g.getLastChange()*Double.parseDouble(PropertyReader.getProperty("momentum")));
 			g.setWeight(g.getLastChange());
 		}
 	}
@@ -131,9 +133,10 @@ public class Backpropagate {
 	private static void outputErrorCalculation(BackpropagateSingleton s, NeuralNetwork nn) {
 		Layer out = nn.getLayers().get(nn.getLayers().size()-1);	
 		for(Neuron n : out.getNeurons()){
+			double activation =Double.parseDouble(PropertyReader.getProperty("activation"));
 			if(n.getInputs().size() == 0) n.setError(0);
-			else if(n.shouldAct && n.getLast() < s.getActivation())n.setError((s.getActivation()+Math.random()-Sigmoid(n.getLast()))*Sigmoid(n.getLast())*(1-Sigmoid(n.getLast())));
-			else if(!n.shouldAct && n.getLast() > s.getActivation())n.setError((-s.getActivation()-Math.random()-Sigmoid(n.getLast()))*Sigmoid(n.getLast())*(1-Sigmoid(n.getLast())));
+			else if(n.shouldAct && n.getLast() < activation)n.setError((activation+Math.random()-Sigmoid(n.getLast()))*Sigmoid(n.getLast())*(1-Sigmoid(n.getLast())));
+			else if(!n.shouldAct && n.getLast() > activation)n.setError((-activation-Math.random()-Sigmoid(n.getLast()))*Sigmoid(n.getLast())*(1-Sigmoid(n.getLast())));
 			else n.setError(0);			
 		}
 	}
@@ -142,7 +145,8 @@ public class Backpropagate {
 	}
 	public static void BackIterationHandling(Singleton s) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		@SuppressWarnings("unchecked")
-		Class<? extends BackpropagateManager> class1 = (Class<? extends BackpropagateManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
+		String type = PropertyReader.getProperty("type");
+		Class<? extends BackpropagateManager> class1 = (Class<? extends BackpropagateManager>) Class.forName("BackEvolution."+type+"."+type+"NetManager");
 		@SuppressWarnings("deprecation")
 		BackpropagateManager netManager = class1.newInstance();
 		netManager.BackIterationHandling();		

@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import Backpropagate.Backpropagate;
 import General.NeuralNetManager;
 import General.NeuralNetwork;
+import General.PropertyReader;
 import General.Singleton;
 
 public class Competition {
@@ -13,11 +14,12 @@ public class Competition {
 		CompetitionSingleton s = (CompetitionSingleton) s1;
 		CompetitionManager netManager = netManagerReflected(s);
 		NeuralNetwork[] nns = s.getNetworks();
-		int[] currentPlayers= new int[s.numCompeting()];
-		for(int i = 0; i< s.numCompeting(); i++){
+		int competing = Integer.parseInt("competing");
+		int[] currentPlayers= new int[competing];
+		for(int i = 0; i< competing; i++){
 			currentPlayers[i] = i;
 		}
-		while(currentPlayers[0] <= s.getNumNetworks()-s.numCompeting()){
+		while(currentPlayers[0] <= Integer.parseInt(PropertyReader.getProperty("numNetworks"))-competing){
 			netManager.setupCompetition();
 			Thread[] threads = new Thread[currentPlayers.length];
 			for(int i = 0; i<currentPlayers.length; i++){
@@ -50,11 +52,12 @@ public class Competition {
 	public static void evolutionRunner(CompetitionSingleton s) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InterruptedException{		
 		CompetitionManager netManager = netManagerReflected(s);
 		NeuralNetwork[] nns = s.getNetworks();
-		int[] currentPlayers= new int[s.numCompeting()];
-		for(int i = 0; i< s.numCompeting(); i++){
+		int competing = Integer.parseInt("competing");
+		int[] currentPlayers= new int[competing];
+		for(int i = 0; i< competing; i++){
 			currentPlayers[i] = i;
 		}
-		while(currentPlayers[0] <= s.getNumNetworks()-s.numCompeting()){
+		while(currentPlayers[0] <= Integer.parseInt(PropertyReader.getProperty("numNetworks"))-competing){
 			netManager.setupCompetition();
 			Thread[] threads = new Thread[currentPlayers.length];
 			for(int i = 0; i<currentPlayers.length; i++){
@@ -79,16 +82,17 @@ public class Competition {
 		}				
 	}
 	private static CompetitionManager netManagerReflected(CompetitionSingleton s)
-			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException {		
+		String type = PropertyReader.getProperty("type");
 		@SuppressWarnings("unchecked")
-		Class<? extends CompetitionManager> class1 = (Class<? extends CompetitionManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
+		Class<? extends CompetitionManager> class1 = (Class<? extends CompetitionManager>) Class.forName("BackEvolution."+type+"."+type+"NetManager");
 		@SuppressWarnings("deprecation")
 		CompetitionManager netManager = class1.newInstance();
 		return netManager;
 	}
 	public static void incrementPlayers(int position, CompetitionSingleton s) {
 		int[] currentPlayers = s.getCurrentPlayers();
-		if(currentPlayers[position] == s.getNumNetworks()-(currentPlayers.length-position) && position !=0){	
+		if(currentPlayers[position] == Integer.parseInt(PropertyReader.getProperty("numNetworks"))-(currentPlayers.length-position) && position !=0){	
 			incrementPlayers(position-1,s);
 			currentPlayers[position] = currentPlayers[position-1]+1;
 		}

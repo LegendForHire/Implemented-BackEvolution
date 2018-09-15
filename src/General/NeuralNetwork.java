@@ -12,11 +12,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 public abstract class NeuralNetwork implements Comparable<NeuralNetwork>{
+	private static final double THRESHOLD = Double.parseDouble(PropertyReader.getProperty("speciationThreshold"));
 	protected ArrayList<Layer> layers;
 	protected double fitness;
 	private int age;
 	private long created;
 	private double globalError;
+	private Species species;
 	public NeuralNetwork(Layer inputLayer, Layer outputLayer, Class<?> a) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException{
 		layers = new ArrayList<Layer>();
 		Class<?>[] types = {a};
@@ -49,10 +51,19 @@ public abstract class NeuralNetwork implements Comparable<NeuralNetwork>{
 		return layers;
 	}
 	public double getFitness(){
-		return fitness;
+		double fitnessAdjuster = 0;
+		for(NeuralNetwork nn : species.getNetworks()) {
+			fitnessAdjuster+=sharingFunction(Evolve.Evolve.getSpeciesDelta(this,nn));
+		}
+		return fitness/fitnessAdjuster;
 	}
 	//resets the wallets to a default state
 	
+	private double sharingFunction(double speciesDelta) {
+		if(speciesDelta>THRESHOLD) return 0.0;
+		else return 1.0;
+		
+	}
 	//finds the fitness in amount of bitcoin.
 	public void updateFitness() throws IOException {
 		System.out.println("Override Fitness method in NeuralNetwork Implementation");
@@ -113,5 +124,10 @@ public abstract class NeuralNetwork implements Comparable<NeuralNetwork>{
 		}
 		
 	}
-	
+	public Species getSpecies() {
+		return species;
+	}
+	public void setSpecies(Species species) {
+		this.species = species;
+	}
 }

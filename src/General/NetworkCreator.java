@@ -20,9 +20,10 @@ public abstract class NetworkCreator {
 	@SuppressWarnings("unchecked")
 	public static NeuralNetwork[] CreateNetworks(Singleton s) throws InstantiationException, IllegalAccessException, ClassNotFoundException{
 		//if there are no load files , it creates one random gene for each neural network.
-			Class<? extends NeuralNetwork> NetClass = (Class<? extends NeuralNetwork>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"Network");
-			NeuralNetwork[] NetworkList = new NeuralNetwork[s.getNumNetworks()];
-			Class<? extends SpecialCreator> CreatorClass = (Class<? extends SpecialCreator>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"Creator");
+			String type = PropertyReader.getProperty("type");
+			Class<? extends NeuralNetwork> NetClass = (Class<? extends NeuralNetwork>) Class.forName("BackEvolution."+type+"."+type+"Network");
+			NeuralNetwork[] NetworkList = new NeuralNetwork[Integer.parseInt(PropertyReader.getProperty("numNetworks"))];
+			Class<? extends SpecialCreator> CreatorClass = (Class<? extends SpecialCreator>) Class.forName("BackEvolution."+type+"."+type+"Creator");
 			@SuppressWarnings("deprecation")
 			SpecialCreator creator = CreatorClass.newInstance();
 		
@@ -34,12 +35,12 @@ public abstract class NetworkCreator {
 		}
 		catch(Exception e){
 			s.getWriter().println("Creating Networks from Scratch");
-			for (int j = 0; j<s.getNumNetworks();j++){		
+			for (int j = 0; j<Integer.parseInt(PropertyReader.getProperty("numNetworks"));j++){		
 				Layer[] layers;
 				try {
 					layers = creator(s);
 					creator.InputOutputcreator(layers);
-					Layer[] copies = RandomGenerate(layers);
+					Layer[] copies = RandomGenerate(layers, s);
 					Class<?>[] types = {Layer.class,Layer.class};
 					Constructor<? extends NeuralNetwork> con = NetClass.getConstructor(types);
 					NetworkList[j] = (NeuralNetwork) con.newInstance(copies[0],copies[1]);
@@ -58,7 +59,7 @@ public abstract class NetworkCreator {
 		return NetworkList;		
 	}
 		//Generates a single random gene
-		public static Layer[] RandomGenerate(Layer[] layers){
+		public static Layer[] RandomGenerate(Layer[] layers, Singleton s){
 			Layer outputlayercopy = layers[1];
 			Layer inputlayercopy = layers[0];
 			outputlayercopy.setNumber(2);
@@ -67,15 +68,15 @@ public abstract class NetworkCreator {
 			if(inputlayercopy.getNeurons().size()-1 >0) inputrand = rand.nextInt(inputlayercopy.getNeurons().size()-1);
 			int outputrand = 0;
 			if(outputlayercopy.getNeurons().size()-1 >0) outputrand = rand.nextInt(outputlayercopy.getNeurons().size()-1);
-			Gene starter = new Gene(outputlayercopy.getNeurons().get(outputrand), (Math.random()*2)-1);
+			Gene starter = new Gene(outputlayercopy.getNeurons().get(outputrand), (Math.random()*2)-1, s);
 			inputlayercopy.getNeurons().get(inputrand).AddGenes(starter);
 			starter.setInput(inputlayercopy.getNeurons().get(inputrand));
 			Layer[] copies = {inputlayercopy, outputlayercopy};
 			return copies;
 		}
 		//Adds a gene to a neuron
-		public static void geneAdder(double weight, int inLayer, int outLayer, Integer inNeuron, Integer outNeuron, NeuralNetwork nn, int enabled){
-			Gene g2 = new Gene(nn.getLayers().get(outLayer-1).getNeurons().get(outNeuron-1), weight);
+		public static void geneAdder(double weight, int inLayer, int outLayer, Integer inNeuron, Integer outNeuron, NeuralNetwork nn, int enabled, Singleton s){
+			Gene g2 = new Gene(nn.getLayers().get(outLayer-1).getNeurons().get(outNeuron-1), weight, s);
 			if (enabled == 0)g2.toggle();
 			nn.getLayers().get(inLayer-1).getNeurons().get(inNeuron-1).AddGenes(g2);
 			g2.setInput(nn.getLayers().get(inLayer-1).getNeurons().get(inNeuron-1));
@@ -84,9 +85,10 @@ public abstract class NetworkCreator {
 		@SuppressWarnings({ "unchecked", "deprecation" })
 		//loads a NeuralNetwork from a file
 		public static void load(Singleton s, NeuralNetwork nn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, FileNotFoundException{
-			Class<? extends Neuron> class1 = (Class<? extends Neuron>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"Neuron");
-			Class<? extends Layer> class2 = (Class<? extends Layer>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"Layer");
-			Class<? extends SpecialNetManager> managerClass = (Class<? extends SpecialNetManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
+			String type = PropertyReader.getProperty("type");
+			Class<? extends Neuron> class1 = (Class<? extends Neuron>) Class.forName("BackEvolution."+type+"."+type+"Neuron");
+			Class<? extends Layer> class2 = (Class<? extends Layer>) Class.forName("BackEvolution."+type+"."+type+"Layer");
+			Class<? extends SpecialNetManager> managerClass = (Class<? extends SpecialNetManager>) Class.forName("BackEvolution."+type+"."+type+"NetManager");
 			File file = new File("Generation.txt");					
 			@SuppressWarnings("resource")
 			Scanner fin = new Scanner(file);
@@ -155,7 +157,7 @@ public abstract class NetworkCreator {
 				catch (Exception e){
 				}
 				if(inNeuron != null && outNeuron != null){
-					NetworkCreator.geneAdder(weight,inLayer,outLayer,inNeuron,outNeuron,nn,enabled);						
+					NetworkCreator.geneAdder(weight,inLayer,outLayer,inNeuron,outNeuron,nn,enabled, s);						
 				}						
 				}
 			}
@@ -177,7 +179,8 @@ public abstract class NetworkCreator {
 		//builds the input and output layers for each neural network
 		@SuppressWarnings({ "unchecked", "deprecation" })
 		public static Layer[] creator(Singleton s) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException{
-			Class<? extends Layer> class1 = (Class<? extends Layer>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"Layer");
+			String type = PropertyReader.getProperty("type");
+			Class<? extends Layer> class1 = (Class<? extends Layer>) Class.forName("BackEvolution."+type+"."+type+"Layer");
 			Layer[] layers = new Layer[2];	
 			layers[0] = class1.newInstance();
 			layers[0].setInput(true);

@@ -19,7 +19,8 @@ public abstract class NeuralNetManager {
 	@SuppressWarnings({ "unchecked", "deprecation" })
 	public static void start(Singleton s) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException {
 		//Creating the networks to run them
-		Class<? extends SpecialNetManager> class1 = (Class<? extends SpecialNetManager>) Class.forName("BackEvolution."+s.getType()+"."+s.getType()+"NetManager");
+		String type = PropertyReader.getProperty("type");
+		Class<? extends SpecialNetManager> class1 = (Class<? extends SpecialNetManager>) Class.forName("BackEvolution."+type+"."+type+"NetManager");
 		SpecialNetManager netManager = class1.newInstance();
 		netManager.setup();
 		NeuralNetwork[] nns =  NetworkCreator.CreateNetworks(s); 
@@ -61,8 +62,8 @@ public abstract class NeuralNetManager {
 	//runs the networks
 	protected static void RunNetworks(Singleton s) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InterruptedException, InstantiationException {
 			while(true) {
-				if(s.getLearningType() <= 1)Backpropagate.runner(s);
-				if(s.getLearningType() >= 1)Evolve.runner(s);
+				Backpropagate.runner(s);
+				Evolve.runner(s);
 				// saves the current state of the neural networks.
 				NeuralNetwork[] nns = s.getNetworks();
 				save(s);
@@ -100,7 +101,7 @@ public abstract class NeuralNetManager {
 				else if (l.isOutput()){
 					//calls the output methods if the data that passes all the way through is enough to trigger the output neuron.
 					for (Neuron n : l.getNeurons()){
-						if (Backpropagate.Sigmoid(n.getValue()) > s.getActivation()){
+						if (Backpropagate.Sigmoid(n.getValue()) > Double.parseDouble(PropertyReader.getProperty("activation"))){
 							n.invoke();
 						}
 						n.setLast(Backpropagate.Sigmoid(n.getValue()));
@@ -126,12 +127,12 @@ public abstract class NeuralNetManager {
 			}
 			
 		}				
-	@SuppressWarnings({ "deprecation" })
+	@SuppressWarnings({ "deprecation", "unchecked" })
 	//save method
 	private static void save(Singleton s) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
 		NeuralNetwork[] nns = s.getNetworks();
-		@SuppressWarnings("unchecked")
-		Class<? extends SpecialNetManager> class1 = (Class<? extends SpecialNetManager>) Class.forName("BackEvolution." + s.getType()+"."+s.getType()+"NetManager");
+		String type = PropertyReader.getProperty("type");
+		Class<? extends SpecialNetManager> class1 = (Class<? extends SpecialNetManager>) Class.forName("BackEvolution." + type +"."+ type +"NetManager");
 		SpecialNetManager manager = class1.newInstance();
 		long t = System.currentTimeMillis();
 		File out;

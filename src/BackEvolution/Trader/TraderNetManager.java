@@ -12,6 +12,7 @@ import java.util.Random;
 import General.Layer;
 import General.NeuralNetwork;
 import General.Neuron;
+import General.PropertyReader;
 import Backpropagate.BackpropagateManager;
 import Evolve.EvolveManager;
 
@@ -104,7 +105,7 @@ public class TraderNetManager implements BackpropagateManager,EvolveManager {
 	@Override
 	public void setAct() {
 	long t1 = System.currentTimeMillis();
-	while(System.currentTimeMillis() - t1 < s.getTiming());
+	while(System.currentTimeMillis() - t1 < Long.parseLong(PropertyReader.getProperty("timing")));
 	Random rand = new Random();
 	TraderSingleton s = TraderSingleton.getInstance();
 	for(NeuralNetwork nn : s.getNetworks()){
