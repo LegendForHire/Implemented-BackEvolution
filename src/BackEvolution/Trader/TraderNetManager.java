@@ -13,10 +13,8 @@ import General.Layer;
 import General.NeuralNetwork;
 import General.Neuron;
 import General.PropertyReader;
-import Backpropagate.BackpropagateManager;
-import Evolve.EvolveManager;
-
-public class TraderNetManager implements BackpropagateManager,EvolveManager {
+import General.SpecialNetManager;
+public class TraderNetManager implements SpecialNetManager {
 	private static TraderSingleton s = TraderSingleton.getInstance();
 	private static ArrayList<Wallet> noactwallets;
 	public static Random rand = new Random();
@@ -172,9 +170,10 @@ public class TraderNetManager implements BackpropagateManager,EvolveManager {
 		int i = -1;
 		while(!markets[++i].getMarketName().equals("USDT-BTC"));
 		try {
-			return "; Created (Genarations Ago):" + nn.getAge() + "; Made (USD):" + ((nn.getFitness()-noact)*markets[i].getData(3))+ "; Global Error :" + nn.getGlobalError();
+			return  "; Made (USD):" + ((nn.getFitness()-noact)*markets[i].getData(3))+ "; Global Error :" + nn.getGlobalError();
 		} catch (IOException e) {
-			return "; Created (Genarations Ago):" + nn.getAge() + "; Global Error :" + nn.getGlobalError();
+			return "; Global Error :" + nn.getGlobalError();
+			
 		}
 	}	
 }

@@ -25,5 +25,7 @@ public interface Singleton {
 	// must return unique id.
 	public long getNewID();
 	public void setLastID(long num);
+	public double getTotalGlobalError();
+	public void setTotalGlobalError(double totalGlobalError);
 }
 

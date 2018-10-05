@@ -3,11 +3,10 @@ package BackEvolution.Brawlhalla;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import Backpropagate.BackpropagateSingleton;
 import Competitive.CompetitionSingleton;
 import General.NeuralNetwork;
 
-public class BrawlhallaSingleton implements BackpropagateSingleton, CompetitionSingleton{
+public class BrawlhallaSingleton implements CompetitionSingleton{
 	private static BrawlhallaSingleton uniqueInstance = new BrawlhallaSingleton();
 	private double totalGlobalError;
 	private PrintWriter writer;

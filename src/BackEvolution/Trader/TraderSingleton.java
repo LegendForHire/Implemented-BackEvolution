@@ -4,10 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
-import Backpropagate.BackpropagateSingleton;
 import General.NeuralNetwork;
+import General.Singleton;
 
-public class TraderSingleton implements BackpropagateSingleton {
+public class TraderSingleton implements Singleton {
 	private Market[] markets;
 	private NeuralNetwork[] networks;
 	private double totalGlobalError;
@@ -19,7 +19,6 @@ public class TraderSingleton implements BackpropagateSingleton {
 	public static final double ALLOWABLE_ERROR= 250;
 	public static final double LEARNING_RATE = .01;
 	public static final double MOMENTUM = .25;
-	private static final int LEARNTYPE = 1;
 
 	private TraderSingleton(){
 		File f = new File("log.txt");
@@ -43,7 +42,6 @@ public class TraderSingleton implements BackpropagateSingleton {
 		this.markets = markets;
 		
 	}
-
 	public Market[] getMarkets() {
 		return markets;
 	}
@@ -63,15 +61,6 @@ public class TraderSingleton implements BackpropagateSingleton {
 	public int getGen() {
 		// TODO Auto-generated method stub
 		return Generation;
-	}
-	public double getLearningRate() {
-		return LEARNING_RATE;
-	}
-	public double getMomentum() {
-		return MOMENTUM;
-	}
-	public int getLearningType() {
-		return LEARNTYPE;
 	}
 	@Override
 	public NeuralNetwork[] getNetworks() {

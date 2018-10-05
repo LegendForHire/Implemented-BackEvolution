@@ -13,8 +13,6 @@ public class Gene {
 	//the weight of the connection
 	private double connectweight;
 	//if it connects to an output neuron uses this instead
-	//multiplier, 0 if disabled, 1 if enabled. enabled by default at creation
-	private int enabled;
 	private Neuron input;
 	private double lastInput;
 	private double lastChange;
@@ -22,18 +20,16 @@ public class Gene {
 	public Gene(Neuron connected, double weight,Singleton s){
 		connect = connected;
 		connectweight = weight;
-		enabled = 1;
 		geneID = s.getNewID();
 	}
-	public Gene(Neuron connected, double weight, long d) {
+	public Gene(Neuron connected, double weight, long id) {
 		connect = connected;
 		connectweight = weight;
-		enabled = 1;
-		geneID = d;
+		geneID = id;
 	}
 	//returns the weight if enabled
 	public double getWeight(){
-		return connectweight*enabled;
+		return connectweight;
 	}
 	//returns the connection
 	public Neuron getConnection(){
@@ -47,15 +43,6 @@ public class Gene {
 	public void setConnection(Neuron n) {
 		connect = n;
 		
-	}
-	// toggles between enabled and disabled
-	public void toggle() {
-		if (enabled == 1) enabled = 0;
-		else enabled = 1;		
-	}
-	//returns 0 or 1 based on enabled or diabled.
-	public int getstate(){
-		return enabled;
 	}
 
 	public Neuron getInput() {
@@ -74,12 +61,10 @@ public class Gene {
 	}
 
 	public double getLastChange() {
-		// TODO Auto-generated method stub
 		return lastChange;
 	}
 
 	public void setLastChange(double d) {
-		// TODO Auto-generated method stub
 		lastChange=d;
 	}
 	public long getID() {

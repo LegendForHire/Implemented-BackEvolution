@@ -127,7 +127,7 @@ public abstract class NeuralNetManager {
 			}
 			
 		}				
-	@SuppressWarnings({ "deprecation", "unchecked" })
+	@SuppressWarnings({ "deprecation", "unchecked"})
 	//save method
 	private static void save(Singleton s) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
 		NeuralNetwork[] nns = s.getNetworks();
@@ -153,77 +153,42 @@ public abstract class NeuralNetManager {
 			fout.print(nn.getLayers().size() + ";");
 			for (Layer l : nn.getLayers()){
 				fout.print(l.getNeurons().size() + ",");
-				
 			}
 			fout.print(";");
 			for (Layer l : nn.getLayers()){
-				if (l.isInput()){
-					int layernumber = l.getNumber();
-					for (Neuron n : l.getNeurons()){
-						//default saves regular neuron number but if overridden a unique name is provided for each
-						String neurondata = manager.saveInput(n);
-						for (Gene g :n.getGenes()){
-							Neuron nout = g.getConnection();
-							if (nn.getLayers().size() == nout.getLayernumber()) {
-								Neuron nout2 = g.getConnection();
-								//default saves regular neuron number but if overridden a unique name is provided for each
-								String noutnum = manager.saveOutput(nout2);
-								int noutlayer = nout2.getLayernumber();
-								double weight = g.getWeight();
-								int enabled = g.getstate();
-								fout.print(layernumber + ":" + neurondata + ":" + noutnum + ":" + noutlayer + ":" + weight + ":" + enabled + ",");
-							}
-							else{
-								int noutnum = nout.getNumber();
-								int noutlayer = nout.getLayernumber();
-								double weight = g.getWeight();
-								int enabled = g.getstate();
-								fout.print(layernumber + ":" + neurondata + ":" + noutnum + ":" + noutlayer + ":" + weight + ":" + enabled + ",");
-							}
-							
-						}
+				int layernumber = l.getNumber();
+				for (Neuron n : l.getNeurons()){
+					String neurondata;
+					if (l.isInput())neurondata = manager.saveInput(n);
+					else neurondata = "" + n.getNumber();
+					for (Gene g :n.getGenes()){
+						geneSave(manager, fout, nn, layernumber, n, neurondata, g);
 					}
 				}
-				else{
-					int layernumber = l.getNumber();
-					for (Neuron n : l.getNeurons()){
-						int neuronnumber = n.getNumber();
-						for (Gene g :n.getGenes()){
-							Neuron nout = g.getConnection();
-							if (nn.getLayers().size() == nout.getLayernumber()) {
-								Neuron nout2 = g.getConnection();
-								if(nout2 == null){
-									n.RemoveGenes(g);
-								}
-								else{
-								//default saves regular neuron number but if overridden a unique name is provided for each
-
-								String noutnum = manager.saveOutput(nout2);
-								int noutlayer = nout2.getLayernumber();
-								double weight = g.getWeight();
-								int enabled = g.getstate();
-								fout.print(layernumber + ":" + neuronnumber + ":" + noutnum + ":" + noutlayer + ":" + weight + ":" + enabled + ",");
-								}
-							}
-							else{
-								int noutnum = nout.getNumber();
-								int noutlayer = nout.getLayernumber();
-								double weight = g.getWeight();
-								int enabled = g.getstate();
-								fout.print(layernumber + ":" + neuronnumber + ":" + noutnum + ":" + noutlayer + ":" + weight + ":" + enabled + ",");
-							}
-							
-						}
-					}
-				}
-				
-			}		
+			}
 			fout.println();
 		}
 		fout.close();
 		}
 		catch(Exception e) {
 			e.printStackTrace();
+		}
+	}
+	@SuppressWarnings("unused")
+	private static void geneSave(SpecialNetManager manager, PrintWriter fout, NeuralNetwork nn, int layernumber,
+			Neuron n, String neurondata, Gene g) {
+		Neuron nout = g.getConnection();
+		String noutnum = null;
+		if (nn.getLayers().size() == nout.getLayernumber()) {
+			if(nout!=null)noutnum = manager.saveOutput(nout);
+			else n.RemoveGenes(g);
+		}
+		else noutnum = "" + nout.getNumber();
+		if(noutnum != null) {
+			int noutlayer = nout.getLayernumber();
+			double weight = g.getWeight();
+			long id = g.getID();
+			fout.print(layernumber + ":" + neurondata + ":" + noutnum + ":" + noutlayer + ":" + weight + ":" + id + ",");;						
 		}
 	}
 	//Makes sure neuron and gene location data are correct.

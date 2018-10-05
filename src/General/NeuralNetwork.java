@@ -15,8 +15,6 @@ public abstract class NeuralNetwork implements Comparable<NeuralNetwork>{
 	private static final double THRESHOLD = Double.parseDouble(PropertyReader.getProperty("speciationThreshold"));
 	protected ArrayList<Layer> layers;
 	protected double fitness;
-	private int age;
-	private long created;
 	private double globalError;
 	private Species species;
 	public NeuralNetwork(Layer inputLayer, Layer outputLayer, Class<?> a) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException{
@@ -29,16 +27,13 @@ public abstract class NeuralNetwork implements Comparable<NeuralNetwork>{
 		layers.get(1).setNumber(2);
 		fitness = 0;
 		//loads the currencies from the bittrex api.		
-		age = 0;
-		setCreated(System.currentTimeMillis());
 	}
 	//made to clone neural networks. didn't work as intended, but not deleted in case used elsewhere for other purpose.
 	public NeuralNetwork(NeuralNetwork nn, Class<?> a) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		ArrayList<Layer> layers = nn.getLayers();
 		for (Layer l : layers){
 			this.layers.add((Layer) a.getConstructor(a.getClass()).newInstance(a.cast(l)));
-		}
-		age = 0;	
+		}	
 	}
 	
 
@@ -68,12 +63,6 @@ public abstract class NeuralNetwork implements Comparable<NeuralNetwork>{
 	public void updateFitness() throws IOException {
 		System.out.println("Override Fitness method in NeuralNetwork Implementation");
 	}
-	public int getAge() {
-		return age;
-	}
-	public void setAge(int age) {
-		this.age = age;
-	}
 	@Override
 	public int compareTo(NeuralNetwork n) {
         if (n == null) return -1;
@@ -102,12 +91,6 @@ public abstract class NeuralNetwork implements Comparable<NeuralNetwork>{
 			return 0;
 		}
 		return 1;
-	}
-	public long getCreated() {
-		return created;
-	}
-	public void setCreated(long created) {
-		this.created = created;
 	}
 	public void setGlobalError(double totalsum) {
 		// TODO Auto-generated method stub

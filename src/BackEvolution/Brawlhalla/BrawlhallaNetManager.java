@@ -2,15 +2,13 @@ package BackEvolution.Brawlhalla;
 
 import java.util.ArrayList;
 
-import Backpropagate.BackpropagateManager;
 import Competitive.CompetitionManager;
-import Evolve.EvolveManager;
 import General.Layer;
 import General.NeuralNetwork;
 import General.Neuron;
 import General.PropertyReader;
 
-public class BrawlhallaNetManager implements BackpropagateManager,EvolveManager,CompetitionManager {
+public class BrawlhallaNetManager implements CompetitionManager {
 	private BrawlhallaSingleton s = BrawlhallaSingleton.getInstance();
 	private ArrayList<String> possibleActions;
 	@Override
