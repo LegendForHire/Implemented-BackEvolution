@@ -143,8 +143,8 @@ public class Backpropagate {
 		return 1/(1+Math.exp(d*-1));
 	}
 	public static void BackIterationHandling(Singleton s) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-		@SuppressWarnings("unchecked")
 		String type = PropertyReader.getProperty("type");
+		@SuppressWarnings("unchecked")
 		Class<? extends SpecialNetManager> class1 = (Class<? extends SpecialNetManager>) Class.forName("BackEvolution."+type+"."+type+"NetManager");
 		@SuppressWarnings("deprecation")
 		SpecialNetManager netManager = class1.newInstance();

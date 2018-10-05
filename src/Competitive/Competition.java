@@ -90,7 +90,7 @@ public class Competition {
 		CompetitionManager netManager = class1.newInstance();
 		return netManager;
 	}
-	public static void incrementPlayers(int position, CompetitionSingleton s) {
+	private static void incrementPlayers(int position, CompetitionSingleton s) {
 		int[] currentPlayers = s.getCurrentPlayers();
 		if(currentPlayers[position] == Integer.parseInt(PropertyReader.getProperty("numNetworks"))-(currentPlayers.length-position) && position !=0){	
 			incrementPlayers(position-1,s);

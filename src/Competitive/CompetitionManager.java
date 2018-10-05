@@ -5,8 +5,8 @@ import General.SpecialNetManager;
 
 public interface CompetitionManager extends SpecialNetManager{
 	//used for any setup before each competition
-	void setupCompetition();
-	boolean getGameOver();
-	void setEndCompetitionState();
-	boolean isTurn(NeuralNetwork nn);
+	public void setupCompetition();
+	public boolean getGameOver();
+	public void setEndCompetitionState();
+	public boolean isTurn(NeuralNetwork nn);
 }
