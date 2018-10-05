@@ -1,12 +1,15 @@
 package BackEvolution.Trader;
 import General.Layer;
 import General.Neuron;
+import General.Singleton;
 import General.SpecialCreator;
 
 public class TraderCreator implements SpecialCreator {
-	public static TraderSingleton s;
+	public static TraderSingleton ts;
+	public static Singleton s;
 	public TraderCreator(){
-		s = TraderSingleton.getInstance();
+		ts = TraderSingleton.getInstance();
+		s = Singleton.getInstance();
 	}
 	@Override
 	public void NeuronSetup(Neuron no, int j) {
@@ -15,7 +18,7 @@ public class TraderCreator implements SpecialCreator {
 	}
 	@Override
 	public void InputOutputcreator(Layer[] layers){		
-		Market[] markets = s.getMarkets();		
+		Market[] markets = ts.getMarkets();		
 		for (Market market: markets){
 			if(market != null){
 			for (int i = 0; i <= 89;i++){

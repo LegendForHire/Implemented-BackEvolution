@@ -12,6 +12,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 
+import General.Singleton;
+
 public class MarketManager {
 	public static void start() throws IOException, InterruptedException {
 		TraderSingleton s = TraderSingleton.getInstance();
@@ -79,7 +81,7 @@ public class MarketManager {
 			for (Thread thread: threads){
 				thread.start();
 			}
-			TraderSingleton s = TraderSingleton.getInstance();
+			Singleton s = Singleton.getInstance();
 			s.getWriter().println("all started updating");
 		}
 	//keeps a single market constantly updated

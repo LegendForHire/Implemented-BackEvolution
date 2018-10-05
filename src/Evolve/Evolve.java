@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.HashMap;
 import Competitive.Competition;
-import Competitive.CompetitionSingleton;
 import General.Gene;
 import General.Layer;
 import General.NetworkCreator;
@@ -39,7 +38,7 @@ public class Evolve {
 		long t1 = System.currentTimeMillis();
 		// runs the networks for a minute to measure their performance
 		if(Integer.parseInt(PropertyReader.getProperty("competing")) > 1){
-			Competition.evolutionRunner((CompetitionSingleton) s);
+			Competition.evolutionRunner(s);
 		}
 		else{
 			while (System.currentTimeMillis()-t1 < Long.parseLong(PropertyReader.getProperty("timing"))){

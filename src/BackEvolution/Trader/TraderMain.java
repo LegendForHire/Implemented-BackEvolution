@@ -25,7 +25,7 @@ import java.io.*;
 
 public class TraderMain implements SpecialMain {
 	public TraderMain(){};
-	public TraderSingleton SetupStartup() {
+	public void SetupStartup() {
 		try {
 			MarketManager.start();
 		} catch (IOException | InterruptedException e) {
@@ -33,7 +33,6 @@ public class TraderMain implements SpecialMain {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		return TraderSingleton.getInstance();
 	}
 	public void AfterStartup() {
 		try {

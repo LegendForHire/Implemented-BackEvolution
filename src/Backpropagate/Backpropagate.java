@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 
 import Competitive.Competition;
-import Competitive.CompetitionSingleton;
 import General.Gene;
 import General.Layer;
 import General.NeuralNetManager;
@@ -39,7 +38,7 @@ public class Backpropagate {
 		// this is where the back propagation learning step for the neural networks run. currently I have them set to run for one minute before evaluating
 		while(s.getTotalGlobalError() > Double.parseDouble(PropertyReader.getProperty("allowedError"))/scaling){
 			if(Integer.parseInt(PropertyReader.getProperty("competing")) > 1){
-				Competition.backpropagationRunner((CompetitionSingleton) s);
+				Competition.backpropagationRunner(s);
 			}
 			else{
 				//set necessary values for backpropagation step

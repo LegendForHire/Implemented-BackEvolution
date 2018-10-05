@@ -38,9 +38,9 @@ public class Main {
         };
         threadQuit.start();
         //Setting up prereqs and getting network singleton
-        Singleton s = main.SetupStartup();
+        main.SetupStartup();
         //Starting the learning algorithm,
-		NeuralNetManager.start(s);
+		NeuralNetManager.start(Singleton.getInstance());
 		System.out.println(System.currentTimeMillis()-t1);
 		//Starting other threads created by Special main package
 		main.AfterStartup();		

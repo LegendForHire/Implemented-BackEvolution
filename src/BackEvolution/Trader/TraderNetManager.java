@@ -13,9 +13,11 @@ import General.Layer;
 import General.NeuralNetwork;
 import General.Neuron;
 import General.PropertyReader;
+import General.Singleton;
 import General.SpecialNetManager;
 public class TraderNetManager implements SpecialNetManager {
-	private static TraderSingleton s = TraderSingleton.getInstance();
+	private static TraderSingleton ts = TraderSingleton.getInstance();
+	private static Singleton s = Singleton.getInstance();
 	private static ArrayList<Wallet> noactwallets;
 	public static Random rand = new Random();
 	private static int noact;
@@ -84,7 +86,7 @@ public class TraderNetManager implements SpecialNetManager {
 				noact+= amt;
 			}
 			else if (!w.getName().equals("XBB")&&!w.getName().equals("HKG")){
-				for (Market market : s.getMarkets()){
+				for (Market market : ts.getMarkets()){
 					if (market.getMarketName().equals("BTC-" + w.getName())){
 						try {
 							noact += amt*market.getData(3);
@@ -105,7 +107,6 @@ public class TraderNetManager implements SpecialNetManager {
 	long t1 = System.currentTimeMillis();
 	while(System.currentTimeMillis() - t1 < Long.parseLong(PropertyReader.getProperty("timing")));
 	Random rand = new Random();
-	TraderSingleton s = TraderSingleton.getInstance();
 	for(NeuralNetwork nn : s.getNetworks()){
 		Layer out = nn.getLayers().get(nn.getLayers().size()-1);
 		ArrayList<Neuron> sells = new ArrayList<Neuron>();
@@ -166,7 +167,7 @@ public class TraderNetManager implements SpecialNetManager {
 	}
 	@Override
 	public String saveMetaData(NeuralNetwork nn) {
-		Market[] markets = s.getMarkets();
+		Market[] markets = ts.getMarkets();
 		int i = -1;
 		while(!markets[++i].getMarketName().equals("USDT-BTC"));
 		try {

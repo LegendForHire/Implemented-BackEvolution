@@ -10,8 +10,7 @@ import General.PropertyReader;
 import General.Singleton;
 
 public class Competition {
-	public static void backpropagationRunner(Singleton s1) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InterruptedException{		
-		CompetitionSingleton s = (CompetitionSingleton) s1;
+	public static void backpropagationRunner(Singleton s) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InterruptedException{	
 		CompetitionManager netManager = netManagerReflected(s);
 		NeuralNetwork[] nns = s.getNetworks();
 		int competing = Integer.parseInt("competing");
@@ -49,7 +48,7 @@ public class Competition {
 			incrementPlayers(currentPlayers.length-1, s);
 		}				
 	}
-	public static void evolutionRunner(CompetitionSingleton s) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InterruptedException{		
+	public static void evolutionRunner(Singleton s) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InterruptedException{		
 		CompetitionManager netManager = netManagerReflected(s);
 		NeuralNetwork[] nns = s.getNetworks();
 		int competing = Integer.parseInt("competing");
@@ -81,7 +80,7 @@ public class Competition {
 			incrementPlayers(s.getCurrentPlayers().length-1, s);
 		}				
 	}
-	private static CompetitionManager netManagerReflected(CompetitionSingleton s)
+	private static CompetitionManager netManagerReflected(Singleton s)
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException {		
 		String type = PropertyReader.getProperty("type");
 		@SuppressWarnings("unchecked")
@@ -90,7 +89,7 @@ public class Competition {
 		CompetitionManager netManager = class1.newInstance();
 		return netManager;
 	}
-	private static void incrementPlayers(int position, CompetitionSingleton s) {
+	private static void incrementPlayers(int position, Singleton s) {
 		int[] currentPlayers = s.getCurrentPlayers();
 		if(currentPlayers[position] == Integer.parseInt(PropertyReader.getProperty("numNetworks"))-(currentPlayers.length-position) && position !=0){	
 			incrementPlayers(position-1,s);

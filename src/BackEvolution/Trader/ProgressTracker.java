@@ -18,8 +18,10 @@ import java.util.ArrayList;
 
 import General.NeuralNetManager;
 import General.NeuralNetwork;
+import General.Singleton;
 public class ProgressTracker {
-	public static TraderSingleton s = TraderSingleton.getInstance();
+	public static TraderSingleton ts = TraderSingleton.getInstance();
+	public static Singleton s = Singleton.getInstance();
 	private static ArrayList<Wallet> wallets;
 	private static ArrayList<Wallet> noactwallets;
 	private static Market BTC;
@@ -38,7 +40,7 @@ public class ProgressTracker {
 			noactwallets.add(new Wallet(c, 50));
 		}
 		int i = -1;	
-		Market[] markets = s.getMarkets();
+		Market[] markets = ts.getMarkets();
 		while(!markets[++i].getMarketName().equals("USDT-BTC"));
 		BTC = markets[i];
 		// this thread is always running with the current most fit neural network and outputs a profits file that lets em see if the neural networks are profitable yet.
@@ -48,7 +50,7 @@ public class ProgressTracker {
 					Thread thread = new Thread() {
 						public void run() {
 				try {
-					main(s.getMarkets());
+					main(ts.getMarkets());
 				} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException
 						| IllegalArgumentException | InvocationTargetException | IOException e) {
 					File eFile = new File("ProfitError"+System.currentTimeMillis());
