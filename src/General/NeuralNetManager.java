@@ -80,53 +80,27 @@ public abstract class NeuralNetManager {
 			//runs each layer in order
 			nn.clearInputArrays();
 			for (Layer l : nn.getLayers()){			
-				if (l.isInput()){
-					// gets the input data, and sends it to each connected neuron.
-					for (Neuron n : l.getNeurons()){
-						n.invoke();
-						for (Gene g : n.getGenes()){
-							Neuron connect = g.getConnection();
-							double weight = g.getWeight();	
-							double value = n.getValue();
-							g.setLastInput(connect.getValue()+value*weight);
-							connect.setValue(connect.getValue()+value*weight);
-							g.getConnection().addInput(g);
-							g.setInput(n);
-							
-						}
-						n.setLast(n.getValue());
-						n.setValue(0.0000001);
-					}
-				}
-				else if (l.isOutput()){
-					//calls the output methods if the data that passes all the way through is enough to trigger the output neuron.
-					for (Neuron n : l.getNeurons()){
-						if (Backpropagate.Sigmoid(n.getValue()) > Double.parseDouble(PropertyReader.getProperty("activation"))){
-							n.invoke();
-						}
-						n.setLast(Backpropagate.Sigmoid(n.getValue()));
-						n.setValue(0.01);
-					}
-				}
-				else{
-					//passes the data each neuron received onto the next neurons and resets its own data state.
-					for (Neuron n : l.getNeurons()){
-						for (Gene g : n.getGenes()){
-							Neuron connect = g.getConnection();
-							double weight = g.getWeight();
-							double value = Backpropagate.Sigmoid(n.getValue());
-							g.setLastInput(connect.getValue()+value*weight);
-							connect.setValue(connect.getValue()+value*weight);
-							g.getConnection().addInput(g);
-							g.setInput(n);
-						}
-						n.setLast(n.getValue());
-						n.setValue(0.01);
-					}
+				// gets the input data, and sends it to each connected neuron.
+				for (Neuron n : l.getNeurons()){
+					if(l.isInput() || (l.isOutput() && Backpropagate.Sigmoid(n.getValue()) > Double.parseDouble(PropertyReader.getProperty("activation"))))n.invoke();
+					if(!l.isOutput())runGenes(n);
+					n.setLast(n.getValue());
+					n.setValue(0.0000001);
 				}
 			}
 			
-		}				
+		}
+	private static void runGenes(Neuron n) {
+		for (Gene g : n.getGenes()){
+			Neuron connect = g.getConnection();
+			double weight = g.getWeight();
+			double value = Backpropagate.Sigmoid(n.getValue());
+			g.setLastInput(connect.getValue()+value*weight);
+			connect.setValue(connect.getValue()+value*weight);
+			g.getConnection().addInput(g);
+			g.setInput(n);
+		}
+	}				
 	@SuppressWarnings({ "deprecation", "unchecked"})
 	//save method
 	private static void save(Singleton s) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
