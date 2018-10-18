@@ -18,18 +18,16 @@ import java.util.Scanner;
 public abstract class NetworkCreator {
 	public static Random rand = new Random();
 	@SuppressWarnings({ "unchecked", "resource" })
-	public static NeuralNetwork[] CreateNetworks(Singleton s){
+	public static NeuralNetwork[] CreateNetworks(DataManager data){
 		//if there are no load files , it creates one random gene for each neural network.
 		try {
 			String type = PropertyReader.getProperty("type");
 			Class<? extends NeuralNetwork> NetClass = (Class<? extends NeuralNetwork>) Class.forName("BackEvolution."+type+"."+type+"Network");
 			NeuralNetwork[] NetworkList = new NeuralNetwork[Integer.parseInt(PropertyReader.getProperty("numNetworks"))];
-			Class<? extends SpecialCreator> CreatorClass = (Class<? extends SpecialCreator>) Class.forName("BackEvolution."+type+"."+type+"Creator");
-			@SuppressWarnings("deprecation")
-			SpecialCreator creator = CreatorClass.newInstance();
+			MethodManager creator = data.getMethods();
 			try {
 				for (int j = 0; j<Integer.parseInt(PropertyReader.getProperty("numNetworks"));j++){		
-					createNetwork(s, NetClass, NetworkList, creator, j);	
+					createNetwork(data, NetClass, NetworkList, creator, j);	
 				}
 			}	 
 			catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException | IOException | InstantiationException | IllegalAccessException e1) {
@@ -41,12 +39,12 @@ public abstract class NetworkCreator {
 				Scanner fin = new Scanner(file);
 				for (NeuralNetwork nn : NetworkList){
 					String[] netData = fin.nextLine().split(";");
-					load(s, nn, netData);
+					load(nn, netData, data);
 				}
 			}
 			catch(FileNotFoundException e){
 				for (NeuralNetwork nn : NetworkList){
-					Evolve.Mutate.newGeneInsert(nn, s);
+					Evolve.Mutate.newGeneInsert(nn, data);
 				}
 			}
 			return NetworkList;
@@ -57,34 +55,18 @@ public abstract class NetworkCreator {
 			return null;
 		}
 	}
-	private static void createNetwork(Singleton s, Class<? extends NeuralNetwork> NetClass, NeuralNetwork[] NetworkList,
-		SpecialCreator creator, int j) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
+	private static void createNetwork(DataManager data, Class<? extends NeuralNetwork> NetClass, NeuralNetwork[] NetworkList,
+		MethodManager creator, int j) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
 		InvocationTargetException, IOException, InstantiationException {
-		Layer[] layers = creator(s);
-		creator.InputOutputcreator(layers);
-		Class<?>[] types = {Layer.class,Layer.class};
+		Layer[] layers = creator();
+		creator.InputOutputcreator(layers, data);
+		Class<?>[] types = {Layer.class,Layer.class,DataManager.class};
 		Constructor<? extends NeuralNetwork> con = NetClass.getConstructor(types);
-		NetworkList[j] = (NeuralNetwork) con.newInstance(layers[0],layers[1]);
-		s.setNetworks(NetworkList);
+		NetworkList[j] = (NeuralNetwork) con.newInstance(layers[0],layers[1],data);
+		data.setNetworks(NetworkList);
 		for (Neuron no : layers[1].getNeurons()){
-			creator.NeuronSetup(no, j);
+			creator.NeuronSetup(no, j, data);
 		}
-	}
-	//Generates a single random gene
-	public static Layer[] RandomGenerate(Layer[] layers, Singleton s){
-		Layer outputlayercopy = layers[1];
-		Layer inputlayercopy = layers[0];
-		outputlayercopy.setNumber(2);
-		inputlayercopy.setNumber(1);
-		int inputrand = 0;
-		if(inputlayercopy.getNeurons().size()-1 >0) inputrand = rand.nextInt(inputlayercopy.getNeurons().size()-1);
-		int outputrand = 0;
-		if(outputlayercopy.getNeurons().size()-1 >0) outputrand = rand.nextInt(outputlayercopy.getNeurons().size()-1);
-		Gene starter = new Gene(outputlayercopy.getNeurons().get(outputrand), (Math.random()*2)-1, s);
-		inputlayercopy.getNeurons().get(inputrand).AddGenes(starter);
-		starter.setInput(inputlayercopy.getNeurons().get(inputrand));
-		Layer[] copies = {inputlayercopy, outputlayercopy};
-		return copies;
 	}
 	//Adds a gene to a neuron
 	public static void geneAdder(double weight, int inLayer, int outLayer, Integer inNeuron, Integer outNeuron, NeuralNetwork nn, long id){
@@ -93,28 +75,27 @@ public abstract class NetworkCreator {
 			g2.setInput(nn.getLayers().get(inLayer-1).getNeurons().get(inNeuron-1));
 			nn.getLayers().get(outLayer-1).getNeurons().get(outNeuron-1).addInput(g2);
 		}
-	@SuppressWarnings({ "unchecked", "deprecation" })
+	@SuppressWarnings({ "unchecked"})
 	//loads a NeuralNetwork from a file
-	public static void load(Singleton s, NeuralNetwork nn, String[] netData) throws InstantiationException, IllegalAccessException, ClassNotFoundException, FileNotFoundException{
+	public static void load(NeuralNetwork nn, String[] netData, DataManager data) throws InstantiationException, IllegalAccessException, ClassNotFoundException, FileNotFoundException{
 			String type = PropertyReader.getProperty("type");
 			Class<? extends Neuron> class1 = (Class<? extends Neuron>) Class.forName("BackEvolution."+type+"."+type+"Neuron");
 			Class<? extends Layer> class2 = (Class<? extends Layer>) Class.forName("BackEvolution."+type+"."+type+"Layer");
-			Class<? extends SpecialNetManager> managerClass = (Class<? extends SpecialNetManager>) Class.forName("BackEvolution."+type+"."+type+"NetManager");
-			SpecialNetManager manager = managerClass.newInstance();							
+			MethodManager manager = data.getMethods();							
 			loadLayers(nn, class2, netData);
 			loadNeurons(nn, class1, netData);
 			Neuraltracker(nn);
-			loadGenes(nn, manager, netData);
+			loadGenes(nn, manager, netData, data);
 		}
-	private static void loadGenes(NeuralNetwork nn, SpecialNetManager manager, String[] netData) {
+	private static void loadGenes(NeuralNetwork nn, MethodManager manager, String[] netData, DataManager dataM) {
 			String[] GeneData = netData[2].split(",");
 			for(String data : GeneData){
 				if(!data.equals("")){
 					String[] g = data.split(":");
 					int inLayer = Integer.parseInt(g[0]);
-					Integer inNeuron = setInput(nn, manager, g, inLayer);
+					Integer inNeuron = setInput(nn, manager, g, inLayer, dataM);
 					int outLayer = Integer.parseInt(g[3]);
-					Integer outNeuron = setOutput(nn, manager, netData, g, outLayer);
+					Integer outNeuron = setOutput(nn, manager, netData, g, outLayer, dataM);
 					double weight = Double.parseDouble(g[4]);
 					long id = Long.parseLong(g[5]);
 					if(inNeuron != null && outNeuron != null){
@@ -123,12 +104,12 @@ public abstract class NetworkCreator {
 				}
 			}
 		}
-	private static Integer setOutput(NeuralNetwork nn, SpecialNetManager manager, String[] netData, String[] g,
-			int outLayer) {
+	private static Integer setOutput(NeuralNetwork nn, MethodManager manager, String[] netData, String[] g,
+			int outLayer, DataManager data) {
 		Integer outNeuron = null;
 		if (outLayer == Integer.parseInt(netData[0])){
 			for (Neuron n : nn.getLayers().get(Integer.parseInt(netData[0])-1).getNeurons()){
-				if (manager.saveOutput(n).equals(g[2])){
+				if (manager.saveOutput(n, data).equals(g[2])){
 					outNeuron = n.getNumber();
 				}
 			}
@@ -138,11 +119,11 @@ public abstract class NetworkCreator {
 		}
 		return outNeuron;
 	}
-	private static Integer setInput(NeuralNetwork nn, SpecialNetManager manager, String[] g, int inLayer) {
+	private static Integer setInput(NeuralNetwork nn, MethodManager manager, String[] g, int inLayer, DataManager data) {
 		Integer inNeuron = null;
 		if (inLayer == 1){
 			for (Neuron n : nn.getLayers().get(0).getNeurons()){
-				if (manager.saveInput(n).equals(g[1])){
+				if (manager.saveInput(n, data).equals(g[1])){
 					inNeuron = n.getNumber();
 				}	
 			}
@@ -157,7 +138,6 @@ public abstract class NetworkCreator {
 		}
 		return inNeuron;
 	}
-	@SuppressWarnings("deprecation")
 	private static void loadNeurons(NeuralNetwork nn, Class<? extends Neuron> class1, String[] netData)
 				throws InstantiationException, IllegalAccessException {
 			String[] NeuronData = netData[1].split(",");
@@ -167,7 +147,6 @@ public abstract class NetworkCreator {
 				}
 			}
 		}
-	@SuppressWarnings("deprecation")
 	private static void loadLayers(NeuralNetwork nn, Class<? extends Layer> class2, String[] netData)
 				throws InstantiationException, IllegalAccessException {
 			for (int i = 2; i < Integer.parseInt(netData[0]); i++){
@@ -192,8 +171,8 @@ public abstract class NetworkCreator {
 			
 		}
 	//builds the input and output layers for each neural network
-		@SuppressWarnings({ "unchecked", "deprecation" })
-	public static Layer[] creator(Singleton s) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException{
+	@SuppressWarnings("unchecked")
+	public static Layer[] creator() throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException{
 			String type = PropertyReader.getProperty("type");
 			Class<? extends Layer> class1 = (Class<? extends Layer>) Class.forName("BackEvolution."+type+"."+type+"Layer");
 			Layer[] layers = new Layer[2];	

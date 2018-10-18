@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import General.DataManager;
 import General.Layer;
 import General.NeuralNetwork;
 import General.Neuron;
@@ -14,10 +15,10 @@ import General.Neuron;
 public class TraderNetwork extends NeuralNetwork{
 	private Market[] markets;
 	public ArrayList<Wallet> wallets;
-	public TraderNetwork(Layer inputLayer, Layer outputLayer) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	public TraderNetwork(Layer inputLayer, Layer outputLayer, DataManager data1) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, IOException {
 		super(inputLayer, outputLayer, new TraderLayer(false,false).getClass());
-		TraderSingleton s = TraderSingleton.getInstance();
-		this.markets = s.getMarkets();
+		TraderDataManager data = (TraderDataManager) data1;
+		this.markets = data.getMarkets();
 		URL currencies = new URL("https://bittrex.com/api/v1.1/public/getCurrencies");
 		wallets = new ArrayList<Wallet>();
 		BufferedReader in = new BufferedReader(new InputStreamReader(currencies.openStream()));
@@ -76,7 +77,7 @@ public class TraderNetwork extends NeuralNetwork{
 		}
 	}
 	@Override
-	public void updateFitness() throws IOException {
+	public void updateFitness(){
 		fitness = 0;
 		for (Wallet w : wallets){
 			double amt = w.getAmmount();
@@ -86,7 +87,12 @@ public class TraderNetwork extends NeuralNetwork{
 			else if(!w.getName().equals("XBB")&&!w.getName().equals("HKG")){
 				for (Market market : markets){
 					if (market.getMarketName().equals("BTC-" + w.getName())){
-						fitness += amt*market.getData(3);
+						try {
+							fitness += amt*market.getData(3);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				
 				}

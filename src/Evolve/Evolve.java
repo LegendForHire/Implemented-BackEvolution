@@ -6,23 +6,16 @@ package Evolve;
  * Mebane, North Carolina 27302 U.S.A
  * All Rights Reserved
  */
-import java.io.IOException;
-import java.lang.reflect.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
-import java.util.HashMap;
 import Competitive.Competition;
+import General.DataManager;
 import General.Gene;
-import General.Layer;
-import General.NetworkCreator;
+import General.MethodManager;
 import General.NeuralNetManager;
 import General.NeuralNetwork;
-import General.Neuron;
 import General.PropertyReader;
-import General.Singleton;
-import General.SpecialCreator;
-import General.SpecialNetManager;
 import General.Species;
 
 public class Evolve {
@@ -31,19 +24,19 @@ public class Evolve {
 	private static final double DISJOINTWEIGHT = 1;
 	private static final double EXCESSWEIGHT = 1;
 	private static final double DIFWEIGHT = 1;
-	public static void runner(Singleton s) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException, ClassNotFoundException, InterruptedException {
-		SpecialNetManager netManager = netManagerReflected(s);
-		netManager.EvolveSetup();
-		NeuralNetwork[] nns = s.getNetworks();
+	public static void runner(DataManager data) {
+		MethodManager netManager = netManagerReflected(data);
+		netManager.EvolveSetup(data);
+		NeuralNetwork[] nns = data.getNetworks();
 		long t1 = System.currentTimeMillis();
 		// runs the networks for a minute to measure their performance
 		if(Integer.parseInt(PropertyReader.getProperty("competing")) > 1){
-			Competition.evolutionRunner(s);
+			Competition.evolutionRunner(data);
 		}
 		else{
 			while (System.currentTimeMillis()-t1 < Long.parseLong(PropertyReader.getProperty("timing"))){
 				for (NeuralNetwork nn : nns){
-					NeuralNetManager.RunNetwork(nn,s);					
+					NeuralNetManager.RunNetwork(nn);					
 				}	
 			}
 		}
@@ -51,19 +44,14 @@ public class Evolve {
 		for(NeuralNetwork nn : nns) {
 			NeuralNetManager.Neuraltracker(nn);	
 		}
-		netManager.EvolveTeardown();
+		netManager.EvolveTeardown(data);
 		
 	}
-	@SuppressWarnings("unchecked")
-	private static SpecialNetManager netManagerReflected(Singleton s)
-			throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-		String type = PropertyReader.getProperty("type");
-		Class<? extends SpecialNetManager> class1 = (Class<? extends SpecialNetManager>) Class.forName("BackEvolution."+ type +"."+ type+"NetManager");
-		@SuppressWarnings("deprecation")
-		SpecialNetManager netManager = class1.newInstance();
-		return netManager;
+	private static MethodManager netManagerReflected(DataManager data) {
+		return data.getMethods();
+		
 	}
-	public static NeuralNetwork[] evolve(NeuralNetwork[] nns,Singleton s) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException {
+	public static NeuralNetwork[] evolve(NeuralNetwork[] nns,DataManager data){
 		Arrays.sort(nns);
 		NeuralNetwork[] halfnns = new NeuralNetwork[nns.length/2];
 		//This will be the new population that is returned
@@ -73,32 +61,31 @@ public class Evolve {
 		Double totalFitness = fitnessSetup(nns, halfnns, newnns);
 		//this is where new neural networks are born for the new population
 		for (int i = nns.length/2; i<nns.length; i++){
-			newNetworkAtLoc(s, halfnns, newnns, totalFitness, i);
+			newNetworkAtLoc(data, halfnns, newnns, totalFitness, i);
 		}
 		
 		return newnns;
 		
 	}
-	private static void newNetworkAtLoc(Singleton s, NeuralNetwork[] originalPopulation, NeuralNetwork[] newnns, Double totalFitness, int loc) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
-		InvocationTargetException, IOException, InstantiationException {
+	private static void newNetworkAtLoc(DataManager data, NeuralNetwork[] originalPopulation, NeuralNetwork[] newnns, Double totalFitness, int loc){
 		//this random decides if the network will be cloned or bred.
 		Double cloneVsCrossover=  Math.random();
 		NeuralNetwork network;
 		//cloned
 		if (cloneVsCrossover <= CLONE_CHANCE){
 			NeuralNetwork clonedParent = parentSelection(originalPopulation, totalFitness);
-			network = Reproduce.clone(clonedParent, s);
+			network = Reproduce.clone(clonedParent, data);
 		}
 		//crossover
 		else{
 			NeuralNetwork parent1 = parentSelection(originalPopulation, totalFitness);
 			NeuralNetwork parent2 = parentSelection(originalPopulation, totalFitness);
-			network = Reproduce.crossover(parent1,parent2,s);
+			network = Reproduce.crossover(parent1,parent2,data);
 		}
-		setSpecies(network, newnns, s);
+		setSpecies(network, newnns);
 		newnns[loc] = network;
 	}
-	private static void setSpecies(NeuralNetwork network, NeuralNetwork[] newnns,Singleton s) {
+	private static void setSpecies(NeuralNetwork network, NeuralNetwork[] newnns) {
 		boolean speciesFound = false;
 		for(NeuralNetwork compared : newnns) {
 			if(compared != null && !speciesFound){

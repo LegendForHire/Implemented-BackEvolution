@@ -17,10 +17,10 @@ public class Gene {
 	private double lastInput;
 	private double lastChange;
 	private long geneID;
-	public Gene(Neuron connected, double weight,Singleton s){
+	public Gene(Neuron connected, double weight,DataManager data){
 		connect = connected;
 		connectweight = weight;
-		geneID = s.getNewID();
+		geneID = data.getNewID();
 	}
 	public Gene(Neuron connected, double weight, long id) {
 		connect = connected;

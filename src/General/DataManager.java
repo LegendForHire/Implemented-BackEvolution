@@ -12,8 +12,7 @@ import java.io.PrintWriter;
  * All Rights Reserved
  */
 
-public class Singleton {
-	private static Singleton uniqueInstance = new Singleton();
+public abstract class DataManager {
 	private NeuralNetwork[] networks;
 	private double totalGlobalError;
 	public static final int NUM_NETWORKS = 200;
@@ -21,20 +20,19 @@ public class Singleton {
 	private int Generation = 0;
 	private long id = 0;
 	private int[] currentPlayers;
+	private MethodManager methods;
 	//create fields for all items that have getters and setter
 	//create constants for all methods with only getters. 
 	//these are your twiddly knobs for changing how the algorithm runs a bit.
 	// also when implementing create the getInstance method of the singleton
 	// and at least an empty constructor
-	private Singleton(){
+	public DataManager(MethodManager methods){
 		File f = new File("log.txt");
 		try {
 			writer = new PrintWriter(f);
 		} catch (FileNotFoundException e) {}
 		Generation = 0;
-	}
-	public static Singleton getInstance() {
-		return uniqueInstance;
+		this.methods = methods;
 	}
 	public PrintWriter getWriter() {
 		return writer;
@@ -76,6 +74,9 @@ public class Singleton {
 	};
 	public void setCurrentPlayers(int[] players) {
 		currentPlayers = players;
+	}
+	public MethodManager getMethods() {
+		return methods;
 	}
 }
 

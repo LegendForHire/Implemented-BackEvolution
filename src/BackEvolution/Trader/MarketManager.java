@@ -12,23 +12,20 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 
-import General.Singleton;
-
 public class MarketManager {
-	public static void start() throws IOException, InterruptedException {
-		TraderSingleton s = TraderSingleton.getInstance();
+	public static void start(TraderDataManager data) throws IOException, InterruptedException {
 		Market[] markets = marketCreator();
 		Thread thread = new Thread() {
 				public void run() {
 					try {
-						updater(markets);
+						updater(markets, data);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
 				}	
 		};
 		thread.start();
-		s.setMarkets(markets);
+		data.setMarkets(markets);
 		long t = System.currentTimeMillis();
 		/* had to put a wait time here for the threads from the previous thread to get started*/
 		while(System.currentTimeMillis() - t < 20000);
@@ -62,7 +59,7 @@ public class MarketManager {
 			return markets;
 		}
 	//creates threads that keep all the markets updated in real time.
-	public static void updater (Market[] markets) throws IOException{
+	public static void updater (Market[] markets, TraderDataManager data) throws IOException{
 			ArrayList<Thread> threads = new ArrayList<Thread>();
 			for (Market market : markets){
 				threads.add (new Thread() {
@@ -81,8 +78,7 @@ public class MarketManager {
 			for (Thread thread: threads){
 				thread.start();
 			}
-			Singleton s = Singleton.getInstance();
-			s.getWriter().println("all started updating");
+			data.getWriter().println("all started updating");
 		}
 	//keeps a single market constantly updated
 	public static void updater (Market market) throws IOException{

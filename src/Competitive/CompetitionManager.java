@@ -1,12 +1,16 @@
 package Competitive;
 
+import General.DataManager;
+import General.MethodManager;
 import General.NeuralNetwork;
-import General.SpecialNetManager;
 
-public interface CompetitionManager extends SpecialNetManager{
+public abstract class CompetitionManager extends MethodManager{
 	//used for any setup before each competition
-	public void setupCompetition();
-	public boolean getGameOver();
-	public void setEndCompetitionState();
-	public boolean isTurn(NeuralNetwork nn);
+	public CompetitionManager() {
+		super();
+	}
+	public abstract void setupCompetition(DataManager data);
+	public abstract boolean getGameOver(DataManager data);
+	public abstract void setEndCompetitionState(DataManager data);
+	public abstract boolean isTurn(NeuralNetwork nn, DataManager data);
 }

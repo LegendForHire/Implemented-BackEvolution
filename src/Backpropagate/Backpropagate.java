@@ -1,17 +1,15 @@
 package Backpropagate;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
 
 import Competitive.Competition;
+import General.DataManager;
 import General.Gene;
 import General.Layer;
+import General.MethodManager;
 import General.NeuralNetManager;
 import General.NeuralNetwork;
 import General.Neuron;
 import General.PropertyReader;
-import General.Singleton;
-import General.SpecialNetManager;
 /**
  * Backpropagate.java 1.0 March 6, 2018
  *
@@ -22,13 +20,13 @@ import General.SpecialNetManager;
 public class Backpropagate {
 	
 	public static Random rand = new Random();
-	public static void runner(Singleton s) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, ClassNotFoundException, SecurityException, InstantiationException, InterruptedException {
-		SpecialNetManager netManager = netManagerReflected(s);
-		netManager.BackpropagationSetup();
-		s.getWriter().println("Iteration" + s.getGen());
-		NeuralNetwork[] nns = s.getNetworks();
+	public static void runner(DataManager data){
+		MethodManager netManager = netManagerReflected(data);
+		netManager.BackpropagationSetup(data);
+		data.getWriter().println("Iteration" + data.getGen());
+		NeuralNetwork[] nns = data.getNetworks();
 		//Scales the allowed error over time allowing a much larger starting error but capping the smallest error possible at a lower but still reasonable number.
-		double scaling = startingErrorSetup(s);
+		double scaling = startingErrorSetup(data);
 		// see method description
 		for(NeuralNetwork nn : nns) {
 			NeuralNetManager.Neuraltracker(nn);	
@@ -36,60 +34,54 @@ public class Backpropagate {
 		//Different types of network running for competitive networks
 		
 		// this is where the back propagation learning step for the neural networks run. currently I have them set to run for one minute before evaluating
-		while(s.getTotalGlobalError() > Double.parseDouble(PropertyReader.getProperty("allowedError"))/scaling){
+		while(data.getTotalGlobalError() > Double.parseDouble(PropertyReader.getProperty("allowedError"))/scaling){
 			if(Integer.parseInt(PropertyReader.getProperty("competing")) > 1){
-				Competition.backpropagationRunner(s);
+				Competition.backpropagationRunner(data);
 			}
 			else{
 				//set necessary values for backpropagation step
-				netManager.BackIterationHandling();
+				netManager.BackIterationHandling(data);
 				//run the networks
 				for (NeuralNetwork nn : nns){
-					NeuralNetManager.RunNetwork(nn,s);					
+					NeuralNetManager.RunNetwork(nn);					
 				}
 				long t = System.currentTimeMillis();
 				while(System.currentTimeMillis() - t < Integer.parseInt(PropertyReader.getProperty("timing")));
-				backpropagate(nns,s);
+				backpropagate(nns,data);
 			}	
-			s.getWriter().println("Total Global Error:" + s.getTotalGlobalError()); 
-			s.getWriter().println("backpropagation complete");		
+			data.getWriter().println("Total Global Error:" + data.getTotalGlobalError()); 
+			data.getWriter().println("backpropagation complete");		
 		}
 		
 	}
-	private static double startingErrorSetup(Singleton s) {
-		double scaling = Math.log(s.getGen())*3+1;
-		s.setTotalGlobalError(Double.parseDouble(PropertyReader.getProperty("allowedError"))/scaling + 1);
+	private static double startingErrorSetup(DataManager data) {
+		double scaling = Math.log(data.getGen())*3+1;
+		data.setTotalGlobalError(Double.parseDouble(PropertyReader.getProperty("allowedError"))/scaling + 1);
 		return scaling;
 	}
-	@SuppressWarnings("unchecked")
-	private static SpecialNetManager netManagerReflected(Singleton s)
-			throws ClassNotFoundException, InstantiationException, IllegalAccessException {	
-		String type = PropertyReader.getProperty("type");
-		Class<? extends SpecialNetManager> class1 = (Class<? extends SpecialNetManager>) Class.forName("BackEvolution."+type+"."+type+"NetManager");
-		@SuppressWarnings("deprecation")
-		SpecialNetManager netManager = class1.newInstance();
-		return netManager;
+	private static MethodManager netManagerReflected(DataManager data){	
+		return data.getMethods();
 	}
-	public static void backpropagate(NeuralNetwork[] nns, Singleton s) throws IOException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SecurityException, InstantiationException {
-		SpecialNetManager netManager = netManagerReflected(s);
+	public static void backpropagate(NeuralNetwork[] nns, DataManager data) {
+		MethodManager netManager = netManagerReflected(data);
 		//Determines which neurons should have fired
-		netManager.setAct();
+		netManager.setAct(data);
 		for(NeuralNetwork nn : nns){					
-			outputErrorCalculation(s, nn);
-			outputGeneCorrection(s, nn);
+			outputErrorCalculation(nn);
+			outputGeneCorrection(nn);
 			for(int i = nn.getLayers().size()-1; i > 0; i--){
 				Layer l = nn.getLayers().get(i);
 				if(!l.isOutput()){
 					for(Neuron n: l.getNeurons()){
 						hiddenErrorCalculation(n);
-						geneCorrection(s, n);
+						geneCorrection(n);
 					}
 				}
 			}
-			globalErrorCalculation(s, nn);
+			globalErrorCalculation(data, nn);
 		}		
 	}
-	private static void geneCorrection(Singleton s, Neuron n) {
+	private static void geneCorrection(Neuron n) {
 		for(Gene g : n.getInputs()){
 			Neuron input = g.getInput();
 			g.setLastChange(n.getError()*Double.parseDouble(PropertyReader.getProperty("learningRate"))*input.getLast()+g.getWeight()+g.getLastChange()*Double.parseDouble(PropertyReader.getProperty("momentum")));
@@ -110,14 +102,14 @@ public class Backpropagate {
 		expected = expected/m;
 		n.setError((expected-Sigmoid(n.getLast()))*Sigmoid(n.getLast())*outputErrors);
 	}
-	private static void outputGeneCorrection(Singleton s, NeuralNetwork nn) {
+	private static void outputGeneCorrection(NeuralNetwork nn) {
 		//set weight for each output gene
 		Layer out = nn.getLayers().get(nn.getLayers().size()-1);	
 		for(Neuron n: out.getNeurons()){
-			geneCorrection(s, n);
+			geneCorrection(n);
 		}
 	}
-	private static void globalErrorCalculation(Singleton s, NeuralNetwork nn) {
+	private static void globalErrorCalculation(DataManager data, NeuralNetwork nn) {
 		double totalsum = 0;
 		for(Layer l : nn.getLayers()){
 			double sum = 0;
@@ -126,9 +118,9 @@ public class Backpropagate {
 			totalsum += Math.pow(sum, 2);
 		}
 		nn.setGlobalError(totalsum/2);
-		s.setTotalGlobalError(s.getTotalGlobalError() + totalsum/2);
+		data.setTotalGlobalError(data.getTotalGlobalError() + totalsum/2);
 	}
-	private static void outputErrorCalculation(Singleton s, NeuralNetwork nn) {
+	private static void outputErrorCalculation(NeuralNetwork nn) {
 		Layer out = nn.getLayers().get(nn.getLayers().size()-1);	
 		for(Neuron n : out.getNeurons()){
 			double activation =Double.parseDouble(PropertyReader.getProperty("activation"));
@@ -141,13 +133,9 @@ public class Backpropagate {
 	public static double Sigmoid(double d) {
 		return 1/(1+Math.exp(d*-1));
 	}
-	public static void BackIterationHandling(Singleton s) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-		String type = PropertyReader.getProperty("type");
-		@SuppressWarnings("unchecked")
-		Class<? extends SpecialNetManager> class1 = (Class<? extends SpecialNetManager>) Class.forName("BackEvolution."+type+"."+type+"NetManager");
-		@SuppressWarnings("deprecation")
-		SpecialNetManager netManager = class1.newInstance();
-		netManager.BackIterationHandling();		
+	public static void BackIterationHandling(DataManager data){
+		MethodManager netManager = netManagerReflected(data);
+		netManager.BackIterationHandling(data);		
 	}
 	
 }

@@ -18,16 +18,13 @@ import java.util.ArrayList;
 
 import General.NeuralNetManager;
 import General.NeuralNetwork;
-import General.Singleton;
 public class ProgressTracker {
-	public static TraderSingleton ts = TraderSingleton.getInstance();
-	public static Singleton s = Singleton.getInstance();
 	private static ArrayList<Wallet> wallets;
 	private static ArrayList<Wallet> noactwallets;
 	private static Market BTC;
 	public static final int UPDATE_TIMING = 60000;
 	public static final int WAIT_TIME = 86400000;
-	public static void start() throws IOException {
+	public static void start(TraderDataManager data) throws IOException {
 		wallets = new ArrayList<Wallet>();
 		noactwallets = new ArrayList<Wallet>();
 		URL currencies = new URL("https://bittrex.com/api/v1.1/public/getCurrencies");
@@ -40,7 +37,7 @@ public class ProgressTracker {
 			noactwallets.add(new Wallet(c, 50));
 		}
 		int i = -1;	
-		Market[] markets = ts.getMarkets();
+		Market[] markets = data.getMarkets();
 		while(!markets[++i].getMarketName().equals("USDT-BTC"));
 		BTC = markets[i];
 		// this thread is always running with the current most fit neural network and outputs a profits file that lets em see if the neural networks are profitable yet.
@@ -50,7 +47,7 @@ public class ProgressTracker {
 					Thread thread = new Thread() {
 						public void run() {
 				try {
-					main(ts.getMarkets());
+					main(data.getMarkets(),data);
 				} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException
 						| IllegalArgumentException | InvocationTargetException | IOException e) {
 					File eFile = new File("ProfitError"+System.currentTimeMillis());
@@ -79,11 +76,11 @@ public class ProgressTracker {
 		while(System.currentTimeMillis()-t1 < WAIT_TIME);
 		thread3.start();
 	}
-	public static void main(Market[] markets) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+	public static void main(Market[] markets, TraderDataManager data) throws IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
 		File f2 = new File("profit.txt");
 		while(true){
-		NeuralNetwork nn = s.getNetworks()[0];
-		NeuralNetManager.RunNetwork(nn,s);
+		NeuralNetwork nn = data.getNetworks()[0];
+		NeuralNetManager.RunNetwork(nn);
 		long t = System.currentTimeMillis();
 		while(System.currentTimeMillis()-t > UPDATE_TIMING);
 		PrintWriter fout = new PrintWriter(f2);

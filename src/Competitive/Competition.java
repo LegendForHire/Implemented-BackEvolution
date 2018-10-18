@@ -1,40 +1,37 @@
 package Competitive;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-
 import Backpropagate.Backpropagate;
+import General.DataManager;
 import General.NeuralNetManager;
 import General.NeuralNetwork;
 import General.PropertyReader;
-import General.Singleton;
 
 public class Competition {
-	public static void backpropagationRunner(Singleton s) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InterruptedException{	
-		CompetitionManager netManager = netManagerReflected(s);
-		NeuralNetwork[] nns = s.getNetworks();
+	@SuppressWarnings("deprecation")
+	public static void backpropagationRunner(DataManager data){	
+		CompetitionManager netManager = netManagerReflected();
+		NeuralNetwork[] nns = data.getNetworks();
 		int competing = Integer.parseInt("competing");
 		int[] currentPlayers= new int[competing];
 		for(int i = 0; i< competing; i++){
 			currentPlayers[i] = i;
 		}
 		while(currentPlayers[0] <= Integer.parseInt(PropertyReader.getProperty("numNetworks"))-competing){
-			netManager.setupCompetition();
+			netManager.setupCompetition(data);
 			Thread[] threads = new Thread[currentPlayers.length];
 			for(int i = 0; i<currentPlayers.length; i++){
 				NeuralNetwork nn = nns[currentPlayers[i]];
 				Thread thread = new Thread(){
 					public void run(){
 						try {
-							while(!netManager.getGameOver()) {
-								while(!netManager.isTurn(nn))
-								Backpropagate.BackIterationHandling(s);
-								NeuralNetManager.RunNetwork(nn,s);
+							while(!netManager.getGameOver(data)) {
+								while(!netManager.isTurn(nn,data))
+								Backpropagate.BackIterationHandling(data);
+								NeuralNetManager.RunNetwork(nn);
 								NeuralNetwork[] back = {nn};
-								Backpropagate.backpropagate(back, s);
+								Backpropagate.backpropagate(back, data);
 							}
-						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
-								| IOException | ClassNotFoundException | SecurityException | InstantiationException e) {
+						} catch (IllegalArgumentException |SecurityException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
@@ -43,56 +40,71 @@ public class Competition {
 				threads[i] = thread;
 			}
 			for(Thread thread: threads)thread.start();
-			for(Thread thread: threads)thread.join();
-			netManager.setEndCompetitionState();
-			incrementPlayers(currentPlayers.length-1, s);
+			for(Thread thread: threads)
+				try {
+					thread.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					Thread.currentThread().stop();
+				}
+			netManager.setEndCompetitionState(data);
+			incrementPlayers(currentPlayers.length-1, data);
 		}				
 	}
-	public static void evolutionRunner(Singleton s) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InterruptedException{		
-		CompetitionManager netManager = netManagerReflected(s);
-		NeuralNetwork[] nns = s.getNetworks();
+	@SuppressWarnings("deprecation")
+	public static void evolutionRunner(DataManager data){		
+		CompetitionManager netManager = netManagerReflected();
+		NeuralNetwork[] nns = data.getNetworks();
 		int competing = Integer.parseInt("competing");
 		int[] currentPlayers= new int[competing];
 		for(int i = 0; i< competing; i++){
 			currentPlayers[i] = i;
 		}
 		while(currentPlayers[0] <= Integer.parseInt(PropertyReader.getProperty("numNetworks"))-competing){
-			netManager.setupCompetition();
+			netManager.setupCompetition(data);
 			Thread[] threads = new Thread[currentPlayers.length];
 			for(int i = 0; i<currentPlayers.length; i++){
 				NeuralNetwork nn = nns[currentPlayers[i]];
 				Thread thread = new Thread(){
 					public void run(){
-						try {
-							NeuralNetManager.RunNetwork(nn,s);
-						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException
-								| IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+						NeuralNetManager.RunNetwork(nn);
 					}
 				};
 				threads[i] = thread;
 			}
 			for(Thread thread: threads)thread.start();
-			for(Thread thread: threads)thread.join(); 
-			netManager.setEndCompetitionState();
-			incrementPlayers(s.getCurrentPlayers().length-1, s);
+			for(Thread thread: threads)
+				try {
+					thread.join();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					Thread.currentThread().stop();
+				} 
+			netManager.setEndCompetitionState(data);
+			incrementPlayers(data.getCurrentPlayers().length-1, data);
 		}				
 	}
-	private static CompetitionManager netManagerReflected(Singleton s)
-			throws ClassNotFoundException, InstantiationException, IllegalAccessException {		
+	@SuppressWarnings({ "unchecked", "deprecation" })
+	private static CompetitionManager netManagerReflected() {		
 		String type = PropertyReader.getProperty("type");
-		@SuppressWarnings("unchecked")
-		Class<? extends CompetitionManager> class1 = (Class<? extends CompetitionManager>) Class.forName("BackEvolution."+type+"."+type+"NetManager");
-		@SuppressWarnings("deprecation")
-		CompetitionManager netManager = class1.newInstance();
-		return netManager;
+		try {
+			Class<? extends CompetitionManager> class1 = (Class<? extends CompetitionManager>) Class.forName("BackEvolution."+type+"."+type+"NetManager");
+			CompetitionManager netManager = class1.newInstance();
+			return netManager;
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Thread.currentThread().stop();
+			
+		}
+		return null;
 	}
-	private static void incrementPlayers(int position, Singleton s) {
-		int[] currentPlayers = s.getCurrentPlayers();
+	private static void incrementPlayers(int position, DataManager data) {
+		int[] currentPlayers = data.getCurrentPlayers();
 		if(currentPlayers[position] == Integer.parseInt(PropertyReader.getProperty("numNetworks"))-(currentPlayers.length-position) && position !=0){	
-			incrementPlayers(position-1,s);
+			incrementPlayers(position-1,data);
 			currentPlayers[position] = currentPlayers[position-1]+1;
 		}
 		else{

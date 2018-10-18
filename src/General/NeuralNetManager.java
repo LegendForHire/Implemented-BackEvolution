@@ -8,32 +8,27 @@ package General;
  */
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import Backpropagate.Backpropagate;
 import Evolve.Evolve;
 public abstract class NeuralNetManager {
-	@SuppressWarnings({ "unchecked", "deprecation" })
-	public static void start(Singleton s) throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException {
+	public static void start(DataManager data) {
 		//Creating the networks to run them
-		String type = PropertyReader.getProperty("type");
-		Class<? extends SpecialNetManager> class1 = (Class<? extends SpecialNetManager>) Class.forName("BackEvolution."+type+"."+type+"NetManager");
-		SpecialNetManager netManager = class1.newInstance();
-		netManager.setup();
-		NeuralNetwork[] nns =  NetworkCreator.CreateNetworks(s); 
-		s.setNetworks(nns);
+		MethodManager manager = data.getMethods();
+		manager.setup(data);
+		NeuralNetwork[] nns =  NetworkCreator.CreateNetworks(data); 
+		data.setNetworks(nns);
 		//Thread to keep the networks learning
 		Thread thread2 = new Thread() {			
 			public void run(){
 				while(true) {
 				Thread thread = new Thread() {
-					public void run() {
+				public void run() {
 					try {
-						RunNetworks(s);
-					} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException | ClassNotFoundException | InstantiationException | IOException | InterruptedException e) {
+						RunNetworks(data);
+					} catch (IllegalArgumentException | SecurityException e) {
 							File eFile = new File("AIError"+System.currentTimeMillis());
 							try {
 							PrintWriter eWriter = new PrintWriter(eFile);
@@ -42,8 +37,8 @@ public abstract class NeuralNetManager {
 						} catch (FileNotFoundException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
+							}
 						}
-					}
 					}
 				};
 				thread.start();
@@ -56,27 +51,27 @@ public abstract class NeuralNetManager {
 				}
 			}
 		
-		};		
+		};
 		thread2.start();
-		}
+	}
 	//runs the networks
-	protected static void RunNetworks(Singleton s) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, ClassNotFoundException, NoSuchMethodException, SecurityException, InterruptedException, InstantiationException {
+	protected static void RunNetworks(DataManager data){
 			while(true) {
-				Backpropagate.runner(s);
-				Evolve.runner(s);
+				Backpropagate.runner(data);
+				Evolve.runner(data);
 				// saves the current state of the neural networks.
-				NeuralNetwork[] nns = s.getNetworks();
-				save(s);
-				s.getWriter().println("Last state saved");
+				NeuralNetwork[] nns = data.getNetworks();
+				save(data);
+				data.getWriter().println("Last state saved");
 				//evolution method
-				nns = Evolve.evolve(nns, s);
-				s.setNetworks(nns);
-				s.getWriter().println("Iteration " + (s.getGen()) + " Complete");
-				s.incrementGen();
+				nns = Evolve.evolve(nns, data);
+				data.setNetworks(nns);
+				data.getWriter().println("Iteration " + (data.getGen()) + " Complete");
+				data.incrementGen();
 			}
 	}
 	//This is where a single neural network is run
-	public static void RunNetwork(NeuralNetwork nn,Singleton s) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException {
+	public static void RunNetwork(NeuralNetwork nn){
 			//runs each layer in order
 			nn.clearInputArrays();
 			for (Layer l : nn.getLayers()){			
@@ -101,13 +96,10 @@ public abstract class NeuralNetManager {
 			g.setInput(n);
 		}
 	}				
-	@SuppressWarnings({ "deprecation", "unchecked"})
 	//save method
-	private static void save(Singleton s) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException {
-		NeuralNetwork[] nns = s.getNetworks();
-		String type = PropertyReader.getProperty("type");
-		Class<? extends SpecialNetManager> class1 = (Class<? extends SpecialNetManager>) Class.forName("BackEvolution." + type +"."+ type +"NetManager");
-		SpecialNetManager manager = class1.newInstance();
+	private static void save(DataManager data){
+		NeuralNetwork[] nns = data.getNetworks();
+		MethodManager manager = data.getMethods();
 		long t = System.currentTimeMillis();
 		File out;
 		File recent;
@@ -133,10 +125,10 @@ public abstract class NeuralNetManager {
 				int layernumber = l.getNumber();
 				for (Neuron n : l.getNeurons()){
 					String neurondata;
-					if (l.isInput())neurondata = manager.saveInput(n);
+					if (l.isInput())neurondata = manager.saveInput(n, data);
 					else neurondata = "" + n.getNumber();
 					for (Gene g :n.getGenes()){
-						geneSave(manager, fout, nn, layernumber, n, neurondata, g);
+						geneSave(manager, fout, nn, layernumber, n, neurondata, g, data);
 					}
 				}
 			}
@@ -149,12 +141,12 @@ public abstract class NeuralNetManager {
 		}
 	}
 	@SuppressWarnings("unused")
-	private static void geneSave(SpecialNetManager manager, PrintWriter fout, NeuralNetwork nn, int layernumber,
-			Neuron n, String neurondata, Gene g) {
+	private static void geneSave(MethodManager manager, PrintWriter fout, NeuralNetwork nn, int layernumber,
+			Neuron n, String neurondata, Gene g, DataManager data) {
 		Neuron nout = g.getConnection();
 		String noutnum = null;
 		if (nn.getLayers().size() == nout.getLayernumber()) {
-			if(nout!=null)noutnum = manager.saveOutput(nout);
+			if(nout!=null)noutnum = manager.saveOutput(nout, data);
 			else n.RemoveGenes(g);
 		}
 		else noutnum = "" + nout.getNumber();

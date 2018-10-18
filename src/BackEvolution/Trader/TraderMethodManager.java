@@ -9,18 +9,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
+import General.DataManager;
 import General.Layer;
+import General.MethodManager;
 import General.NeuralNetwork;
 import General.Neuron;
 import General.PropertyReader;
-import General.Singleton;
-import General.SpecialNetManager;
-public class TraderNetManager implements SpecialNetManager {
-	private static TraderSingleton ts = TraderSingleton.getInstance();
-	private static Singleton s = Singleton.getInstance();
+
+public class TraderMethodManager extends MethodManager {
 	private static ArrayList<Wallet> noactwallets;
 	public static Random rand = new Random();
 	private static int noact;
+	public TraderMethodManager() {
+		super();
+	}
 	public void setup(){	
 		try {
 			noactwallets = new ArrayList<Wallet>();
@@ -34,50 +36,45 @@ public class TraderNetManager implements SpecialNetManager {
 				noactwallets.add(new Wallet(c, 50));
 			}
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.exit(1);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			System.exit(1);
 		}
 	}
 	@Override
-	public void BackpropagationSetup() {
-		for (NeuralNetwork nno : s.getNetworks()){
+	public void BackpropagationSetup(DataManager data) {
+		for (NeuralNetwork nno : data.getNetworks()){
 			TraderNetwork nn = (TraderNetwork) nno;
 			nn.restartWallets();
 		}
 	}
-	public void BackIterationHandling(){
-		Market[] markets = TraderSingleton.getInstance().getMarkets();
+	public void BackIterationHandling(DataManager data1){
+		TraderDataManager data = (TraderDataManager) data1;
+		Market[] markets = data.getMarkets();
 		for(Market m: markets){
 			m.setOld();
 		}
 	}
-	public void EvolveSetup(){
-		NeuralNetwork[] nns = s.getNetworks();
+	public void EvolveSetup(DataManager data){
+		NeuralNetwork[] nns = data.getNetworks();
 		for (NeuralNetwork nno : nns){
 			TraderNetwork nn = (TraderNetwork) nno;
 			nn.restartWallets();
 			
 		}
-		s.getWriter().println("Wallets Restarted");
+		data.getWriter().println("Wallets Restarted");
 	}
-	public void EvolveTeardown(){
-		NeuralNetwork[] nns = s.getNetworks();
+	public void EvolveTeardown(DataManager data1) {
+		TraderDataManager data = (TraderDataManager) data1;
+		NeuralNetwork[] nns = data.getNetworks();
 		//Updates the fitness for each neural network 
 		for (NeuralNetwork nno : nns){
 			TraderNetwork nn = (TraderNetwork) nno;
-			try {
-				nn.updateFitness();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}				
+			nn.updateFitness();		
 		}
-		s.getWriter().println("Fitness Determined");
+		data.getWriter().println("Fitness Determined");
 		// determines the fitness if no action was taken
 		noact = 0;
 		for (Wallet w : noactwallets){
@@ -86,7 +83,7 @@ public class TraderNetManager implements SpecialNetManager {
 				noact+= amt;
 			}
 			else if (!w.getName().equals("XBB")&&!w.getName().equals("HKG")){
-				for (Market market : ts.getMarkets()){
+				for (Market market : data.getMarkets()){
 					if (market.getMarketName().equals("BTC-" + w.getName())){
 						try {
 							noact += amt*market.getData(3);
@@ -103,11 +100,11 @@ public class TraderNetManager implements SpecialNetManager {
 		Arrays.sort(nns);
 	}
 	@Override
-	public void setAct() {
+	public void setAct(DataManager data) {
 	long t1 = System.currentTimeMillis();
 	while(System.currentTimeMillis() - t1 < Long.parseLong(PropertyReader.getProperty("timing")));
 	Random rand = new Random();
-	for(NeuralNetwork nn : s.getNetworks()){
+	for(NeuralNetwork nn : data.getNetworks()){
 		Layer out = nn.getLayers().get(nn.getLayers().size()-1);
 		ArrayList<Neuron> sells = new ArrayList<Neuron>();
 		ArrayList<Neuron> buys = new ArrayList<Neuron>();
@@ -155,19 +152,20 @@ public class TraderNetManager implements SpecialNetManager {
 	}
 	// Don't Include semicolons, or colons in this return
 	@Override
-	public String saveInput(Neuron outo) {
+	public String saveInput(Neuron outo, DataManager data1) {
 		TraderNeuron out = (TraderNeuron) outo;
 		return out.getMarket().getMarketName() + "_" + out.getSelector();
 	}
 	// Don't Include semicolons, or colons in this return
 	@Override
-	public String saveOutput(Neuron ino) {
+	public String saveOutput(Neuron ino, DataManager data1) {;
 		TraderNeuron in = (TraderNeuron) ino;
 		return in.getMarket().getMarketName() + "_" + in.getSelector();
 	}
 	@Override
-	public String saveMetaData(NeuralNetwork nn) {
-		Market[] markets = ts.getMarkets();
+	public String saveMetaData(NeuralNetwork nn, DataManager data1) {
+		TraderDataManager data = (TraderDataManager) data1;
+		Market[] markets = data.getMarkets();
 		int i = -1;
 		while(!markets[++i].getMarketName().equals("USDT-BTC"));
 		try {
@@ -176,5 +174,63 @@ public class TraderNetManager implements SpecialNetManager {
 			return "; Global Error :" + nn.getGlobalError();
 			
 		}
-	}	
+	}
+	@Override
+	public void setup(DataManager data) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public DataManager SetupStartup() {
+		TraderDataManager data = new TraderDataManager(this);
+		try {
+			MarketManager.start(data);
+		} catch (IOException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(1);
+		}
+		return data;
+	}
+	@Override
+	public void AfterStartup(DataManager data) {
+		try {
+			ProgressTracker.start((TraderDataManager) data);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	@Override
+	public void NeuronSetup(Neuron no, int j, DataManager data) {
+		TraderNeuron n = (TraderNeuron) no;
+		n.updateWallets(((TraderNetwork)data.getNetworks()[j]).getWallets());	
+	}
+	@Override
+	public void InputOutputcreator(Layer[] layers, DataManager data1) {
+		TraderDataManager data = (TraderDataManager) data1;
+		Market[] markets = data.getMarkets();		
+		for (Market market: markets){
+			if(market != null){
+			for (int i = 0; i <= 89;i++){
+				if (!market.getMarketName().equals("BTC-HKG")&&!market.getMarketName().equals("BTC-XBB")){
+				TraderNeuron in = new TraderNeuron("input", market, i);
+				layers[0].addNeuron(in);
+				in.setLayernumber(1);
+				}
+			}
+			for (int i = 1; i <= 5;i++){
+				if (!market.getMarketName().equals("BTC-HKG")&&!market.getMarketName().equals("BTC-XBB")){
+				Neuron out = new TraderNeuron("buy",market,i);
+				layers[1].addNeuron(out);
+				out.setLayernumber(2);
+				}
+			}
+			Neuron out = new TraderNeuron("sell",market,5);
+			layers[1].addNeuron(out);
+			out.setLayernumber(2);
+			}
+		}
+		
+	}
 }
