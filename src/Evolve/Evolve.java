@@ -9,11 +9,10 @@ package Evolve;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import Competitive.Competition;
+import FeedForward.Feedforward;
 import General.DataManager;
 import General.Gene;
 import General.MethodManager;
-import General.NeuralNetManager;
 import General.NeuralNetwork;
 import General.PropertyReader;
 import General.Species;
@@ -25,26 +24,14 @@ public class Evolve {
 	private static final double EXCESSWEIGHT = 1;
 	private static final double DIFWEIGHT = 1;
 	public static void runner(DataManager data) {
-		MethodManager netManager = netManagerReflected(data);
-		netManager.EvolveSetup(data);
+		MethodManager manager = netManagerReflected(data);
+		manager.EvolveSetup(data);
 		NeuralNetwork[] nns = data.getNetworks();
-		long t1 = System.currentTimeMillis();
+		
 		// runs the networks for a minute to measure their performance
-		if(Integer.parseInt(PropertyReader.getProperty("competing")) > 1){
-			Competition.evolutionRunner(data);
-		}
-		else{
-			while (System.currentTimeMillis()-t1 < Long.parseLong(PropertyReader.getProperty("timing"))){
-				for (NeuralNetwork nn : nns){
-					NeuralNetManager.RunNetwork(nn);					
-				}	
-			}
-		}
+		Feedforward.feed(true, data, nns);
 		//see method description
-		for(NeuralNetwork nn : nns) {
-			NeuralNetManager.Neuraltracker(nn);	
-		}
-		netManager.EvolveTeardown(data);
+		manager.EvolveTeardown(data);
 		
 	}
 	private static MethodManager netManagerReflected(DataManager data) {

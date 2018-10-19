@@ -16,7 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import General.NeuralNetManager;
+import FeedForward.Feedforward;
 import General.NeuralNetwork;
 public class ProgressTracker {
 	private static ArrayList<Wallet> wallets;
@@ -80,7 +80,7 @@ public class ProgressTracker {
 		File f2 = new File("profit.txt");
 		while(true){
 		NeuralNetwork nn = data.getNetworks()[0];
-		NeuralNetManager.RunNetwork(nn);
+		Feedforward.RunNetwork(nn);
 		long t = System.currentTimeMillis();
 		while(System.currentTimeMillis()-t > UPDATE_TIMING);
 		PrintWriter fout = new PrintWriter(f2);

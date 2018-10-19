@@ -1,12 +1,11 @@
 package Backpropagate;
 import java.util.Random;
 
-import Competitive.Competition;
+import FeedForward.Feedforward;
 import General.DataManager;
 import General.Gene;
 import General.Layer;
 import General.MethodManager;
-import General.NeuralNetManager;
 import General.NeuralNetwork;
 import General.Neuron;
 import General.PropertyReader;
@@ -27,28 +26,11 @@ public class Backpropagate {
 		NeuralNetwork[] nns = data.getNetworks();
 		//Scales the allowed error over time allowing a much larger starting error but capping the smallest error possible at a lower but still reasonable number.
 		double scaling = startingErrorSetup(data);
-		// see method description
-		for(NeuralNetwork nn : nns) {
-			NeuralNetManager.Neuraltracker(nn);	
-		}
-		//Different types of network running for competitive networks
-		
-		// this is where the back propagation learning step for the neural networks run. currently I have them set to run for one minute before evaluating
+		// this is where the back propagation learning step for the neural networks run.
 		while(data.getTotalGlobalError() > Double.parseDouble(PropertyReader.getProperty("allowedError"))/scaling){
-			if(Integer.parseInt(PropertyReader.getProperty("competing")) > 1){
-				Competition.backpropagationRunner(data);
-			}
-			else{
-				//set necessary values for backpropagation step
-				netManager.BackIterationHandling(data);
-				//run the networks
-				for (NeuralNetwork nn : nns){
-					NeuralNetManager.RunNetwork(nn);					
-				}
-				long t = System.currentTimeMillis();
-				while(System.currentTimeMillis() - t < Integer.parseInt(PropertyReader.getProperty("timing")));
-				backpropagate(nns,data);
-			}	
+			netManager.BackIterationHandling(data);
+			Feedforward.feed(false, data, nns);	
+			backpropagate(nns,data);
 			data.getWriter().println("Total Global Error:" + data.getTotalGlobalError()); 
 			data.getWriter().println("backpropagation complete");		
 		}

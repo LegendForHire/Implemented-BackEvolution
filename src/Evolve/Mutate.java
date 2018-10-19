@@ -8,7 +8,6 @@ import java.util.Random;
 import General.DataManager;
 import General.Gene;
 import General.Layer;
-import General.NeuralNetManager;
 import General.NeuralNetwork;
 import General.Neuron;
 import General.PropertyReader;
@@ -18,7 +17,6 @@ public class Mutate {
 	public static Random rand = new Random();
 	
 	public static NeuralNetwork mutate(NeuralNetwork newnn, DataManager data){
-		NeuralNetManager.Neuraltracker(newnn);
 		double mutationSelector = Math.random();
 		ArrayList<Gene> genes = geneArrayCreator(newnn);
 		if (mutationSelector < Double.parseDouble(PropertyReader.getProperty("removeProbability"))&& genes.size() > 0)geneMutation(mutationSelector, genes);

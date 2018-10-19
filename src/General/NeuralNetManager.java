@@ -9,7 +9,6 @@ package General;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 
 import Backpropagate.Backpropagate;
 import Evolve.Evolve;
@@ -69,32 +68,6 @@ public abstract class NeuralNetManager {
 				data.getWriter().println("Iteration " + (data.getGen()) + " Complete");
 				data.incrementGen();
 			}
-	}
-	//This is where a single neural network is run
-	public static void RunNetwork(NeuralNetwork nn){
-			//runs each layer in order
-			nn.clearInputArrays();
-			for (Layer l : nn.getLayers()){			
-				// gets the input data, and sends it to each connected neuron.
-				for (Neuron n : l.getNeurons()){
-					if(l.isInput() || (l.isOutput() && Backpropagate.Sigmoid(n.getValue()) > Double.parseDouble(PropertyReader.getProperty("activation"))))n.invoke();
-					if(!l.isOutput())runGenes(n);
-					n.setLast(n.getValue());
-					n.setValue(0.0000001);
-				}
-			}
-			
-		}
-	private static void runGenes(Neuron n) {
-		for (Gene g : n.getGenes()){
-			Neuron connect = g.getConnection();
-			double weight = g.getWeight();
-			double value = Backpropagate.Sigmoid(n.getValue());
-			g.setLastInput(connect.getValue()+value*weight);
-			connect.setValue(connect.getValue()+value*weight);
-			g.getConnection().addInput(g);
-			g.setInput(n);
-		}
 	}				
 	//save method
 	private static void save(DataManager data){
@@ -157,20 +130,7 @@ public abstract class NeuralNetManager {
 			fout.print(layernumber + ":" + neurondata + ":" + noutnum + ":" + noutlayer + ":" + weight + ":" + id + ",");;						
 		}
 	}
-	//Makes sure neuron and gene location data are correct.
-	public static void Neuraltracker(NeuralNetwork nn){		
-		for (int i = 0; i < nn.getLayers().size(); i++){
-			Layer l = nn.getLayers().get(i);
-			l.setNumber(i+1);		
-			ArrayList<Neuron> ns = l.getNeurons();
-			for (int j = 0; j < ns.size(); j++){
-				Neuron n = ns.get(j);
-				n.setLayernumber(i+1);
-				n.setNumber(j+1);
-			}
-		}
-		
-	}
+
 
 
 }
