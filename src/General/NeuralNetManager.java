@@ -10,14 +10,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
-import Backpropagate.Backpropagate;
 import Evolve.Evolve;
+import FeedForward.Feedforward;
 public abstract class NeuralNetManager {
-	public static void start(DataManager data) {
+	protected DataManager data;
+	public NeuralNetManager(DataManager data) {
+		this.data = data;
+	}
+	public void start() {
 		//Creating the networks to run them
-		MethodManager manager = data.getMethods();
-		manager.setup(data);
-		NeuralNetwork[] nns =  NetworkCreator.CreateNetworks(data); 
+		setup();
+		NetworkCreator creator = data.getNetworkCreator();
+		NeuralNetwork[] nns =  creator.CreateNetworks(); 
 		data.setNetworks(nns);
 		//Thread to keep the networks learning
 		Thread thread2 = new Thread() {			
@@ -26,7 +30,7 @@ public abstract class NeuralNetManager {
 				Thread thread = new Thread() {
 				public void run() {
 					try {
-						RunNetworks(data);
+						RunNetworks();
 					} catch (IllegalArgumentException | SecurityException e) {
 							File eFile = new File("AIError"+System.currentTimeMillis());
 							try {
@@ -53,26 +57,28 @@ public abstract class NeuralNetManager {
 		};
 		thread2.start();
 	}
+	
 	//runs the networks
-	protected static void RunNetworks(DataManager data){
+	protected void RunNetworks(){
+			Feedforward feed = data.getFeedforward();
+			Evolve evolve = data.getEvolve();
 			while(true) {
-				Backpropagate.runner(data);
-				Evolve.runner(data);
+				feed.backpropagateRunner();
+				feed.evolveRunner();
 				// saves the current state of the neural networks.
 				NeuralNetwork[] nns = data.getNetworks();
-				save(data);
+				save();
 				data.getWriter().println("Last state saved");
 				//evolution method
-				nns = Evolve.evolve(nns, data);
+				nns = evolve.evolve(nns);
 				data.setNetworks(nns);
 				data.getWriter().println("Iteration " + (data.getGen()) + " Complete");
 				data.incrementGen();
 			}
 	}				
 	//save method
-	private static void save(DataManager data){
+	private void save(){
 		NeuralNetwork[] nns = data.getNetworks();
-		MethodManager manager = data.getMethods();
 		long t = System.currentTimeMillis();
 		File out;
 		File recent;
@@ -98,10 +104,10 @@ public abstract class NeuralNetManager {
 				int layernumber = l.getNumber();
 				for (Neuron n : l.getNeurons()){
 					String neurondata;
-					if (l.isInput())neurondata = manager.saveInput(n, data);
+					if (l.isInput())neurondata = saveInput(n);
 					else neurondata = "" + n.getNumber();
 					for (Gene g :n.getGenes()){
-						geneSave(manager, fout, nn, layernumber, n, neurondata, g, data);
+						geneSave(fout, nn, layernumber, n, neurondata, g, data);
 					}
 				}
 			}
@@ -113,14 +119,13 @@ public abstract class NeuralNetManager {
 			e.printStackTrace();
 		}
 	}
-	@SuppressWarnings("unused")
-	private static void geneSave(MethodManager manager, PrintWriter fout, NeuralNetwork nn, int layernumber,
+	
+	private void geneSave(PrintWriter fout, NeuralNetwork nn, int layernumber,
 			Neuron n, String neurondata, Gene g, DataManager data) {
 		Neuron nout = g.getConnection();
 		String noutnum = null;
 		if (nn.getLayers().size() == nout.getLayernumber()) {
-			if(nout!=null)noutnum = manager.saveOutput(nout, data);
-			else n.RemoveGenes(g);
+			noutnum = saveOutput(nout);
 		}
 		else noutnum = "" + nout.getNumber();
 		if(noutnum != null) {
@@ -130,6 +135,26 @@ public abstract class NeuralNetManager {
 			fout.print(layernumber + ":" + neurondata + ":" + noutnum + ":" + noutlayer + ":" + weight + ":" + id + ",");;						
 		}
 	}
+	//override this method if your input neuron positions could change between loads
+	// give each neuron a unique name based on its unique data
+	//make sure your returns do not include colons or semicolons or new lines
+	public String saveInput(Neuron in) {
+		return "" + in.getNumber();
+	}
+	//override this method if your output neuron positions could change between loads
+	// give each neuron a unique name based on its unique data
+	//make sure your returns do not include colons or semicolons or new lines
+	public String saveOutput(Neuron out) {
+		return "" + out.getNumber();
+	}
+	//override this method if you have additional information you want
+	// do not include new lines here
+	public String saveMetaData(NeuralNetwork nn) {
+		return "";
+	}
+	//This runs before RunNetworks is called and setups up the single
+	//use items for further calls to this class item.
+	public abstract void setup();
 
 
 

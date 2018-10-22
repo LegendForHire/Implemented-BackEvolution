@@ -4,6 +4,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
+import Backpropagate.Backpropagate;
+import Evolve.Evolve;
+import Evolve.Mutate;
+import Evolve.Reproduce;
+import FeedForward.Feedforward;
+
 /**
  * Singleton.java 1.0 March 6, 2018
  *
@@ -20,19 +26,20 @@ public abstract class DataManager {
 	private int Generation = 0;
 	private long id = 0;
 	private int[] currentPlayers;
-	private MethodManager methods;
+	private Evolve evolve;
+	private Reproduce reproduce;
+	private Mutate mutate;
 	//create fields for all items that have getters and setter
 	//create constants for all methods with only getters. 
 	//these are your twiddly knobs for changing how the algorithm runs a bit.
 	// also when implementing create the getInstance method of the singleton
 	// and at least an empty constructor
-	public DataManager(MethodManager methods){
+	public DataManager(){
 		File f = new File("log.txt");
 		try {
 			writer = new PrintWriter(f);
 		} catch (FileNotFoundException e) {}
 		Generation = 0;
-		this.methods = methods;
 	}
 	public PrintWriter getWriter() {
 		return writer;
@@ -75,8 +82,21 @@ public abstract class DataManager {
 	public void setCurrentPlayers(int[] players) {
 		currentPlayers = players;
 	}
-	public MethodManager getMethods() {
-		return methods;
+	public abstract NeuralNetManager getNetManager();
+	public Evolve getEvolve() {
+		if(evolve == null)evolve = new Evolve(this);
+		return evolve;
+	};
+	public abstract Feedforward getFeedforward();
+	public abstract Backpropagate getBackPropagate();
+	public abstract NetworkCreator getNetworkCreator();
+	public Reproduce getReproduce() {
+		if(reproduce == null)reproduce = new Reproduce(this);
+		return reproduce;
+	}
+	public Mutate getMutate() {
+		if(mutate == null)mutate = new Mutate(this);
+		return mutate;
 	}
 }
 

@@ -1,11 +1,9 @@
 package Backpropagate;
 import java.util.Random;
 
-import FeedForward.Feedforward;
 import General.DataManager;
 import General.Gene;
 import General.Layer;
-import General.MethodManager;
 import General.NeuralNetwork;
 import General.Neuron;
 import General.PropertyReader;
@@ -16,38 +14,20 @@ import General.PropertyReader;
  * Mebane, North Carolina 27302 U.S.A
  * All Rights Reserved
  */
-public class Backpropagate {
-	
+public abstract class Backpropagate {
+	protected DataManager data;
 	public static Random rand = new Random();
-	public static void runner(DataManager data){
-		MethodManager netManager = netManagerReflected(data);
-		netManager.BackpropagationSetup(data);
-		data.getWriter().println("Iteration" + data.getGen());
-		NeuralNetwork[] nns = data.getNetworks();
-		//Scales the allowed error over time allowing a much larger starting error but capping the smallest error possible at a lower but still reasonable number.
-		double scaling = startingErrorSetup(data);
-		// this is where the back propagation learning step for the neural networks run.
-		while(data.getTotalGlobalError() > Double.parseDouble(PropertyReader.getProperty("allowedError"))/scaling){
-			netManager.BackIterationHandling(data);
-			Feedforward.feed(false, data, nns);	
-			backpropagate(nns,data);
-			data.getWriter().println("Total Global Error:" + data.getTotalGlobalError()); 
-			data.getWriter().println("backpropagation complete");		
-		}
-		
+	public Backpropagate(DataManager data) {
+		this.data = data;
 	}
-	private static double startingErrorSetup(DataManager data) {
+	public double startingErrorSetup() {
 		double scaling = Math.log(data.getGen())*3+1;
 		data.setTotalGlobalError(Double.parseDouble(PropertyReader.getProperty("allowedError"))/scaling + 1);
 		return scaling;
 	}
-	private static MethodManager netManagerReflected(DataManager data){	
-		return data.getMethods();
-	}
-	public static void backpropagate(NeuralNetwork[] nns, DataManager data) {
-		MethodManager netManager = netManagerReflected(data);
+	public void backpropagate(NeuralNetwork[] nns) {
 		//Determines which neurons should have fired
-		netManager.setAct(data);
+		setAct();
 		for(NeuralNetwork nn : nns){					
 			outputErrorCalculation(nn);
 			outputGeneCorrection(nn);
@@ -60,17 +40,17 @@ public class Backpropagate {
 					}
 				}
 			}
-			globalErrorCalculation(data, nn);
+			globalErrorCalculation(nn);
 		}		
 	}
-	private static void geneCorrection(Neuron n) {
+	private void geneCorrection(Neuron n) {
 		for(Gene g : n.getInputs()){
 			Neuron input = g.getInput();
 			g.setLastChange(n.getError()*Double.parseDouble(PropertyReader.getProperty("learningRate"))*input.getLast()+g.getWeight()+g.getLastChange()*Double.parseDouble(PropertyReader.getProperty("momentum")));
 			g.setWeight(g.getLastChange());
 		}
 	}
-	private static void hiddenErrorCalculation(Neuron n) {
+	private void hiddenErrorCalculation(Neuron n) {
 		double outputErrors = 0;
 		int m = 0;
 		int expected = 0;
@@ -84,14 +64,14 @@ public class Backpropagate {
 		expected = expected/m;
 		n.setError((expected-Sigmoid(n.getLast()))*Sigmoid(n.getLast())*outputErrors);
 	}
-	private static void outputGeneCorrection(NeuralNetwork nn) {
+	private void outputGeneCorrection(NeuralNetwork nn) {
 		//set weight for each output gene
 		Layer out = nn.getLayers().get(nn.getLayers().size()-1);	
 		for(Neuron n: out.getNeurons()){
 			geneCorrection(n);
 		}
 	}
-	private static void globalErrorCalculation(DataManager data, NeuralNetwork nn) {
+	private void globalErrorCalculation(NeuralNetwork nn) {
 		double totalsum = 0;
 		for(Layer l : nn.getLayers()){
 			double sum = 0;
@@ -115,9 +95,6 @@ public class Backpropagate {
 	public static double Sigmoid(double d) {
 		return 1/(1+Math.exp(d*-1));
 	}
-	public static void BackIterationHandling(DataManager data){
-		MethodManager netManager = netManagerReflected(data);
-		netManager.BackIterationHandling(data);		
-	}
+	public abstract void setAct();
 	
 }

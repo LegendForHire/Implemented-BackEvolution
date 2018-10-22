@@ -14,20 +14,24 @@ import General.PropertyReader;
 
 
 public class Mutate {
-	public static Random rand = new Random();
-	
-	public static NeuralNetwork mutate(NeuralNetwork newnn, DataManager data){
+	public Random rand;
+	private DataManager data;
+	public Mutate(DataManager data) {
+		this.data = data;
+		rand = new Random();
+	}
+	public NeuralNetwork mutate(NeuralNetwork newnn){
 		double mutationSelector = Math.random();
 		ArrayList<Gene> genes = geneArrayCreator(newnn);
 		if (mutationSelector < Double.parseDouble(PropertyReader.getProperty("removeProbability"))&& genes.size() > 0)geneMutation(mutationSelector, genes);
-		else if (mutationSelector < Double.parseDouble(PropertyReader.getProperty("newGeneProbability")) || genes.size() == 0)newGeneInsert(newnn, data);
+		else if (mutationSelector < Double.parseDouble(PropertyReader.getProperty("newGeneProbability")) || genes.size() == 0)newGeneInsert(newnn);
 		else {
-			if (newnn.getLayers().size() == 2 || mutationSelector > Double.parseDouble(PropertyReader.getProperty("existingLayerProbability")))newNeuronInNewLayer(newnn, genes, data);	
-			else newNeuronInExistingLayer(newnn, data);	
+			if (newnn.getLayers().size() == 2 || mutationSelector > Double.parseDouble(PropertyReader.getProperty("existingLayerProbability")))newNeuronInNewLayer(newnn, genes);	
+			else newNeuronInExistingLayer(newnn);	
 		}
 		return newnn;
 	}
-	public static ArrayList<Gene> geneArrayCreator(NeuralNetwork newnn) {
+	public ArrayList<Gene> geneArrayCreator(NeuralNetwork newnn) {
 		ArrayList<Gene> genes = new ArrayList<Gene>();
 		for (Layer l : newnn.getLayers()){
 				for (Neuron n : l.getNeurons()){						
@@ -37,7 +41,7 @@ public class Mutate {
 		return genes;
 	}
 	@SuppressWarnings({ "unchecked"})
-	private static void newNeuronInExistingLayer(NeuralNetwork newnn, DataManager data){
+	private void newNeuronInExistingLayer(NeuralNetwork newnn){
 		String type = PropertyReader.getProperty("type");
 		try {
 			Class<? extends Neuron> neuronClass = (Class<? extends Neuron>) Class.forName("BackEvolution."+type+"."+type+"Neuron");
@@ -120,7 +124,7 @@ public class Mutate {
 		
 	}
 	@SuppressWarnings({ "unchecked" })
-	private static void newNeuronInNewLayer(NeuralNetwork newnn, ArrayList<Gene> genes, DataManager data) {
+	private void newNeuronInNewLayer(NeuralNetwork newnn, ArrayList<Gene> genes) {
 		//new neuron in new layer
 		String type = PropertyReader.getProperty("type");
 		
@@ -182,7 +186,7 @@ public class Mutate {
 		}
 		
 	}
-	public static void newGeneInsert(NeuralNetwork newnn, DataManager data) {
+	public void newGeneInsert(NeuralNetwork newnn) {
 		// new gene
 		int layer = 0;
 		if (newnn.getLayers().size() > 2) layer = rand.nextInt(newnn.getLayers().size()-2);
@@ -208,7 +212,7 @@ public class Mutate {
 		}
 		in.AddGenes(g);
 	}
-	private static void geneMutation(double selector, ArrayList<Gene> genes) {
+	private void geneMutation(double selector, ArrayList<Gene> genes) {
 		Gene gene= genes.get(0);
 		if(genes.size() > 1) gene= genes.get(rand.nextInt(genes.size()-1));
 		if(selector < Double.parseDouble(PropertyReader.getProperty("adjustProbability"))){

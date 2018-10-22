@@ -80,7 +80,8 @@ public class ProgressTracker {
 		File f2 = new File("profit.txt");
 		while(true){
 		NeuralNetwork nn = data.getNetworks()[0];
-		Feedforward.RunNetwork(nn);
+		Feedforward feedforward = data.getFeedforward();
+		feedforward.RunNetwork(nn);
 		long t = System.currentTimeMillis();
 		while(System.currentTimeMillis()-t > UPDATE_TIMING);
 		PrintWriter fout = new PrintWriter(f2);

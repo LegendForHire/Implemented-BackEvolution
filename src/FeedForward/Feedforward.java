@@ -1,7 +1,6 @@
 package FeedForward;
 
 import Backpropagate.Backpropagate;
-import Competitive.CompetitionManager;
 import General.DataManager;
 import General.Gene;
 import General.Layer;
@@ -9,22 +8,46 @@ import General.NeuralNetwork;
 import General.Neuron;
 import General.PropertyReader;
 
-public class Feedforward {
-	public static void feed(boolean evolve, DataManager data, NeuralNetwork[] nns){
-		if(Integer.parseInt(PropertyReader.getProperty("competing")) > 1){
-			competitionRunner(data,evolve);
-
+public abstract class Feedforward {
+		protected DataManager data;
+		protected Backpropagate backpropagate;
+		public Feedforward(DataManager data){
+			this.data = data;
+			backpropagate = data.getBackPropagate();
 		}
-		else{
-			for (NeuralNetwork nn : nns){
-				RunNetwork(nn);					
+		public void evolveRunner() {
+			EvolveSetup();		
+			// runs the networks for a minute to measure their performance
+			feed(true);
+			//see method description
+			EvolveTeardown();
+		
+		}
+		public void backpropagateRunner(){
+			BackpropagationSetup();
+			data.getWriter().println("Iteration" + data.getGen());
+			NeuralNetwork[] nns = data.getNetworks();
+			//Scales the allowed error over time allowing a much larger starting error but capping the smallest error possible at a lower but still reasonable number.
+			double scaling = backpropagate.startingErrorSetup();
+			// this is where the back propagation learning step for the neural networks run.
+			while(data.getTotalGlobalError() > Double.parseDouble(PropertyReader.getProperty("allowedError"))/scaling){
+				BackIterationHandling();
+				feed(false);	
+				backpropagate.backpropagate(nns);
+				data.getWriter().println("Total Global Error:" + data.getTotalGlobalError()); 
+				data.getWriter().println("backpropagation complete");		
 			}
-			long t = System.currentTimeMillis();
-			while(System.currentTimeMillis() - t < Integer.parseInt(PropertyReader.getProperty("timing")));
+			
 		}
-	}
-	//This is where a single neural network is run
-		public static void RunNetwork(NeuralNetwork nn){
+		public void feed(boolean evolve){
+			NeuralNetwork[] nns = data.getNetworks();
+				for (NeuralNetwork nn : nns){
+					RunNetwork(nn);					
+				}
+				long t = System.currentTimeMillis();
+				while(System.currentTimeMillis() - t < Integer.parseInt(PropertyReader.getProperty("timing")));
+		}
+		public void RunNetwork(NeuralNetwork nn){
 				//runs each layer in order
 				nn.clearInputArrays();
 				for (Layer l : nn.getLayers()){			
@@ -37,7 +60,7 @@ public class Feedforward {
 					}
 				}		
 		}
-		private static void runGenes(Neuron n) {
+		private void runGenes(Neuron n) {
 			for (Gene g : n.getGenes()){
 				Neuron connect = g.getConnection();
 				double weight = g.getWeight();
@@ -48,68 +71,16 @@ public class Feedforward {
 				g.setInput(n);
 			}
 		}
-		@SuppressWarnings("deprecation")
-		public static void competitionRunner(DataManager data, boolean evolve){	
-			CompetitionManager netManager = (CompetitionManager) data.getMethods();
-			NeuralNetwork[] nns = data.getNetworks();
-			int competing = Integer.parseInt("competing");
-			int[] currentPlayers= new int[competing];
-			for(int i = 0; i< competing; i++){
-				currentPlayers[i] = i;
-			}
-			while(currentPlayers[0] <= Integer.parseInt(PropertyReader.getProperty("numNetworks"))-competing){
-				netManager.setupCompetition(data);
-				Thread[] threads = createPlayerThreads(data, evolve, netManager, nns, currentPlayers);
-				for(Thread thread: threads)thread.start();
-				for(Thread thread: threads)
-					try {
-						thread.join();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						Thread.currentThread().stop();
-					}
-				netManager.setEndCompetitionState(data);
-				incrementPlayers(currentPlayers.length-1, data);
-			}				
-		}
-		private static Thread[] createPlayerThreads(DataManager data, boolean evolve, CompetitionManager netManager,
-				NeuralNetwork[] nns, int[] currentPlayers) {
-			Thread[] threads = new Thread[currentPlayers.length];
-			for(int i = 0; i<currentPlayers.length; i++){
-				NeuralNetwork nn = nns[currentPlayers[i]];
-				Thread thread = new Thread(){
-					public void run(){
-						try {
-							while(!netManager.getGameOver(data)) {
-								if(evolve)RunNetwork(nn);
-								else {
-									while(!netManager.isTurn(nn,data));
-									netManager.BackIterationHandling(data);
-									RunNetwork(nn);
-									NeuralNetwork[] back = {nn};
-									Backpropagate.backpropagate(back, data);
-								}	
-							}
-						} catch (IllegalArgumentException |SecurityException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				};
-				threads[i] = thread;
-			}
-			return threads;
-		}
-		private static void incrementPlayers(int position, DataManager data) {
-			int[] currentPlayers = data.getCurrentPlayers();
-			if(currentPlayers[position] == Integer.parseInt(PropertyReader.getProperty("numNetworks"))-(currentPlayers.length-position) && position !=0){	
-				incrementPlayers(position-1,data);
-				currentPlayers[position] = currentPlayers[position-1]+1;
-			}
-			else{
-				currentPlayers[position]++;
-			}	
-		}
+		//this is called when evolve begins.
+		public abstract void EvolveSetup();
+		//this is called after evolve finishes
+		public abstract void EvolveTeardown();
+		// This is called at the beginning of each iteration of learning
+		// this is for data that needs to be reset or generated on each iteration of learning
+		public abstract void BackpropagationSetup();
+		// This runs before the backpropagation step is called each time
+		// this is for data that needs to be reset or generated on each iteration of backpropagtion
+		public abstract void BackIterationHandling();
+
 }
 

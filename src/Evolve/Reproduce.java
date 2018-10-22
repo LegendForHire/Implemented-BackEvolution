@@ -9,15 +9,19 @@ import java.util.HashMap;
 import General.DataManager;
 import General.Gene;
 import General.Layer;
-import General.MethodManager;
 import General.NetworkCreator;
 import General.NeuralNetwork;
 import General.Neuron;
 import General.PropertyReader;
 
 public class Reproduce {
-	
-	public static NeuralNetwork clone(NeuralNetwork cloner, DataManager data) {
+	private DataManager data;
+	private Mutate mutate;
+	public Reproduce(DataManager data){
+		this.data = data;
+		mutate = data.getMutate();
+	}
+	public NeuralNetwork clone(NeuralNetwork cloner) {
 		NeuralNetwork newnn = newNetwork(data);
 		ArrayList<Layer> clonelayers = cloner.getLayers();
 		//adds layer and neuron structure
@@ -30,9 +34,9 @@ public class Reproduce {
 		HashMap<Long, double[]> geneIdentities = getGeneIdentities(clonelayers,clonelayers.size());
 		geneAdder(newnn, geneIdentities);
 		//returns a mutated clone
-		return Mutate.mutate(newnn,data);
+		return mutate.mutate(newnn);
 	}
-	public static NeuralNetwork crossover(NeuralNetwork cross, NeuralNetwork over, DataManager data) {
+	public NeuralNetwork crossover(NeuralNetwork cross, NeuralNetwork over) {
 		NeuralNetwork newnn = newNetwork(data);
 		NeuralNetwork lessfit = null;
 		NeuralNetwork morefit = null;
@@ -65,9 +69,9 @@ public class Reproduce {
 		geneBreeder(geneIdentities, geneIdentities2);
 		geneAdder(newnn, geneIdentities);
 		geneAdder(newnn, geneIdentities2);
-		return Mutate.mutate(newnn, data);
+		return mutate.mutate(newnn);
 	}
-	private static void geneBreeder(HashMap<Long, double[]> geneIdentities, HashMap<Long, double[]> geneIdentities2) {
+	private void geneBreeder(HashMap<Long, double[]> geneIdentities, HashMap<Long, double[]> geneIdentities2) {
 		for (long id : geneIdentities.keySet()){
 			if(geneIdentities2.containsKey(id)) {
 				double[] nums = geneIdentities.get(id);
@@ -81,7 +85,7 @@ public class Reproduce {
 			}
 		}
 	}
-	private static void layerTrackingReset(ArrayList<Layer> morelayers) {
+	private void layerTrackingReset(ArrayList<Layer> morelayers) {
 		for (int i = 1; i <=morelayers.size(); i++){
 			Layer l = morelayers.get(i-1);
 			for (Neuron n : l.getNeurons()){
@@ -91,7 +95,7 @@ public class Reproduce {
 			l.setNumber(i);	
 		}
 	}
-	private static int getNumNeurons(ArrayList<Layer> lesslayers, ArrayList<Layer> morelayers, int i) {
+	private int getNumNeurons(ArrayList<Layer> lesslayers, ArrayList<Layer> morelayers, int i) {
 		Layer lesslayer = null;
 		Layer morelayer = null;
 		int lessnum = 0;
@@ -121,14 +125,13 @@ public class Reproduce {
 		return (morenum > lessnum) ? morenum : lessnum;
 	}
 	@SuppressWarnings({ "unchecked", "deprecation" })
-	private static NeuralNetwork newNetwork(DataManager data) {
+	private NeuralNetwork newNetwork(DataManager data) {
 		String type = PropertyReader.getProperty("type");
-		
+		NetworkCreator creator = data.getNetworkCreator();
 		try {
 			Class<? extends NeuralNetwork> networkClass = (Class<? extends NeuralNetwork>) Class.forName("BackEvolution."+type+"."+type+"Network");
-			Layer[] puts = NetworkCreator.creator();
-			MethodManager manager = data.getMethods();
-			manager.InputOutputcreator(puts, data);
+			Layer[] puts = creator.creator();
+			creator.InputOutputcreator(puts);
 			Class<?>[] types2 = {Layer.class,Layer.class,DataManager.class};
 			Constructor<? extends NeuralNetwork> con2 = networkClass.getConstructor(types2);
 			NeuralNetwork newnn = con2.newInstance(puts[0],puts[1], data);
@@ -142,7 +145,7 @@ public class Reproduce {
 		
 	} 
 	@SuppressWarnings({ "unchecked"})
-	private static void networkLayerCreation(NeuralNetwork newnn, int numNeurons) {
+	private void networkLayerCreation(NeuralNetwork newnn, int numNeurons) {
 		String type = PropertyReader.getProperty("type");
 		
 		try {
@@ -165,7 +168,7 @@ public class Reproduce {
 		}	
 		
 	}
-	private static HashMap<Long, double[]> getGeneIdentities(ArrayList<Layer> layers, int maxlayers) {
+	private HashMap<Long, double[]> getGeneIdentities(ArrayList<Layer> layers, int maxlayers) {
 		HashMap<Long, double[]> geneIdentities = new HashMap<Long, double[]>();
 		for(int k =1; k <=layers.size(); k++){
 			Layer l = layers.get(k-1);			
@@ -185,7 +188,7 @@ public class Reproduce {
 		}
 		return geneIdentities;
 	}
-	private static void geneAdder(NeuralNetwork newnn, HashMap<Long, double[]> geneIdentities) {
+	private void geneAdder(NeuralNetwork newnn, HashMap<Long, double[]> geneIdentities) {
 		for(long id : geneIdentities.keySet()){
 			double[] nums = geneIdentities.get(id);
 			Gene newGene = new Gene(newnn.getLayers().get((int) nums[3]-1).getNeurons().get((int) nums[2]-1), nums[4], id);

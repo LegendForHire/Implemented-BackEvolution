@@ -11,13 +11,16 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
+import Evolve.Evolve;
+
 public abstract class NeuralNetwork implements Comparable<NeuralNetwork>{
 	private static final double THRESHOLD = Double.parseDouble(PropertyReader.getProperty("speciationThreshold"));
 	protected ArrayList<Layer> layers;
 	protected double fitness;
 	private double globalError;
 	private Species species;
-	public NeuralNetwork(Layer inputLayer, Layer outputLayer, Class<?> a) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException{
+	private DataManager data;
+	public NeuralNetwork(Layer inputLayer, Layer outputLayer, Class<?> a, DataManager data) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException{
 		layers = new ArrayList<Layer>();
 		Class<?>[] types = {a};
 		Constructor<?> con =  a.getConstructor(types);
@@ -26,6 +29,7 @@ public abstract class NeuralNetwork implements Comparable<NeuralNetwork>{
 		layers.add((Layer) con.newInstance(a.cast(outputLayer)));
 		layers.get(1).setNumber(2);
 		fitness = 0;
+		this.data = data;
 		//loads the currencies from the bittrex api.		
 	}
 	//made to clone neural networks. didn't work as intended, but not deleted in case used elsewhere for other purpose.
@@ -34,6 +38,7 @@ public abstract class NeuralNetwork implements Comparable<NeuralNetwork>{
 		for (Layer l : layers){
 			this.layers.add((Layer) a.getConstructor(a.getClass()).newInstance(a.cast(l)));
 		}	
+		this.data = nn.getData();
 	}
 	
 
@@ -47,8 +52,9 @@ public abstract class NeuralNetwork implements Comparable<NeuralNetwork>{
 	}
 	public double getFitness(){
 		double fitnessAdjuster = 0;
+		Evolve evolve = data.getEvolve();
 		for(NeuralNetwork nn : species.getNetworks()) {
-			fitnessAdjuster+=sharingFunction(Evolve.Evolve.getSpeciesDelta(this,nn));
+			fitnessAdjuster+=sharingFunction(evolve.getSpeciesDelta(this,nn));
 		}
 		return fitness/fitnessAdjuster;
 	}
@@ -112,5 +118,8 @@ public abstract class NeuralNetwork implements Comparable<NeuralNetwork>{
 	}
 	public void setSpecies(Species species) {
 		this.species = species;
+	}
+	public DataManager getData(){
+		return data;
 	}
 }

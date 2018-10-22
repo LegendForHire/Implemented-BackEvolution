@@ -9,10 +9,8 @@ package Evolve;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import FeedForward.Feedforward;
 import General.DataManager;
 import General.Gene;
-import General.MethodManager;
 import General.NeuralNetwork;
 import General.PropertyReader;
 import General.Species;
@@ -23,22 +21,11 @@ public class Evolve {
 	private static final double DISJOINTWEIGHT = 1;
 	private static final double EXCESSWEIGHT = 1;
 	private static final double DIFWEIGHT = 1;
-	public static void runner(DataManager data) {
-		MethodManager manager = netManagerReflected(data);
-		manager.EvolveSetup(data);
-		NeuralNetwork[] nns = data.getNetworks();
-		
-		// runs the networks for a minute to measure their performance
-		Feedforward.feed(true, data, nns);
-		//see method description
-		manager.EvolveTeardown(data);
-		
+	private DataManager data;
+	public Evolve(DataManager data) {
+		this.data = data;
 	}
-	private static MethodManager netManagerReflected(DataManager data) {
-		return data.getMethods();
-		
-	}
-	public static NeuralNetwork[] evolve(NeuralNetwork[] nns,DataManager data){
+	public NeuralNetwork[] evolve(NeuralNetwork[] nns){
 		Arrays.sort(nns);
 		NeuralNetwork[] halfnns = new NeuralNetwork[nns.length/2];
 		//This will be the new population that is returned
@@ -48,31 +35,32 @@ public class Evolve {
 		Double totalFitness = fitnessSetup(nns, halfnns, newnns);
 		//this is where new neural networks are born for the new population
 		for (int i = nns.length/2; i<nns.length; i++){
-			newNetworkAtLoc(data, halfnns, newnns, totalFitness, i);
+			newNetworkAtLoc(halfnns, newnns, totalFitness, i);
 		}
 		
 		return newnns;
 		
 	}
-	private static void newNetworkAtLoc(DataManager data, NeuralNetwork[] originalPopulation, NeuralNetwork[] newnns, Double totalFitness, int loc){
+	private void newNetworkAtLoc(NeuralNetwork[] originalPopulation, NeuralNetwork[] newnns, Double totalFitness, int loc){
 		//this random decides if the network will be cloned or bred.
 		Double cloneVsCrossover=  Math.random();
 		NeuralNetwork network;
 		//cloned
+		Reproduce reproduce = data.getReproduce();
 		if (cloneVsCrossover <= CLONE_CHANCE){
 			NeuralNetwork clonedParent = parentSelection(originalPopulation, totalFitness);
-			network = Reproduce.clone(clonedParent, data);
+			network = reproduce.clone(clonedParent);
 		}
 		//crossover
 		else{
 			NeuralNetwork parent1 = parentSelection(originalPopulation, totalFitness);
 			NeuralNetwork parent2 = parentSelection(originalPopulation, totalFitness);
-			network = Reproduce.crossover(parent1,parent2,data);
+			network = reproduce.crossover(parent1,parent2);
 		}
 		setSpecies(network, newnns);
 		newnns[loc] = network;
 	}
-	private static void setSpecies(NeuralNetwork network, NeuralNetwork[] newnns) {
+	private void setSpecies(NeuralNetwork network, NeuralNetwork[] newnns) {
 		boolean speciesFound = false;
 		for(NeuralNetwork compared : newnns) {
 			if(compared != null && !speciesFound){
@@ -88,15 +76,16 @@ public class Evolve {
 			network.setSpecies(newSpecies);
 		}
 	}
-	public static double getSpeciesDelta(NeuralNetwork network, NeuralNetwork compare) {
+	public double getSpeciesDelta(NeuralNetwork network, NeuralNetwork compare) {
 		
 		double weightdif=0;
 		int totalmatches = 0;
 		int numGenes;
 		int excess = 0;
 		int disjoint = 0;
-		ArrayList<Gene> genes = Mutate.geneArrayCreator(network);
-		ArrayList<Gene> genes2 = Mutate.geneArrayCreator(compare);
+		Mutate mutate = data.getMutate();
+		ArrayList<Gene> genes = mutate.geneArrayCreator(network);
+		ArrayList<Gene> genes2 = mutate.geneArrayCreator(compare);
 		if(genes2.size() > genes.size())numGenes =genes2.size();
 		else numGenes = genes.size();
 		if(numGenes < 20) numGenes = 1;
@@ -123,7 +112,7 @@ public class Evolve {
 		weightdif = weightdif/totalmatches;
 		return (EXCESSWEIGHT*excess)/numGenes + (DISJOINTWEIGHT*disjoint)/numGenes + DIFWEIGHT * weightdif;
 	}
-	private static Double fitnessSetup(NeuralNetwork[] nns, NeuralNetwork[] newnns, NeuralNetwork[] halfnns) {
+	private Double fitnessSetup(NeuralNetwork[] nns, NeuralNetwork[] newnns, NeuralNetwork[] halfnns) {
 		double totalFitness = 0.0;
 		for (int i = 0; i < nns.length/2; i++){
 			//makes sure duplicates aren't added.
@@ -138,7 +127,7 @@ public class Evolve {
 		}
 		return totalFitness;
 	}
-	private static NeuralNetwork parentSelection(NeuralNetwork[] originalPopulation, Double totalFitness) {
+	private NeuralNetwork parentSelection(NeuralNetwork[] originalPopulation, Double totalFitness) {
 		//this decides which network it will be a clone of
 		Double who = Math.random()*totalFitness;
 		NeuralNetwork cloner = null;
