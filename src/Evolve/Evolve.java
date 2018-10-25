@@ -10,10 +10,10 @@ package Evolve;
 import java.util.ArrayList;
 import java.util.Arrays;
 import General.DataManager;
-import General.Gene;
-import General.NeuralNetwork;
 import General.PropertyReader;
-import General.Species;
+import NeuralNetwork.Gene;
+import NeuralNetwork.NeuralNetwork;
+import NeuralNetwork.Species;
 
 public class Evolve {
 	private static final double CLONE_CHANCE = .25;

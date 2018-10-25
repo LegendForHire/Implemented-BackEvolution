@@ -16,6 +16,10 @@ import java.util.Random;
 import java.util.Scanner;
 
 import Evolve.Mutate;
+import NeuralNetwork.Gene;
+import NeuralNetwork.Layer;
+import NeuralNetwork.NeuralNetwork;
+import NeuralNetwork.Neuron;
 
 public abstract class NetworkCreator {
 	public Random rand;

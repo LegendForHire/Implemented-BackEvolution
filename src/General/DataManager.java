@@ -9,6 +9,7 @@ import Evolve.Evolve;
 import Evolve.Mutate;
 import Evolve.Reproduce;
 import FeedForward.Feedforward;
+import NeuralNetwork.NeuralNetwork;
 
 /**
  * Singleton.java 1.0 March 6, 2018
@@ -21,7 +22,6 @@ import FeedForward.Feedforward;
 public abstract class DataManager {
 	private NeuralNetwork[] networks;
 	private double totalGlobalError;
-	public static final int NUM_NETWORKS = 200;
 	private PrintWriter writer;
 	private int Generation = 0;
 	private long id = 0;

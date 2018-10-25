@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import General.DataManager;
-import General.Gene;
-import General.Layer;
 import General.NetworkCreator;
-import General.NeuralNetwork;
-import General.Neuron;
 import General.PropertyReader;
+import NeuralNetwork.Gene;
+import NeuralNetwork.Layer;
+import NeuralNetwork.NeuralNetwork;
+import NeuralNetwork.Neuron;
 
 public class Reproduce {
 	private DataManager data;

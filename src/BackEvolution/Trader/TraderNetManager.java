@@ -9,8 +9,8 @@ import java.util.ArrayList;
 
 import General.DataManager;
 import General.NeuralNetManager;
-import General.NeuralNetwork;
-import General.Neuron;
+import NeuralNetwork.NeuralNetwork;
+import NeuralNetwork.Neuron;
 
 public class TraderNetManager extends NeuralNetManager {
 

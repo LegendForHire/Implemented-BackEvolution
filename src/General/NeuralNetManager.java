@@ -12,6 +12,10 @@ import java.io.PrintWriter;
 
 import Evolve.Evolve;
 import FeedForward.Feedforward;
+import NeuralNetwork.Gene;
+import NeuralNetwork.Layer;
+import NeuralNetwork.NeuralNetwork;
+import NeuralNetwork.Neuron;
 public abstract class NeuralNetManager {
 	protected DataManager data;
 	public NeuralNetManager(DataManager data) {

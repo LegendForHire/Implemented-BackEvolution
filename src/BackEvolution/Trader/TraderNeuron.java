@@ -2,7 +2,8 @@ package BackEvolution.Trader;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import General.Neuron;
+
+import NeuralNetwork.Neuron;
 
 public class TraderNeuron extends Neuron{
 	private Market market;

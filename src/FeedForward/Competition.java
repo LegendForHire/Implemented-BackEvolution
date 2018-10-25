@@ -1,8 +1,8 @@
 package FeedForward;
 
 import General.DataManager;
-import General.NeuralNetwork;
 import General.PropertyReader;
+import NeuralNetwork.NeuralNetwork;
 
 public abstract class Competition extends Feedforward {
 

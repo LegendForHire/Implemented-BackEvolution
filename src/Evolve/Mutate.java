@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import General.DataManager;
-import General.Gene;
-import General.Layer;
-import General.NeuralNetwork;
-import General.Neuron;
 import General.PropertyReader;
+import NeuralNetwork.Gene;
+import NeuralNetwork.Layer;
+import NeuralNetwork.NeuralNetwork;
+import NeuralNetwork.Neuron;
 
 
 public class Mutate {

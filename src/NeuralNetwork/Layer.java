@@ -1,4 +1,4 @@
-package General;
+package NeuralNetwork;
 import java.lang.reflect.InvocationTargetException;
 /**
  * Layer.java 1.0 March 6, 2018

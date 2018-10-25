@@ -1,4 +1,6 @@
-package General;
+package NeuralNetwork;
+
+import General.DataManager;
 
 /**
  * Gene.java 1.0 March 6, 2018

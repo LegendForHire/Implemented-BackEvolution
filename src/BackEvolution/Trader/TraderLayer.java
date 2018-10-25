@@ -2,7 +2,7 @@ package BackEvolution.Trader;
 
 import java.lang.reflect.InvocationTargetException;
 
-import General.Layer;
+import NeuralNetwork.Layer;
 
 public class TraderLayer extends Layer {
 	

@@ -1,9 +1,9 @@
 package BackEvolution.Trader;
 
 import General.DataManager;
-import General.Layer;
 import General.NetworkCreator;
-import General.Neuron;
+import NeuralNetwork.Layer;
+import NeuralNetwork.Neuron;
 
 public class TraderCreator extends NetworkCreator {
 

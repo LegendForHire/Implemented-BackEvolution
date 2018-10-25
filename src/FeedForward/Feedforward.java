@@ -2,11 +2,11 @@ package FeedForward;
 
 import Backpropagate.Backpropagate;
 import General.DataManager;
-import General.Gene;
-import General.Layer;
-import General.NeuralNetwork;
-import General.Neuron;
 import General.PropertyReader;
+import NeuralNetwork.Gene;
+import NeuralNetwork.Layer;
+import NeuralNetwork.NeuralNetwork;
+import NeuralNetwork.Neuron;
 
 public abstract class Feedforward {
 		protected DataManager data;

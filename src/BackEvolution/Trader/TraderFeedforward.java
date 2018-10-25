@@ -5,16 +5,13 @@ import java.util.Arrays;
 
 import FeedForward.Feedforward;
 import General.DataManager;
-import General.NeuralNetwork;
+import NeuralNetwork.NeuralNetwork;
 
 public class TraderFeedforward extends Feedforward {
-
-	private double noact;
 
 	public TraderFeedforward(DataManager data) {
 		super(data);
 	}
-
 	@Override
 	public void EvolveSetup() {
 		NeuralNetwork[] nns = data.getNetworks();
@@ -24,7 +21,6 @@ public class TraderFeedforward extends Feedforward {
 		}
 		data.getWriter().println("Wallets Restarted");
 	}
-
 	@Override
 	public void EvolveTeardown() {
 		TraderDataManager data1 = (TraderDataManager) data;
@@ -36,7 +32,7 @@ public class TraderFeedforward extends Feedforward {
 		}
 		data.getWriter().println("Fitness Determined");
 		// determines the fitness if no action was taken
-		noact = 0;
+		double noact = 0;
 		for (Wallet w : data1.getNoActWallets()){
 			double amt = w.getAmmount();
 			if (w.getName().equals("BTC")){
@@ -56,11 +52,11 @@ public class TraderFeedforward extends Feedforward {
 				}
 			}
 		}
+		data1.setNoAct(noact);
 		// sorts the neural networks from most fit to least fit.
 		Arrays.sort(nns);
 
 	}
-
 	@Override
 	public void BackpropagationSetup() {
 		for (NeuralNetwork nno : data.getNetworks()){
@@ -68,7 +64,6 @@ public class TraderFeedforward extends Feedforward {
 			nn.restartWallets();
 		}
 	}
-
 	@Override
 	public void BackIterationHandling() {
 		TraderDataManager data1 = (TraderDataManager) data;

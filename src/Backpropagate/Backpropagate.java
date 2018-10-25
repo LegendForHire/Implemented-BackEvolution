@@ -2,11 +2,11 @@ package Backpropagate;
 import java.util.Random;
 
 import General.DataManager;
-import General.Gene;
-import General.Layer;
-import General.NeuralNetwork;
-import General.Neuron;
 import General.PropertyReader;
+import NeuralNetwork.Gene;
+import NeuralNetwork.Layer;
+import NeuralNetwork.NeuralNetwork;
+import NeuralNetwork.Neuron;
 /**
  * Backpropagate.java 1.0 March 6, 2018
  *

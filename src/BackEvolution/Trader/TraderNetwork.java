@@ -8,9 +8,9 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import General.DataManager;
-import General.Layer;
-import General.NeuralNetwork;
-import General.Neuron;
+import NeuralNetwork.Layer;
+import NeuralNetwork.NeuralNetwork;
+import NeuralNetwork.Neuron;
 
 public class TraderNetwork extends NeuralNetwork{
 	private Market[] markets;

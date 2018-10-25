@@ -1,4 +1,4 @@
-package General;
+package NeuralNetwork;
 /**
  * NeuralNetwork.java 1.0 March 6, 2018
  *
@@ -12,6 +12,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import Evolve.Evolve;
+import General.DataManager;
+import General.PropertyReader;
 
 public abstract class NeuralNetwork implements Comparable<NeuralNetwork>{
 	private static final double THRESHOLD = Double.parseDouble(PropertyReader.getProperty("speciationThreshold"));

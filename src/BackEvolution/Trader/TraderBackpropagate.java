@@ -5,10 +5,10 @@ import java.util.Random;
 
 import Backpropagate.Backpropagate;
 import General.DataManager;
-import General.Layer;
-import General.NeuralNetwork;
-import General.Neuron;
 import General.PropertyReader;
+import NeuralNetwork.Layer;
+import NeuralNetwork.NeuralNetwork;
+import NeuralNetwork.Neuron;
 
 public class TraderBackpropagate extends Backpropagate {
 

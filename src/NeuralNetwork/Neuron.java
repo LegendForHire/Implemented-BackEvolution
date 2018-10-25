@@ -1,4 +1,4 @@
-package General;
+package NeuralNetwork;
 /**
  * Neuron.java 1.0 March 6, 2018
  *

@@ -17,7 +17,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import FeedForward.Feedforward;
-import General.NeuralNetwork;
+import NeuralNetwork.NeuralNetwork;
 public class ProgressTracker {
 	private static ArrayList<Wallet> wallets;
 	private static ArrayList<Wallet> noactwallets;
