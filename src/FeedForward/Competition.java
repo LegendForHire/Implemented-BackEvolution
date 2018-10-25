@@ -1,6 +1,7 @@
 package FeedForward;
 
 import General.DataManager;
+import General.Properties;
 import General.PropertyReader;
 import NeuralNetwork.NeuralNetwork;
 
@@ -18,7 +19,7 @@ public abstract class Competition extends Feedforward {
 		for(int i = 0; i< competing; i++){
 			currentPlayers[i] = i;
 		}
-		while(currentPlayers[0] <= Integer.parseInt(PropertyReader.getProperty("numNetworks"))-competing){
+		while(currentPlayers[0] <= Integer.parseInt(PropertyReader.getProperty(Properties.NUM_NETWORKS.toString()))-competing){
 			setupCompetition();
 			Thread[] threads = createPlayerThreads(evolve, nns, currentPlayers);
 			for(Thread thread: threads)thread.start();
@@ -64,7 +65,7 @@ public abstract class Competition extends Feedforward {
 	}
 	private void incrementPlayers(int position) {
 		int[] currentPlayers = data.getCurrentPlayers();
-		if(currentPlayers[position] == Integer.parseInt(PropertyReader.getProperty("numNetworks"))-(currentPlayers.length-position) && position !=0){	
+		if(currentPlayers[position] == Integer.parseInt(PropertyReader.getProperty(Properties.NUM_NETWORKS.toString()))-(currentPlayers.length-position) && position !=0){	
 			incrementPlayers(position-1);
 			currentPlayers[position] = currentPlayers[position-1]+1;
 		}

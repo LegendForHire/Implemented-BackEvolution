@@ -34,7 +34,7 @@ public abstract class NetworkCreator {
 	public NeuralNetwork[] CreateNetworks(){
 		//if there are no load files , it creates one random gene for each neural network.
 		try {
-			String type = PropertyReader.getProperty("type");
+			String type = PropertyReader.getProperty(Properties.TYPE.toString());
 			Class<? extends NeuralNetwork> NetClass = (Class<? extends NeuralNetwork>) Class.forName("BackEvolution."+type+"."+type+"Network");
 			NeuralNetwork[] NetworkList = new NeuralNetwork[Integer.parseInt(PropertyReader.getProperty("numNetworks"))];
 			try {

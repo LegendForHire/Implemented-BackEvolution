@@ -2,6 +2,7 @@ package Backpropagate;
 import java.util.Random;
 
 import General.DataManager;
+import General.Properties;
 import General.PropertyReader;
 import NeuralNetwork.Gene;
 import NeuralNetwork.Layer;
@@ -22,7 +23,7 @@ public abstract class Backpropagate {
 	}
 	public double startingErrorSetup() {
 		double scaling = Math.log(data.getGen())*3+1;
-		data.setTotalGlobalError(Double.parseDouble(PropertyReader.getProperty("allowedError"))/scaling + 1);
+		data.setTotalGlobalError(Double.parseDouble(PropertyReader.getProperty(Properties.ALLOWED_ERROR.toString()))/scaling + 1);
 		return scaling;
 	}
 	public void backpropagate(NeuralNetwork[] nns) {
@@ -46,7 +47,7 @@ public abstract class Backpropagate {
 	private void geneCorrection(Neuron n) {
 		for(Gene g : n.getInputs()){
 			Neuron input = g.getInput();
-			g.setLastChange(n.getError()*Double.parseDouble(PropertyReader.getProperty("learningRate"))*input.getLast()+g.getWeight()+g.getLastChange()*Double.parseDouble(PropertyReader.getProperty("momentum")));
+			g.setLastChange(n.getError()*Double.parseDouble(PropertyReader.getProperty(Properties.LEARNING_RATE.toString()))*input.getLast()+g.getWeight()+g.getLastChange()*Double.parseDouble(PropertyReader.getProperty(Properties.MOMENTUM.toString())));
 			g.setWeight(g.getLastChange());
 		}
 	}
@@ -85,7 +86,7 @@ public abstract class Backpropagate {
 	private static void outputErrorCalculation(NeuralNetwork nn) {
 		Layer out = nn.getLayers().get(nn.getLayers().size()-1);	
 		for(Neuron n : out.getNeurons()){
-			double activation =Double.parseDouble(PropertyReader.getProperty("activation"));
+			double activation =Double.parseDouble(PropertyReader.getProperty(Properties.ACTIVATION.toString()));
 			if(n.getInputs().size() == 0) n.setError(0);
 			else if(n.shouldAct && n.getLast() < activation)n.setError((activation+Math.random()-Sigmoid(n.getLast()))*Sigmoid(n.getLast())*(1-Sigmoid(n.getLast())));
 			else if(!n.shouldAct && n.getLast() > activation)n.setError((-activation-Math.random()-Sigmoid(n.getLast()))*Sigmoid(n.getLast())*(1-Sigmoid(n.getLast())));

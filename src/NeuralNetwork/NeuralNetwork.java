@@ -13,10 +13,11 @@ import java.util.ArrayList;
 
 import Evolve.Evolve;
 import General.DataManager;
+import General.Properties;
 import General.PropertyReader;
 
 public abstract class NeuralNetwork implements Comparable<NeuralNetwork>{
-	private static final double THRESHOLD = Double.parseDouble(PropertyReader.getProperty("speciationThreshold"));
+	private static final double THRESHOLD = Double.parseDouble(PropertyReader.getProperty(Properties.SPECIATION_THRESHHOLD.toString()));
 	protected ArrayList<Layer> layers;
 	protected double fitness;
 	private double globalError;
