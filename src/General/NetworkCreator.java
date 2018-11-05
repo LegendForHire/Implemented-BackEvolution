@@ -8,7 +8,6 @@ package General;
  */
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -36,13 +35,13 @@ public abstract class NetworkCreator {
 		try {
 			String type = PropertyReader.getProperty(Properties.TYPE.toString());
 			Class<? extends NeuralNetwork> NetClass = (Class<? extends NeuralNetwork>) Class.forName("BackEvolution."+type+"."+type+"Network");
-			NeuralNetwork[] NetworkList = new NeuralNetwork[Integer.parseInt(PropertyReader.getProperty("numNetworks"))];
+			NeuralNetwork[] NetworkList = new NeuralNetwork[Integer.parseInt(PropertyReader.getProperty(Properties.NUM_NETWORKS.toString()))];
 			try {
-				for (int j = 0; j<Integer.parseInt(PropertyReader.getProperty("numNetworks"));j++){		
+				for (int j = 0; j<Integer.parseInt(PropertyReader.getProperty(Properties.NUM_NETWORKS.toString()));j++){		
 					createNetwork(NetClass, NetworkList, j);	
 				}
 			}	 
-			catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException | IOException | InstantiationException | IllegalAccessException e1) {
+			catch (SecurityException | IllegalArgumentException e1) {
 				e1.printStackTrace();
 				System.exit(1);
 			}
@@ -62,23 +61,28 @@ public abstract class NetworkCreator {
 			}
 			return NetworkList;
 		}
-		catch(ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+		catch(ClassNotFoundException e) {
 			e.printStackTrace();
 			System.exit(1);
 			return null;
 		}
 	}
-	private void createNetwork(Class<? extends NeuralNetwork> NetClass, NeuralNetwork[] NetworkList, int j) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
-		InvocationTargetException, IOException, InstantiationException {
+	private void createNetwork(Class<? extends NeuralNetwork> NetClass, NeuralNetwork[] NetworkList, int j){
 		Layer[] layers = creator();
 		InputOutputcreator(layers);
-		Class<?>[] types = {Layer.class,Layer.class,DataManager.class};
-		Constructor<? extends NeuralNetwork> con = NetClass.getConstructor(types);
-		NetworkList[j] = (NeuralNetwork) con.newInstance(layers[0],layers[1],data);
-		data.setNetworks(NetworkList);
-		for (Neuron no : layers[1].getNeurons()){
-			NeuronSetup(no, j);
+		Class<?>[] types = {Layer.class,Layer.class,DataManager.class};	
+		try {
+			Constructor<? extends NeuralNetwork> con = NetClass.getConstructor(types);
+			NetworkList[j] = (NeuralNetwork) con.newInstance(layers[0],layers[1],data);
+			data.setNetworks(NetworkList);
+			for (Neuron no : layers[1].getNeurons()){
+				NeuronSetup(no, j);
+			}
+		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
 	}
 	
 	//Adds a gene to a neuron
@@ -90,14 +94,21 @@ public abstract class NetworkCreator {
 		}
 	@SuppressWarnings({ "unchecked"})
 	//loads a NeuralNetwork from a file
-	public void load(NeuralNetwork nn, String[] netData) throws InstantiationException, IllegalAccessException, ClassNotFoundException, FileNotFoundException{
-			String type = PropertyReader.getProperty("type");
-			Class<? extends Neuron> class1 = (Class<? extends Neuron>) Class.forName("BackEvolution."+type+"."+type+"Neuron");
-			Class<? extends Layer> class2 = (Class<? extends Layer>) Class.forName("BackEvolution."+type+"."+type+"Layer");							
-			loadLayers(nn, class2, netData);
-			loadNeurons(nn, class1, netData);
-			Neuraltracker(nn);
-			loadGenes(nn, netData);
+	public void load(NeuralNetwork nn, String[] netData){
+			String type = PropertyReader.getProperty(Properties.TYPE.toString());
+			Class<? extends Neuron> class1;
+			try {
+				class1 = (Class<? extends Neuron>) Class.forName("BackEvolution."+type+"."+type+"Neuron");
+				Class<? extends Layer> class2 = (Class<? extends Layer>) Class.forName("BackEvolution."+type+"."+type+"Layer");							
+				loadLayers(nn, class2, netData);
+				loadNeurons(nn, class1, netData);
+				Neuraltracker(nn);
+				loadGenes(nn, netData);
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 	private void loadGenes(NeuralNetwork nn, String[] netData) {
 			String[] GeneData = netData[2].split(",");
@@ -150,22 +161,30 @@ public abstract class NetworkCreator {
 		}
 		return inNeuron;
 	}
-	private void loadNeurons(NeuralNetwork nn, Class<? extends Neuron> class1, String[] netData)
-				throws InstantiationException, IllegalAccessException {
+	private void loadNeurons(NeuralNetwork nn, Class<? extends Neuron> class1, String[] netData){
 			String[] NeuronData = netData[1].split(",");
 			for (int i =1; i < nn.getLayers().size()-1; i++){
 				for (int j = 0; j < Integer.parseInt(NeuronData[i]); j++){
-					nn.getLayers().get(i).addNeuron(class1.newInstance());
+					try {
+						nn.getLayers().get(i).addNeuron(class1.newInstance());
+					} catch (InstantiationException | IllegalAccessException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 		}
-	private void loadLayers(NeuralNetwork nn, Class<? extends Layer> class2, String[] netData)
-				throws InstantiationException, IllegalAccessException {
+	private void loadLayers(NeuralNetwork nn, Class<? extends Layer> class2, String[] netData){
 			for (int i = 2; i < Integer.parseInt(netData[0]); i++){
-				Layer l = class2.newInstance();
-				l.setInput(false);
-				l.setOutput(false);
-				nn.addLayer(l);
+				Layer l;
+				try {
+					l = class2.newInstance();
+					l.setInput(false);
+					l.setOutput(false);
+					nn.addLayer(l);
+				} catch (InstantiationException | IllegalAccessException e) {
+					e.printStackTrace();
+				}		
 			}
 		}
 	//Makes sure neuron and gene location data are correct.
@@ -184,19 +203,27 @@ public abstract class NetworkCreator {
 		}
 	//builds the input and output layers for each neural network
 	@SuppressWarnings("unchecked")
-	public Layer[] creator() throws ClassNotFoundException, NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, IOException, InstantiationException{
-			String type = PropertyReader.getProperty("type");
-			Class<? extends Layer> class1 = (Class<? extends Layer>) Class.forName("BackEvolution."+type+"."+type+"Layer");
-			Layer[] layers = new Layer[2];	
-			layers[0] = class1.newInstance();
-			layers[0].setInput(true);
-			layers[0].setOutput(false);
-			layers[0].setNumber(1);
-			layers[1] = class1.newInstance();
-			layers[1].setOutput(true);
-			layers[1].setInput(false);
-			layers[0].setNumber(2);
-			return layers;
+	public Layer[] creator(){
+			String type = PropertyReader.getProperty(Properties.TYPE.toString());		
+			try {
+				Class<? extends Layer> class1 = (Class<? extends Layer>) Class.forName("BackEvolution."+type+"."+type+"Layer");
+				Layer[] layers = new Layer[2];	
+				layers[0] = class1.newInstance();
+				layers[0].setInput(true);
+				layers[0].setOutput(false);
+				layers[0].setNumber(1);
+				layers[1] = class1.newInstance();
+				layers[1].setOutput(true);
+				layers[1].setInput(false);
+				layers[0].setNumber(2);
+				return layers;
+			} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.exit(1);
+			}
+			return null;
+			
 		}
 	//after neurons are created, use this to give them any additional data you might need to feed them
 	public abstract void NeuronSetup(Neuron no, int j);

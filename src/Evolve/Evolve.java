@@ -10,6 +10,7 @@ package Evolve;
 import java.util.ArrayList;
 import java.util.Arrays;
 import General.DataManager;
+import General.Properties;
 import General.PropertyReader;
 import NeuralNetwork.Gene;
 import NeuralNetwork.NeuralNetwork;
@@ -17,7 +18,7 @@ import NeuralNetwork.Species;
 
 public class Evolve {
 	private static final double CLONE_CHANCE = .25;
-	private static final double MAX_SPECIES_DELTA = Double.parseDouble(PropertyReader.getProperty("speciationThreshold"));
+	private static final double MAX_SPECIES_DELTA = Double.parseDouble(PropertyReader.getProperty(Properties.SPECIATION_THRESHHOLD.toString()));
 	private static final double DISJOINTWEIGHT = 1;
 	private static final double EXCESSWEIGHT = 1;
 	private static final double DIFWEIGHT = 1;

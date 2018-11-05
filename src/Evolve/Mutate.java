@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import General.DataManager;
+import General.Properties;
 import General.PropertyReader;
 import NeuralNetwork.Gene;
 import NeuralNetwork.Layer;
@@ -23,10 +24,10 @@ public class Mutate {
 	public NeuralNetwork mutate(NeuralNetwork newnn){
 		double mutationSelector = Math.random();
 		ArrayList<Gene> genes = geneArrayCreator(newnn);
-		if (mutationSelector < Double.parseDouble(PropertyReader.getProperty("removeProbability"))&& genes.size() > 0)geneMutation(mutationSelector, genes);
-		else if (mutationSelector < Double.parseDouble(PropertyReader.getProperty("newGeneProbability")) || genes.size() == 0)newGeneInsert(newnn);
+		if (mutationSelector < Double.parseDouble(PropertyReader.getProperty(Properties.DISABLE.toString()))&& genes.size() > 0)geneMutation(mutationSelector, genes);
+		else if (mutationSelector < Double.parseDouble(PropertyReader.getProperty(Properties.NEW_GENE.toString())) || genes.size() == 0)newGeneInsert(newnn);
 		else {
-			if (newnn.getLayers().size() == 2 || mutationSelector > Double.parseDouble(PropertyReader.getProperty("existingLayerProbability")))newNeuronInNewLayer(newnn, genes);	
+			if (newnn.getLayers().size() == 2 || mutationSelector > Double.parseDouble(PropertyReader.getProperty(Properties.EXISTING_LAYER.toString())))newNeuronInNewLayer(newnn, genes);	
 			else newNeuronInExistingLayer(newnn);	
 		}
 		return newnn;
@@ -42,7 +43,7 @@ public class Mutate {
 	}
 	@SuppressWarnings({ "unchecked"})
 	private void newNeuronInExistingLayer(NeuralNetwork newnn){
-		String type = PropertyReader.getProperty("type");
+		String type = PropertyReader.getProperty(Properties.TYPE.toString());
 		try {
 			Class<? extends Neuron> neuronClass = (Class<? extends Neuron>) Class.forName("BackEvolution."+type+"."+type+"Neuron");
 			//new node in existing layer
@@ -126,7 +127,7 @@ public class Mutate {
 	@SuppressWarnings({ "unchecked" })
 	private void newNeuronInNewLayer(NeuralNetwork newnn, ArrayList<Gene> genes) {
 		//new neuron in new layer
-		String type = PropertyReader.getProperty("type");
+		String type = PropertyReader.getProperty(Properties.TYPE.toString());
 		
 		try {
 			Class<? extends Neuron> neuronClass = (Class<? extends Neuron>) Class.forName("BackEvolution."+type+"."+type+"Neuron");
@@ -215,11 +216,11 @@ public class Mutate {
 	private void geneMutation(double selector, ArrayList<Gene> genes) {
 		Gene gene= genes.get(0);
 		if(genes.size() > 1) gene= genes.get(rand.nextInt(genes.size()-1));
-		if(selector < Double.parseDouble(PropertyReader.getProperty("adjustProbability"))){
+		if(selector < Double.parseDouble(PropertyReader.getProperty(Properties.ADJUST.toString()))){
 			//adjust weight
 			gene.setWeight(gene.getWeight()*(1+(Math.random()*.1)));
 		}
-		else if (selector < Double.parseDouble(PropertyReader.getProperty("randomProbability"))){
+		else if (selector < Double.parseDouble(PropertyReader.getProperty(Properties.RANDOM.toString()))){
 			// new random weight
 			gene.setWeight(Math.random()*2 - 1);
 			

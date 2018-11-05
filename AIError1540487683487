@@ -1,0 +1,8 @@
+java.lang.NumberFormatException: null
+	at java.lang.Long.parseLong(Unknown Source)
+	at java.lang.Long.parseLong(Unknown Source)
+	at BackEvolution.Trader.TraderBackpropagate.setAct(TraderBackpropagate.java:23)
+	at Backpropagate.Backpropagate.backpropagate(Backpropagate.java:31)
+	at FeedForward.Feedforward.backpropagateRunner(Feedforward.java:37)
+	at General.NeuralNetManager.RunNetworks(NeuralNetManager.java:74)
+	at General.NeuralNetManager$1$1.run(NeuralNetManager.java:39)

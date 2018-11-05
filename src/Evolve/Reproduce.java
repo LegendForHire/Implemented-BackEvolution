@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import General.DataManager;
 import General.NetworkCreator;
+import General.Properties;
 import General.PropertyReader;
 import NeuralNetwork.Gene;
 import NeuralNetwork.Layer;
@@ -126,7 +127,7 @@ public class Reproduce {
 	}
 	@SuppressWarnings({ "unchecked", "deprecation" })
 	private NeuralNetwork newNetwork(DataManager data) {
-		String type = PropertyReader.getProperty("type");
+		String type = PropertyReader.getProperty(Properties.TYPE.toString());
 		NetworkCreator creator = data.getNetworkCreator();
 		try {
 			Class<? extends NeuralNetwork> networkClass = (Class<? extends NeuralNetwork>) Class.forName("BackEvolution."+type+"."+type+"Network");
@@ -136,7 +137,7 @@ public class Reproduce {
 			Constructor<? extends NeuralNetwork> con2 = networkClass.getConstructor(types2);
 			NeuralNetwork newnn = con2.newInstance(puts[0],puts[1], data);
 			return newnn;
-		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException | IOException e) {
+		} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			Thread.currentThread().stop();
@@ -146,7 +147,7 @@ public class Reproduce {
 	} 
 	@SuppressWarnings({ "unchecked"})
 	private void networkLayerCreation(NeuralNetwork newnn, int numNeurons) {
-		String type = PropertyReader.getProperty("type");
+		String type = PropertyReader.getProperty(Properties.TYPE.toString());
 		
 		try {
 			Class<? extends Neuron> neuronClass = (Class<? extends Neuron>) Class.forName("BackEvolution."+type+"."+type+"Neuron");

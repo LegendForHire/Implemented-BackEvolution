@@ -24,9 +24,11 @@ public abstract class NeuralNetManager {
 	public void start() {
 		//Creating the networks to run them
 		setup();
+		System.out.println("Creating Networks");
 		NetworkCreator creator = data.getNetworkCreator();
 		NeuralNetwork[] nns =  creator.CreateNetworks(); 
 		data.setNetworks(nns);
+		System.out.println("Networks Created\nStartingLearningThreads");
 		//Thread to keep the networks learning
 		Thread thread2 = new Thread() {			
 			public void run(){
@@ -66,15 +68,20 @@ public abstract class NeuralNetManager {
 	protected void RunNetworks(){
 			Feedforward feed = data.getFeedforward();
 			Evolve evolve = data.getEvolve();
+			
 			while(true) {
+				System.out.println("New Generation " + data.getGen() + " Started\nGathering data and backpropagting");
 				feed.backpropagateRunner();
+				System.out.println("Backpropagation complete \nGathering data for evolution");
 				feed.evolveRunner();
 				// saves the current state of the neural networks.
+				System.out.println("Data Collection Complete\nSaving Current State");
 				NeuralNetwork[] nns = data.getNetworks();
 				save();
-				data.getWriter().println("Last state saved");
+				data.getWriter().println("Current State Saved\nEvolving");
 				//evolution method
 				nns = evolve.evolve(nns);
+				System.out.println("Evolution Complete\nNew Generation created");
 				data.setNetworks(nns);
 				data.getWriter().println("Iteration " + (data.getGen()) + " Complete");
 				data.incrementGen();

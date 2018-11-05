@@ -11,7 +11,9 @@ public class TraderStartup extends Startup {
 	public DataManager SetupStartup() {
 		TraderDataManager data = new TraderDataManager();
 		try {
+			System.out.println("Starting Up Market Trackers");
 			MarketManager.start(data);
+			System.out.println("Market Trackers Created");
 		} catch (IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

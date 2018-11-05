@@ -12,7 +12,7 @@ import FeedForward.Feedforward;
 import NeuralNetwork.NeuralNetwork;
 
 /**
- * Singleton.java 1.0 March 6, 2018
+ * March 6, 2018
  *
  * Copyright (c) 2018 Blair Helms
  * Mebane, North Carolina 27302 U.S.A

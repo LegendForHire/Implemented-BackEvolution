@@ -2,6 +2,7 @@ package FeedForward;
 
 import Backpropagate.Backpropagate;
 import General.DataManager;
+import General.Properties;
 import General.PropertyReader;
 import NeuralNetwork.Gene;
 import NeuralNetwork.Layer;
@@ -30,7 +31,7 @@ public abstract class Feedforward {
 			//Scales the allowed error over time allowing a much larger starting error but capping the smallest error possible at a lower but still reasonable number.
 			double scaling = backpropagate.startingErrorSetup();
 			// this is where the back propagation learning step for the neural networks run.
-			while(data.getTotalGlobalError() > Double.parseDouble(PropertyReader.getProperty("allowedError"))/scaling){
+			while(data.getTotalGlobalError() > Double.parseDouble(PropertyReader.getProperty(Properties.ALLOWED_ERROR.toString()))/scaling){
 				BackIterationHandling();
 				feed(false);	
 				backpropagate.backpropagate(nns);
@@ -45,7 +46,7 @@ public abstract class Feedforward {
 					RunNetwork(nn);					
 				}
 				long t = System.currentTimeMillis();
-				while(System.currentTimeMillis() - t < Integer.parseInt(PropertyReader.getProperty("timing")));
+				while(System.currentTimeMillis() - t < Integer.parseInt(PropertyReader.getProperty(Properties.TIMING.toString())));
 		}
 		public void RunNetwork(NeuralNetwork nn){
 				//runs each layer in order
@@ -53,7 +54,7 @@ public abstract class Feedforward {
 				for (Layer l : nn.getLayers()){			
 					// gets the input data, and sends it to each connected neuron.
 					for (Neuron n : l.getNeurons()){
-						if(l.isInput() || (l.isOutput() && Backpropagate.Sigmoid(n.getValue()) > Double.parseDouble(PropertyReader.getProperty("activation"))))n.invoke();
+						if(l.isInput() || (l.isOutput() && Backpropagate.Sigmoid(n.getValue()) > Double.parseDouble(PropertyReader.getProperty(Properties.ACTIVATION.toString()))))n.invoke();
 						if(!l.isOutput())runGenes(n);
 						n.setLast(n.getValue());
 						n.setValue(0.0000001);
