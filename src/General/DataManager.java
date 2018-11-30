@@ -29,6 +29,10 @@ public abstract class DataManager {
 	private Evolve evolve;
 	private Reproduce reproduce;
 	private Mutate mutate;
+	private NetworkCreator networkCreator;
+	private Backpropagate backpropagate;
+	private Feedforward feedforward;
+	private NeuralNetManager netManager;
 	//create fields for all items that have getters and setter
 	//create constants for all methods with only getters. 
 	//these are your twiddly knobs for changing how the algorithm runs a bit.
@@ -40,6 +44,9 @@ public abstract class DataManager {
 			writer = new PrintWriter(f);
 		} catch (FileNotFoundException e) {}
 		Generation = 0;
+		reproduce = new Reproduce(this);
+		evolve = new Evolve(this);
+		mutate = new Mutate(this);
 	}
 	public PrintWriter getWriter() {
 		return writer;
@@ -82,20 +89,25 @@ public abstract class DataManager {
 	public void setCurrentPlayers(int[] players) {
 		currentPlayers = players;
 	}
-	public abstract NeuralNetManager getNetManager();
+	public NeuralNetManager getNetManager() {
+		return netManager;
+	}
 	public Evolve getEvolve() {
-		if(evolve == null)evolve = new Evolve(this);
 		return evolve;
 	};
-	public abstract Feedforward getFeedforward();
-	public abstract Backpropagate getBackPropagate();
-	public abstract NetworkCreator getNetworkCreator();
+	public Feedforward getFeedforward() {
+		return feedforward;
+	}
+	public Backpropagate getBackPropagate() {
+		return backpropagate;
+	}
+	public NetworkCreator getNetworkCreator() {
+		return networkCreator;
+	}
 	public Reproduce getReproduce() {
-		if(reproduce == null)reproduce = new Reproduce(this);
 		return reproduce;
 	}
 	public Mutate getMutate() {
-		if(mutate == null)mutate = new Mutate(this);
 		return mutate;
 	}
 }

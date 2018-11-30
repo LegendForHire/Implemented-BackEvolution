@@ -16,7 +16,7 @@ public class TraderNetwork extends NeuralNetwork{
 	private Market[] markets;
 	public ArrayList<Wallet> wallets;
 	public TraderNetwork(Layer inputLayer, Layer outputLayer, DataManager data1) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, IOException {
-		super(inputLayer, outputLayer, new TraderLayer(false,false).getClass(), data1);
+		super(inputLayer, outputLayer, data1);
 		TraderDataManager data = (TraderDataManager) data1;
 		this.markets = data.getMarkets();
 		URL currencies = new URL("https://bittrex.com/api/v1.1/public/getCurrencies");

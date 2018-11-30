@@ -23,11 +23,13 @@ public class Gene {
 		connect = connected;
 		connectweight = weight;
 		geneID = data.getNewID();
+		connected.addInput(this);
 	}
 	public Gene(Neuron connected, double weight, long id) {
 		connect = connected;
 		connectweight = weight;
 		geneID = id;
+		connected.addInput(this);
 	}
 	//returns the weight if enabled
 	public double getWeight(){

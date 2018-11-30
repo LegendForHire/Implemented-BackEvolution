@@ -42,7 +42,7 @@ public class Mutate {
 		return genes;
 	}
 	@SuppressWarnings({ "unchecked"})
-	private void newNeuronInExistingLayer(NeuralNetwork newnn){
+	public void newNeuronInExistingLayer(NeuralNetwork newnn){
 		String type = PropertyReader.getProperty(Properties.TYPE.toString());
 		try {
 			Class<? extends Neuron> neuronClass = (Class<? extends Neuron>) Class.forName("BackEvolution."+type+"."+type+"Neuron");
@@ -125,7 +125,7 @@ public class Mutate {
 		
 	}
 	@SuppressWarnings({ "unchecked" })
-	private void newNeuronInNewLayer(NeuralNetwork newnn, ArrayList<Gene> genes) {
+	public void newNeuronInNewLayer(NeuralNetwork newnn, ArrayList<Gene> genes) {
 		//new neuron in new layer
 		String type = PropertyReader.getProperty(Properties.TYPE.toString());
 		
@@ -218,16 +218,25 @@ public class Mutate {
 		if(genes.size() > 1) gene= genes.get(rand.nextInt(genes.size()-1));
 		if(selector < Double.parseDouble(PropertyReader.getProperty(Properties.ADJUST.toString()))){
 			//adjust weight
-			gene.setWeight(gene.getWeight()*(1+(Math.random()*.1)));
+			
 		}
 		else if (selector < Double.parseDouble(PropertyReader.getProperty(Properties.RANDOM.toString()))){
 			// new random weight
-			gene.setWeight(Math.random()*2 - 1);
+			randomWeight(gene);
 			
 		}
 		else{
 			//disable/enable gene
-			gene.remove();	
+			geneDisable(gene);
 		}
+	}
+	public void geneDisable(Gene gene) {
+		gene.remove();
+	}
+	public void randomWeight(Gene gene) {
+		gene.setWeight(Math.random()*2 - 1);
+	}
+	public void geneAdjust(Gene gene) {
+		gene.setWeight(gene.getWeight()*(1+(Math.random()*.2-.1)));
 	}
 }

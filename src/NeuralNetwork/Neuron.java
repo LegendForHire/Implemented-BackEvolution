@@ -48,6 +48,7 @@ public abstract class Neuron {
 	}
 	public void AddGenes(Gene gene){
 		genes.add(gene);
+		gene.setInput(this);
 	}
 	public void RemoveGenes(Gene gene){
 		genes.remove(gene);
@@ -99,9 +100,7 @@ public abstract class Neuron {
 		input = new ArrayList<Gene>();
 		
 	}
-	public void invoke() {
-		System.out.print("You need to overide the invoke method in your Neuron implementation");
-	}
+	public abstract void invoke();
 	public void setActive (boolean b){
 		shouldAct = b;
 	}

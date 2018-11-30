@@ -23,23 +23,26 @@ public abstract class NeuralNetwork implements Comparable<NeuralNetwork>{
 	private double globalError;
 	private Species species;
 	private DataManager data;
-	public NeuralNetwork(Layer inputLayer, Layer outputLayer, Class<?> a, DataManager data) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException{
+	public NeuralNetwork(Layer inputLayer, Layer outputLayer, DataManager data){
 		layers = new ArrayList<Layer>();
-		Class<?>[] types = {a};
-		Constructor<?> con =  a.getConstructor(types);
-		layers.add((Layer) con.newInstance(a.cast(inputLayer)));
-		layers.get(0).setNumber(1);	
-		layers.add((Layer) con.newInstance(a.cast(outputLayer)));
-		layers.get(1).setNumber(2);
+		layers.add(inputLayer);
+		layers.add(outputLayer);
 		fitness = 0;
 		this.data = data;
 		//loads the currencies from the bittrex api.		
 	}
 	//made to clone neural networks. didn't work as intended, but not deleted in case used elsewhere for other purpose.
-	public NeuralNetwork(NeuralNetwork nn, Class<?> a) throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	public NeuralNetwork(NeuralNetwork nn, Class<?> a){
 		ArrayList<Layer> layers = nn.getLayers();
 		for (Layer l : layers){
-			this.layers.add((Layer) a.getConstructor(a.getClass()).newInstance(a.cast(l)));
+			try {
+				this.layers.add((Layer) a.getConstructor(a.getClass()).newInstance(a.cast(l)));
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.exit(1);
+			}
 		}	
 		this.data = nn.getData();
 	}
@@ -69,9 +72,7 @@ public abstract class NeuralNetwork implements Comparable<NeuralNetwork>{
 		
 	}
 	//finds the fitness in amount of bitcoin.
-	public void updateFitness() throws IOException {
-		System.out.println("Override Fitness method in NeuralNetwork Implementation");
-	}
+	public abstract void updateFitness();
 	@Override
 	public int compareTo(NeuralNetwork n) {
         if (n == null) return -1;
